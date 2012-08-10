@@ -26,7 +26,7 @@
 #include "dac.h"
 #include "rtc_mode.h"
 #include "gpio_if.h"
-#include "lcd_ht1621_drv.h"
+//#include "lcd_ht1621_drv.h"
 
 extern u8 LCDPAGE,LCDCOLUMN;
 #if FM_MODULE

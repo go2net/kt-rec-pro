@@ -501,6 +501,16 @@
                 </File51>
               </FileOption>
             </File>
+            <File>
+              <FileName>lcd_ht1621_disp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\display\lcd_ht1621_disp.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd_ht1621_drv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\display\lcd_ht1621_drv.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
