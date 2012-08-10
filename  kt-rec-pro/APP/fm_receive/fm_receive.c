@@ -274,6 +274,9 @@ __FREQ_DEC:
 #ifdef FM_FREQ_NUM_KEY_INPUT			
             else if (cur_menu == MENU_INPUT_NUMBER)			//数字输入模式
             {
+            		if(cur_sw_fm_band>1){
+				input_number = input_number*10;
+			}
             	 	if ((input_number <= REG_MAX_FREQ) && (input_number >=REG_MIN_FREQ)){
 
 		        	frequency =input_number;
