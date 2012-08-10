@@ -73,12 +73,12 @@
 								/*09*/    NO_MSG,\
                                                        /*10*/     NO_MSG,\
 								/*11*/    NO_MSG,\
-								/*12*/    MSG_MUSIC_FF,\
+								/*12*/    MSG_MUSIC_FR,\
 								/*13*/    NO_MSG,\
 								/*14*/    MSG_VOL_DOWN,\
 								/*15*/    NO_MSG,\
 								/*16*/    NO_MSG,\
-								/*17*/    MSG_MUSIC_FR,\
+								/*17*/    MSG_MUSIC_FF,\
 								/*18*/    MSG_VOL_UP,\
 								/*19*/    NO_MSG,\
 								/*20*/    NO_MSG
