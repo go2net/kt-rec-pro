@@ -16,7 +16,12 @@
 
 #include "lcd.h"
 #include "led.h"
+
+#if defined(USE_LCD_DRV_HT1621)
+#include "lcd_ht1621_drv.h"
+#else
 #include "lcdsegment.h"
+#endif
 
 #include "resource.h"
 #include "my_printf.h"
@@ -26,7 +31,6 @@
 #include "dac.h"
 #include "rtc_mode.h"
 #include "gpio_if.h"
-#include "lcd_ht1621_drv.h"
 
 extern u8 LCDPAGE,LCDCOLUMN;
 #if FM_MODULE
