@@ -263,18 +263,12 @@ void led_putchar(u8 chardata,u8 loc)
 }
 void Lcd_check_buf()
 {
-#if 0
+#if 1
 	static char cnt='0';
-	disp_buf_clear();
+	clear_lcd_disp_buf();
 
-	cnt++;
-	if(cnt>'9')cnt='0';
-	//loc++;
-	if(loc>7)loc=0;
-	//lcd_putchar('A');
-	disp_buf_align(0,LCD_LARGE_LETTER[0]);
-	//Ht1621_buf[0]=LCD_LARGE_LETTER[0];
-	//Ht1621_buf[1]=LCD_LARGE_LETTER[0];
+	Ht1621_buf[19]=0xFF;
+
 #endif
 	
 }
