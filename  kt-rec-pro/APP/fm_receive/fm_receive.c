@@ -217,6 +217,8 @@ void fm_rev( void )
 {
     u8 key;
 
+    set_radio_freq(FM_CUR_FRE);
+
     while (1)
     {
 
