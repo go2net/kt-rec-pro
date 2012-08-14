@@ -374,7 +374,7 @@ void main(void)
     clear_all_event();
     flush_all_msg();
     set_brightness_all_on();
-
+    delay_10ms(10);
     ///*
     while (1)
     {

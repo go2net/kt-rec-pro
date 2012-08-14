@@ -83,7 +83,7 @@
 
 #if defined(K289_MODULE)
 
-#define NEW_DH_LCD_MODULE_SM5858
+//#define NEW_DH_LCD_MODULE_SM5858
 
 #ifdef NEW_DH_LCD_MODULE_SM5858
 #define DISP_PAU_STR
