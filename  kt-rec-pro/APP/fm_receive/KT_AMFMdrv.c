@@ -466,10 +466,8 @@ void  KT_AMFMStandby(void)					//0->Fail 1->Success
 xd_u8 KT_AMFMWakeUp(void) //0->Fail 1->Success
 {
 	xd_u16 regx;
-	delay_10ms(10);
 	regx = KT_Bus_Read(0x0F);
 	KT_Bus_Write(0x0F, regx & 0xe000);			//Write Standby bit to 0
-	delay_10ms(20);
 	return (KT_AMFMInit());
 }
 #if 0
