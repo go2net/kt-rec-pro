@@ -129,7 +129,7 @@ void amp_mute(bool mute);
 #define DAC_MUSIC			2
 
 ///◊Ó¥Û“Ù¡ø
-#define MAX_DIGITAL_VOL 	27
+#define MAX_DIGITAL_VOL 	30
 #define MAX_ANOLOG_VOL 		30
 #define MAX_MAIN_VOL        30
 
