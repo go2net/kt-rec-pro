@@ -315,7 +315,12 @@ __FREQ_DEC:
 /*----------------------------------------------------------------------------*/
 void fm_radio(void)
 {
-//deg_str("fm_radio \n");
+
+#ifdef UART_ENABLE
+	uart_init();
+	deg_str("fm_radio \n");
+#endif
+
     flush_all_msg();
 
     amux_dsp_eq();

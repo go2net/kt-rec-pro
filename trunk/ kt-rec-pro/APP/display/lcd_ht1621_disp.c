@@ -13,30 +13,30 @@ u8 xdata lcd_flash_timer=0;
 extern xd_u8 Ht1621_buf[MAX_SEG_NUM];
 
 
-u16 _code LCD_NUMBER[10] =
+u8 _code LCD_NUMBER[10] =
 {
-    0xA28A,0x0088,0x9292,0x909A,0x3098,  ///<0~4
-    0xB01A,0xB21A,0x8088,0xB29A,0xB09A   ///<5~9
+    0x3f,0x06,0x5b,0x4f,0x66,  ///<0~4
+    0x6d,0x7d,0x07,0x7f,0x6f   ///<5~9
 };
 
-u16 _code LCD_LARGE_LETTER[26] =
+u8 _code LCD_LARGE_LETTER[26] =
 {
-    0xB298,0x321A,0xA202,0x129A,0xB212,///<ABCDE
-    0xB210,0xA21A,0x3298,0xC006,0x008A,///<FGHIJ
-    0x4844,0x2202,0x22EC,0xA288,0xA28A,///<KLMNO
-    0xB290,0xB098,0xBB90,0xB01A,0xC004,///<PQRST
-    0x228A,0x08A8,0x6E88,0x0C60,0x309A,///<UVWXY
-    0x8442///<Z
+    0x77,0x40,0x39,0x3f,0x79,///<ABCDE
+    0x71,0x40,0x76,0x06,0x40,///<FGHIJ
+    0x40,0x38,0x40,0x37,0x3f,///<KLMNO
+    0x73,0x40,0x50,0x6d,0x40,///<PQRST
+    0x3e,0x3e,0x40,0x76,0x40,///<UVWXY
+    0x40///<Z
 };
 
-u16 _code LCD_SMALL_LETTER[26] =
+u8 _code LCD_SMALL_LETTER[26] =
 {
-    0xB298,0x321A,0xA202,0x129A,0xB212,///<ABCDE
-    0xB210,0xA21A,0x3298,0xC006,0x008A,///<FGHIJ
-    0x4844,0x2202,0x22EC,0xA288,0xA28A,///<KLMNO
-    0xB290,0xB098,0xBB90,0xB01A,0xC004,///<PQRST
-    0x228A,0x08A8,0x6E88,0x0C60,0x309A,///<UVWXY
-    0x8442///<Z
+    0x77,0x7c,0x58,0x5e,0x79,///<abcde
+    0x71,0x40,0x40,0x40,0x40,///<fghij
+    0x40,0x38,0x40,0x54,0x5c,///<klmno
+    0x73,0x67,0x50,0x40,0x40,///<pqrst
+    0x3e,0x3e,0x40,0x40,0x40,///<uvwxy
+    0x40///<z
 };
 /*----------------------------------------------------------------------------*/
 /**@brief    清空LED BUFF函数，LED显示位置设为1
@@ -50,19 +50,21 @@ void clear_lcd_disp_buf(void)
 	my_memset(&Ht1621_buf[0], 0x0, (MAX_SEG_NUM));
 	//loc=0;
 }
-void disp_buf_align(u8 lcd_digit,u16 buf_data)
+u8 _code align_lcd_digit[4]={18,19,21,22};
+void disp_buf_align(u8 lcd_digit,u8 buf_data)
 {
-	u8 digit_num=0;
+	//u8 digit_num=0;
 	//digit_num =align_lcd_digit[lcd_digit];
-	Ht1621_buf[digit_num] |=(u8)(buf_data>>8);
-	Ht1621_buf[digit_num+1]|=(u8)(buf_data&0x00FF);
+	
+	Ht1621_buf[align_lcd_digit[lcd_digit]] &=~(0xEF);
+       Ht1621_buf[align_lcd_digit[lcd_digit]] |= ((buf_data & DIG_A)<<3)|((buf_data & DIG_B)<<1)|((buf_data & DIG_C)>>1)|((buf_data & DIG_D)>>3);
+       Ht1621_buf[align_lcd_digit[lcd_digit]] |= ((buf_data & DIG_E)<<1)|((buf_data & DIG_F)<<2)|((buf_data & DIG_G));
 }
 void clr_lcd_digit(u8 lcd_num)
 {
 	u8 digit_num=0;
-	//digit_num =align_lcd_digit[lcd_digit];
-	Ht1621_buf[digit_num] =0x00;
-	Ht1621_buf[digit_num+1]=0x00;
+	digit_num =align_lcd_digit[lcd_num];
+	Ht1621_buf[digit_num] &=~(0xEF);
 }
 void clr_all_num()
 {
@@ -80,7 +82,7 @@ void clr_all_num()
 /*----------------------------------------------------------------------------*/
 void init_lcd_disp(void)
 {
-	clear_lcd_disp_buf();
+	//clear_lcd_disp_buf();
 	lcd_ht1621_init();
 }
 void lcd_disp_icon(u8 id)
@@ -102,21 +104,15 @@ void lcd_disp_icon(u8 id)
 		break;
 #endif		
 	case FM_MHZ_ICON:
-		F_MHZ_DEV |=FM_MHZ_MASK;
-#if defined(NEW_DH_LCD_MODULE_SM5858)
-		F_P1_DEV |=FM_P1_MASK;
-#endif		
+		F_FM_DEV |=FM_DEV_MASK;
+		F_MHZ_DEV |=FM_MHZ_MASK;	
 		break;
 	case AM_KHZ_ICON:
 		F_KHZ_DEV |=AM_KHZ_MASK;
 		break;
 	case SW_ICON:
 		F_SW_DEV |=SW_MHZ_MASK;
-#if defined(NEW_DH_LCD_MODULE_SM5901)
-		F_P1_DEV |=FM_P1_MASK;
-#elif defined(NEW_DH_LCD_MODULE_SM5858)
-		F_P2_DEV |=SW_P2_MASK;
-#endif			
+		F_MHZ_DEV |=FM_MHZ_MASK;	
 		break;				
 	case REP_1_ICON:
 		F_REP_ONE|=REP_ONE_MASK;
@@ -144,9 +140,7 @@ void lcd_disp_icon(u8 id)
 		S1_ICON_BUF |=S3_ICON_MASK;
 		break;	
 #endif		
-//	case BAT_S4_ICON:
-//		S1_ICON_BUF |=S4_ICON_MASK;
-//		break;		
+
     }
 }
 void lcd_clr_icon(u8 id)
@@ -169,21 +163,16 @@ void lcd_clr_icon(u8 id)
 		break;
 #endif		
 	case FM_MHZ_ICON:
+		F_FM_DEV &=~FM_DEV_MASK;
 		F_MHZ_DEV &=~FM_MHZ_MASK;
 		break;
-#if defined(NEW_DH_LCD_MODULE_SM5858)
-		F_P1_DEV &=~FM_P1_MASK;
-#endif
+
 	case AM_KHZ_ICON:
 		F_KHZ_DEV &=~AM_KHZ_MASK;
 		break;
 	case SW_ICON:
 		F_SW_DEV &=~SW_MHZ_MASK;
-#if defined(NEW_DH_LCD_MODULE_SM5901)
-		F_P1_DEV &=~FM_P1_MASK;
-#elif defined(NEW_DH_LCD_MODULE_SM5858)
-		F_P2_DEV &=~SW_P2_MASK;
-#endif			
+		F_MHZ_DEV &=~FM_MHZ_MASK;		
 		break;			
 	case REP_1_ICON:
 		F_REP_ONE&=~REP_ONE_MASK;
@@ -230,9 +219,10 @@ void lcd_clr_flash_icon()
 /*----------------------------------------------------------------------------*/
 void led_putchar(u8 chardata,u8 loc)
 {
-    //set_lcd_icon_buf(LCD_ST_ICON);
    //printf("digit : %x   -->   %c  \r\n",(u16)loc,chardata);
-    if ((chardata < ' ') || (chardata > '~') || (loc > 7))
+   TRADEMARK_ICON |=TRADEMARK_MASK;
+	
+    if ((chardata < ' ') || (chardata > '~'))
     {
         return;
     }
@@ -250,24 +240,28 @@ void led_putchar(u8 chardata,u8 loc)
     }
     else if (chardata == ':')
     {
-        //set_lcd_icon_buf(LCD_2DOT_ICON);
-    }
-    else if (chardata == ' ')
-    {
-        loc++;
-    }
-    else if (chardata == '-')
-    {
-        //Ht1621_buf[loc++] = LCD0_MINUS;
+        lcd_disp_icon(COL_ICON);
     }
 }
+#if defined(USE_BAT_MANAGEMENT)
+extern void Bat_icon_chk(void);
+#endif
+
 void Lcd_check_buf()
 {
-#if 1
+#if defined(USE_BAT_MANAGEMENT)
+	Bat_icon_chk();
+#endif
+#if 0
 	static char cnt='0';
 	clear_lcd_disp_buf();
 
-	Ht1621_buf[19]=0xFF;
+	//cnt++;
+	//led_putchar('0',0);
+	//led_putchar('1',1);
+	//led_putchar('2',2);
+	//led_putchar('3',3);
+	Ht1621_buf[16]=0x01;
 
 #endif
 	

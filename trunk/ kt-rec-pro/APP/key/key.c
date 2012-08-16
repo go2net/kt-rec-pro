@@ -453,6 +453,10 @@ void bmt_hdlr(void)
 #if defined(CHARGER_DETECT_INDICATOR)
 	if(charger_detect()){
 
+#if defined(USE_LCD_DRV_HT1621)
+		update_disp_icon();
+#endif
+
 		return;
 	}
 #endif
