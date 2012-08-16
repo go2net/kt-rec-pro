@@ -677,7 +677,6 @@ void update_disp_icon()
 			lcd_disp_icon(MUTE_ICON);
 	    }
     }	
-
 #if defined(USE_LCD_DRV_HT1621)
 	UpdateLcd_HT1621_Buf();
 #endif

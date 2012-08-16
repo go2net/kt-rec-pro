@@ -29,35 +29,35 @@
 #define 	DIG_H	0x80
 
 
-#define USB_DEV_MASK	0x0080
-#define F_USB_DEV  		(Ht1621_buf[1])	
+#define USB_DEV_MASK	0x80
+#define F_USB_DEV  		(Ht1621_buf[17])	
 
 #define AUX_DEV_MASK	0x0000
 #define F_AUX_DEV  		(Ht1621_buf[0])
 
 #define SD_DEV_MASK	0x0040
-#define F_SD_DEV		(Ht1621_buf[4])	
+#define F_SD_DEV		(Ht1621_buf[17])	
 
-#define FM_DEV_MASK	0x0000
-#define F_FM_DEV		(Ht1621_buf[1])	
+#define FM_DEV_MASK	0x0010
+#define F_FM_DEV		(Ht1621_buf[18])	
 
 
 #define POINTS_MASK		0x0010
-#define F_POINTS		(Ht1621_buf[0])	
+#define F_POINTS		(Ht1621_buf[21])	
 
-#define FM_MHZ_MASK	0x0001
-#define F_MHZ_DEV		(Ht1621_buf[2])	
+#define FM_MHZ_MASK	0x0020
+#define F_MHZ_DEV		(Ht1621_buf[16])	
 
-#define AM_KHZ_MASK	0x0001
-#define F_KHZ_DEV		(Ht1621_buf[1])	
+#define AM_KHZ_MASK	0x0040
+#define F_KHZ_DEV		(Ht1621_buf[16])	
 
-#define FM_P1_MASK		0x0004
+#define FM_P1_MASK		0x0000
 #define F_P1_DEV		(Ht1621_buf[0])	
 
-#define SW_MHZ_MASK	0x0001
-#define F_SW_DEV		(Ht1621_buf[0])	
+#define SW_MHZ_MASK	0x0010
+#define F_SW_DEV		(Ht1621_buf[19])	
 
-#define SW_P2_MASK		0x0040
+#define SW_P2_MASK		0x0000
 #define F_P2_DEV		(Ht1621_buf[0])	
 
 
@@ -73,36 +73,36 @@
 #define RTC_AM_MASK	0x0000
 #define F_RTC_AM		(Ht1621_buf[3])
 
-#define REC_ICON_MASK	0x0001
-#define F_REC_DEV		(Ht1621_buf[4])	
+#define REC_ICON_MASK	0x0010
+#define F_REC_DEV		(Ht1621_buf[22])	
 
-#define SPK_MUTE_MASK	0x0001
+#define SPK_MUTE_MASK	0x0000
 #define F_SPK_DEV		(Ht1621_buf[3])	
 
-#define BATTERY_MASK	0x0002
-#define F_BAT_ICON_BUF	(Ht1621_buf[0])	
+#define BATTERY_MASK	0x0080
+#define F_BAT_ICON_BUF	(Ht1621_buf[20])	
 
 
-#define TRADEMARK_MASK	0x0100
-#define TRADEMARK_ICON		(Ht1621_buf[0])	
+#define TRADEMARK_MASK	0x0004
+#define TRADEMARK_ICON		(Ht1621_buf[17])	
 
 #define NUM_1BC_MASK	0x0000
 #define F_NUM_1BC		(Ht1621_buf[2])	
 
-#define REP_ALL_MASK	0//0x0004
+#define REP_ALL_MASK	0x0008
 #define REP_ONE_MASK	0//0x0008
-#define F_REP_ALL		(Ht1621_buf[4])
+#define F_REP_ALL		(Ht1621_buf[16])
 #define F_REP_ONE 		(Ht1621_buf[0])
 
 //#define L_ICON_BUF		(Ht1621_buf[4])
-#define S1_ICON_MASK	0x0008
-#define S1_ICON_BUF		(Ht1621_buf[0])
+#define S1_ICON_MASK	0x0040
+#define S1_ICON_BUF		(Ht1621_buf[20])
 #define S2_ICON_MASK	0x0020
-#define S2_ICON_BUF		(Ht1621_buf[0])
-#define S3_ICON_MASK	0x0080
-#define S3_ICON_BUF		(Ht1621_buf[0])
-#define S4_ICON_MASK	0x0080
-#define S4_ICON_BUF		(Ht1621_buf[0])
+#define S2_ICON_BUF		(Ht1621_buf[20])
+#define S3_ICON_MASK	0x0010
+#define S3_ICON_BUF		(Ht1621_buf[20])
+#define S4_ICON_MASK	0x0000
+#define S4_ICON_BUF		(Ht1621_buf[20])
 
 enum   ///<LED±êÖ¾Î»
 {

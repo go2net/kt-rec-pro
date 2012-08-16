@@ -904,8 +904,10 @@ __HOT_MSG_HDLR:
 /*----------------------------------------------------------------------------*/
 void music_decode(void)
 {
-
-//deg_str("music_decode \n");
+#ifdef UART_ENABLE
+	uart_init();
+	deg_str("music_decode \n");
+#endif
 
     input_number_en = 1;									//允许数字输入功能
     vol_change_en=1;
