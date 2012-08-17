@@ -743,7 +743,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 		KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1D));		//Write volume to 0
 	}
 	else{
-		KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1C));		//Write volume to 0
+		KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1B));		//Write volume to 0
 	}
 
 	//return(1);
