@@ -570,8 +570,10 @@ void disp_curr_time(void)
     printf_num(curr_time.min,2,2);
     printf_num(curr_time.hour,0,2);
 
+#ifdef DISP_ACTIVE_DEVICE_WHEN_TIME_DISPLAY
     if(play_status == MAD_PLAY)
 	    disp_device();
+#endif
 
     if(clock_points==1){
 
