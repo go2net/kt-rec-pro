@@ -7,14 +7,14 @@
 xd_u8 Ht1621_buf[MAX_SEG_NUM];
 
 
-#define LCD_spi_gpio_Init()	P1DIR &=~(( BIT(0))|( BIT(1))|( BIT(2)));P1PU |=(( BIT(0))|( BIT(1))|( BIT(2)))
+#define LCD_spi_gpio_Init()	P3DIR &=~(( BIT(3))|( BIT(1))|( BIT(2)));P3PU |=(( BIT(3))|( BIT(1))|( BIT(2)))
 
-#define LCD_SPI_CS_HIGH()		P12 =1;
-#define LCD_SPI_CS_LOW()		P12 =0;
-#define LCD_SPI_CLK_HIGH()		P11 =1;
-#define LCD_SPI_CLK_LOW()		P11 =0;
-#define LCD_SPI_DATA_HIGH()	P10 =1;
-#define LCD_SPI_DATA_LOW()		P10 =0;
+#define LCD_SPI_CS_HIGH()		P33 =1;
+#define LCD_SPI_CS_LOW()		P33 =0;
+#define LCD_SPI_CLK_HIGH()		P31 =1;
+#define LCD_SPI_CLK_LOW()		P31 =0;
+#define LCD_SPI_DATA_HIGH()	P32 =1;
+#define LCD_SPI_DATA_LOW()		P32 =0;
 
 
 void Ht1621_Delay(u16 t)
