@@ -51,6 +51,9 @@ u8  main_menu_conter;				///<离开主界面的时间
 extern bool iic_busy; ///<iic繁忙标记
 extern void KT_AMFMStandby(void);					//0->Fail 1->Success
 
+#if defined(USE_LCD_DRV_HT1621)
+extern void lcd_ht1621_init(void);
+#endif
 /*----------------------------------------------------------------------------*/
 /**@brief  Line In检测函数
    @param  无
@@ -364,6 +367,9 @@ void idle_mode(void)
 #endif
 void main(void)
 {
+#if defined(USE_LCD_DRV_HT1621)
+    lcd_ht1621_init();
+#endif
     work_mode = MUSIC_MODE;
     //amp_mute(1);
     clock_in = T0CNT;									//输入时钟,define in clock.h

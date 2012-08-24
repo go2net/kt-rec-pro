@@ -183,6 +183,7 @@ void init_display(void)
 {
     init_lcd_disp();
  //   disp_power_on();
+    LCD_BACKLIGHT_ON();
 }
 
 
@@ -679,6 +680,12 @@ void update_disp_icon()
 			lcd_disp_icon(MUTE_ICON);
 	    }
     }	
+#ifdef DISP_REC_ICON_WHEN_RECORDING
+	if(encode_status==RECODE_WORKING)
+	{
+	    lcd_flash_icon(REC_ICON);
+	}
+#endif
 #if defined(USE_LCD_DRV_HT1621)
 	UpdateLcd_HT1621_Buf();
 #endif
