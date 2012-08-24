@@ -83,7 +83,7 @@ void clr_all_num()
 void init_lcd_disp(void)
 {
 	//clear_lcd_disp_buf();
-	lcd_ht1621_init();
+	//lcd_ht1621_init();
 }
 void lcd_disp_icon(u8 id)
 {
@@ -98,11 +98,6 @@ void lcd_disp_icon(u8 id)
 	case REC_ICON:
 		F_REC_DEV |=REC_ICON_MASK;
 		break;	
-#if 0		
-	case AUX_ICON:
-		F_AUX_DEV |=AUX_DEV_MASK;
-		break;
-#endif		
 	case FM_MHZ_ICON:
 		F_FM_DEV |=FM_DEV_MASK;
 		F_MHZ_DEV |=FM_MHZ_MASK;	
@@ -157,11 +152,6 @@ void lcd_clr_icon(u8 id)
 	case REC_ICON:
 		F_REC_DEV &=~REC_ICON_MASK;
 		break;		
-#if 0		
-	case AUX_ICON:
-		F_AUX_DEV &=~AUX_DEV_MASK;
-		break;
-#endif		
 	case FM_MHZ_ICON:
 		F_FM_DEV &=~FM_DEV_MASK;
 		F_MHZ_DEV &=~FM_MHZ_MASK;
@@ -204,7 +194,7 @@ void lcd_clr_icon(u8 id)
 }
 void lcd_flash_icon(u8 id)
 {
-    lcd_flash_icon_id = id;	
+    lcd_disp_icon(id);	
 }
 void lcd_clr_flash_icon()
 {
@@ -252,6 +242,7 @@ void Lcd_check_buf()
 #if defined(USE_BAT_MANAGEMENT)
 	Bat_icon_chk();
 #endif
+
 #if 0
 	static char cnt='0';
 	clear_lcd_disp_buf();

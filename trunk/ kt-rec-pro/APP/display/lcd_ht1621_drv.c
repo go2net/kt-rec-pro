@@ -78,7 +78,7 @@ void lcd_ht1621_init(void)
     Ht1621_Wr_Cmd(HT1621_SYSEN); 
     Ht1621_Wr_Cmd(HT1621_LCDON); 
    //Ht1621_Wr_Cmd(HT1621_LCDOFF); 
-    //UpdateLcd_HT1621_Buf();
+    UpdateLcd_HT1621_Buf();
 }
 extern void updatae_lcd_buf();
 void UpdateLcd_HT1621_Buf(void)
