@@ -53,7 +53,7 @@ void Ht1621_Wr_Cmd(u8 Cmd)
 void Ht1621WrAllData(u8 Addr, u8 *buf_p, u8 Num) 
 { 
     u8 i; 
-   EA =0;
+   //EA =0;
     LCD_SPI_CS_LOW();
     Ht1621_Wr_Data(0xa0, 3);           //写入数据标志101 
     Ht1621_Wr_Data(Addr << 2, 6);      //写入地址数据 
@@ -63,7 +63,7 @@ void Ht1621WrAllData(u8 Addr, u8 *buf_p, u8 Num)
         buf_p++; 
     } 
     LCD_SPI_CS_HIGH(); 
-    EA =1;
+    //EA =1;
 }
 
 void lcd_ht1621_init(void)

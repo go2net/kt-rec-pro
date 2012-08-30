@@ -340,6 +340,9 @@ xd_u8 KT_AMFMInit(void)                            //0->Fail 1->Success
 	KT_Bus_Write(0x09, (regx & 0xFCFF));			//
 #endif
 
+	regx = KT_Bus_Read(0x0E); 
+	KT_Bus_Write(0x0E, regx | 0x7700);	
+		
 	regx = KT_Bus_Read(0x0F); 
 	KT_Bus_Write(0x0f, (regx & 0xFFE0)); 
 
@@ -382,7 +385,10 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		KT_Bus_Write(0x18,0x0000);						//Enable cap
 		
    		regx = KT_Bus_Read(0x0a);
-		KT_Bus_Write(0x0a, (regx&(~0x6000)));  		
+		KT_Bus_Write(0x0a, (regx&(~0x6000)));  	
+
+		regx = KT_Bus_Read(0x0E); 
+		KT_Bus_Write(0x0E, regx | 0x7700);			
 	}
 	else
 	{
@@ -686,6 +692,10 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	regx = KT_Bus_Read(0x0F);       
 	KT_Bus_Write(0x0F, regx & 0xFFE0);		//Write volume to 0
 
+	if(Current_Band.Band == MW_MODE){
+		
+		KT_Bus_Write(0x18,0x0000);						//Enable cap
+	}
 	
 #ifdef DISABLE_FAST_GAIN_UP
 	regx = KT_Bus_Read(0x23);
@@ -728,7 +738,9 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 #endif
 	}
 	//delay_10ms(100);
-
+	if(Current_Band.Band == MW_MODE){
+		delay_10ms(2);		
+	}
 #ifdef DISABLE_FAST_GAIN_UP
 	regx = KT_Bus_Read(0x23);
 	KT_Bus_Write(0x23, regx & 0xDFFF | 0x2000);				//disable the function of fast up in baseband AGC, by chend, 2010-05-21

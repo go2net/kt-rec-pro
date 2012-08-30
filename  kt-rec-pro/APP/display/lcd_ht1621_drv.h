@@ -2,8 +2,8 @@
 #define	_LCD_HT1621_DRV_H_
 
 
-#define HT1621_BIT_DELAY 60
-#define HT1621_INI_DELAY 100
+#define HT1621_BIT_DELAY 6
+#define HT1621_INI_DELAY 60
 
 
 #define HT1621_BIAS    	0x53
