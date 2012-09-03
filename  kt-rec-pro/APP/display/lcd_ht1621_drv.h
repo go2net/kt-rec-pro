@@ -41,6 +41,9 @@
 #define FM_DEV_MASK	0x0010
 #define F_FM_DEV		(Ht1621_buf[18])	
 
+#define AM_DEV_MASK	0x0001
+#define F_AM_DEV		(Ht1621_buf[17])	
+
 
 #define POINTS_MASK		0x0010
 #define F_POINTS		(Ht1621_buf[21])	
