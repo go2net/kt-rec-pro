@@ -25,9 +25,9 @@
 //#define NEW_DH_LCD_MODULE_SM5858
 
 
-//#define K289_MODULE
+#define K289_MODULE
 //#define K129_MODULE
-#define K299_MODULE
+//#define K299_MODULE
 
 
 #if defined(K299_MODULE)
@@ -83,7 +83,7 @@
 
 #if defined(K289_MODULE)
 
-//#define NEW_DH_LCD_MODULE_SM5858
+#define NEW_DH_LCD_MODULE_SM5858
 
 #ifdef NEW_DH_LCD_MODULE_SM5858
 #define DISP_PAU_STR
