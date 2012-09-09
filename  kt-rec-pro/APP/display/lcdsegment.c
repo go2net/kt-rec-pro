@@ -410,6 +410,7 @@ void seg_lcd_disp_scan(void)
 #endif
     TRADEMARK_ICON |=TRADEMARK_MASK;
 
+    update_disp_icon();
     lcd_flash_timer++;
     if (lcd_flash_timer == 220)
     {
