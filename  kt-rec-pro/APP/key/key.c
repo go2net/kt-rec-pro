@@ -153,6 +153,9 @@ void set_key_tone(void)
 xd_u8 touchkeyval;
 xd_u8 keyval_buf;
 xd_u8  JogBuf;
+#ifdef FAST_STICK_TUNE_FUNC
+xd_u8 fast_step_cnt=0,reset_cnt=0,last_reg=0;
+#endif
 void JogDetect(void)
 {
 	u8 port_val=0;
@@ -178,50 +181,78 @@ void JogDetect(void)
     touchkeyval = ((port_val & (BIT(4)))>>4)|((port_val & (BIT(3)))>>2);
 #endif
 
+#ifdef FAST_STICK_TUNE_FUNC
+	if(last_reg!=touchkeyval){
+		last_reg=touchkeyval;
+	}
+	else{
+		
+		if(reset_cnt<12){
+			reset_cnt++;
+		}
+		else{
+			fast_step_cnt=0;
+		}
+	}
+#endif
+
 	if((touchkeyval == 0x00) || (touchkeyval == 0x03))
-    {										
-        if(touchkeyval == keyval_buf)
-        {
-            JogBuf = 0;
-        }
-        else
-        {
-            keyval_buf = touchkeyval;
-            if (touchkeyval == 0x00)
-            {
-                if (JogBuf == 0x02)
-                {
-                    // Increase
-	             put_msg_fifo(MSG_FM_PREV_STEP);
-                    JogBuf = 0;
-                }
-                if (JogBuf == 0x01)
-                {
-                    // Decrease
-	                 put_msg_fifo(MSG_FM_NEXT_STEP);
-	             //put_msg_fifo(INFO_VOL_MINUS);
-                    JogBuf = 0;
-                }
-            }
-            else
-            {
-                if (JogBuf == 0x02)
-                {
-                    // Decrease
-                    JogBuf = 0;
-                }
-                if (JogBuf == 0x01)
-                {			
-                    // Increase 
-                    JogBuf = 0;
-                }					
-            }
-        }
-    }
+    	{										
+        	if(touchkeyval == keyval_buf)
+	        {
+	            JogBuf = 0;
+	        }
+        	else
+	        {
+	            keyval_buf = touchkeyval;
+	            if (touchkeyval == 0x00)
+	            {
+	                if (JogBuf == 0x02)
+	                {
+	                    // Increase
+		             put_msg_fifo(MSG_FM_PREV_STEP);
+	                    JogBuf = 0;
+#ifdef FAST_STICK_TUNE_FUNC
+	                    	reset_cnt=0;
+				if(fast_step_cnt<6)
+				fast_step_cnt++;
+#endif								
+	                }
+	                if (JogBuf == 0x01)
+	                {
+	                    // Decrease
+		                 put_msg_fifo(MSG_FM_NEXT_STEP);
+		             //put_msg_fifo(INFO_VOL_MINUS);
+	                    JogBuf = 0;
+#ifdef FAST_STICK_TUNE_FUNC
+	                    	reset_cnt=0;
+				if(fast_step_cnt<6)
+				fast_step_cnt++;
+#endif							 
+	                }
+	            }
+	            else
+	            {
+#ifdef FAST_STICK_TUNE_FUNC
+	                 reset_cnt=0;
+#endif	            
+	                if (JogBuf == 0x02)
+	                {
+	                    // Decrease
+	                    JogBuf = 0;
+	                }
+	                if (JogBuf == 0x01)
+	                {			
+	                    // Increase 
+	                    JogBuf = 0;
+	                }					
+	            }
+	        }
+    	}
 	else
 	{
 		JogBuf = touchkeyval;
-    }
+    	}
 }
 
 #endif
@@ -763,10 +794,6 @@ void keyScan(void)
 
     if (keyTemp == NO_KEY)
     {
-#ifdef JOG_STICK_FUNC	 
-    		JogDetect();
-#endif
-
         keyTemp = keyDetect();
         if (keyTemp != NO_KEY)
         {

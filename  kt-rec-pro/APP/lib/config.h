@@ -25,9 +25,9 @@
 //#define NEW_DH_LCD_MODULE_SM5858
 
 
-#define K289_MODULE
+//#define K289_MODULE
 //#define K129_MODULE
-//#define K299_MODULE
+#define K299_MODULE
 
 
 #if defined(K299_MODULE)
@@ -46,6 +46,9 @@
 #define NO_AUX_CHANNEL
 #define SAVE_BAND_FREQ_INFO
 #define JOG_STICK_FUNC
+#define FAST_STICK_TUNE_FUNC
+
+
 #define REPEAT_MODE_USE_ONE_ALL
 #define PLAY_MODE_IN_USE
 
@@ -105,6 +108,8 @@
 #define CHARGER_DETECT_INDICATOR
 #define SAVE_BAND_FREQ_INFO
 #define JOG_STICK_FUNC
+#define FAST_STICK_TUNE_FUNC
+
 #define DC_CHARGER_DET_SHARE_IIC
 #define USE_GPIO_MEASURE_VOLT
 

@@ -37,6 +37,9 @@ u8 fre_channel; 			///<×ÜÌ¨Êý
 extern  bool vol_change_en;
 extern u8 eq_mode;
 extern u8 _xdata decode_buffer[];
+#ifdef FAST_STICK_TUNE_FUNC
+extern xd_u8 fast_step_cnt;
+#endif
 
 #if defined(K129_MODULE)
 xd_u8 freq_step_flag=0;
@@ -109,16 +112,43 @@ void set_radio_freq(u8 mode)
    xd_u8 freq_step =0;
    
     set_brightness_all_on();
+#if defined(FAST_STICK_TUNE_FUNC)
+	    if(cur_sw_fm_band==0){
+			
+			freq_step =1*fast_step_cnt; 
+	    }
+	    else if(cur_sw_fm_band==1){
+
+			if(freq_step_flag){
+				freq_step = 10;
+				freq_step_flag=0;				
+			}
+			else{
+				freq_step = 1*fast_step_cnt;
+			}
+	    }
+	    else{
+			if(freq_step_flag==1){
+				freq_step = 10;
+				freq_step_flag=0;				
+			}
+			else{				
+				freq_step = 5*fast_step_cnt;
+			}
+	    }
+#else
     if(cur_sw_fm_band==0){
 		
 		freq_step =1; 
     }
     else if(cur_sw_fm_band==1){
-		if(freq_step_flag)
+		if(freq_step_flag){
+			freq_step_flag=0;			
 			freq_step = 10;
-		else
+		}
+		else{
 			freq_step = 1;
-		freq_step_flag=0;
+		}
     }
     else{
 #if defined(K129_MODULE)
@@ -140,6 +170,7 @@ void set_radio_freq(u8 mode)
 		freq_step = 5;
 #endif
     }	
+#endif
 	
     if (mode == FM_FRE_INC)
     {
