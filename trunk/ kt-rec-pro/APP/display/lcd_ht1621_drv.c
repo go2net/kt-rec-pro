@@ -28,16 +28,19 @@ void Ht1621_Wr_Data(u8 W_Data, u8 Num)
     for (i = 0; i < Num; i++) 
     {   
         LCD_SPI_CLK_LOW();
-        Ht1621_Delay(HT1621_BIT_DELAY);
+	 _nop_();_nop_();
+        //Ht1621_Delay(HT1621_BIT_DELAY);
         if(W_Data & 0x80){
             LCD_SPI_DATA_HIGH();
         }
         else{
             LCD_SPI_DATA_LOW();                              
         }
-        Ht1621_Delay(HT1621_BIT_DELAY);
+	 _nop_();_nop_();		
+        //Ht1621_Delay(HT1621_BIT_DELAY);
         LCD_SPI_CLK_HIGH();
-        Ht1621_Delay(HT1621_BIT_DELAY);
+	 _nop_();_nop_();		
+        //Ht1621_Delay(HT1621_BIT_DELAY);
         W_Data <<= 1;  
     } 
 } 

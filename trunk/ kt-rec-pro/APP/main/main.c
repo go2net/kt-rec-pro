@@ -50,7 +50,9 @@ u8  main_menu_conter;				///<离开主界面的时间
 //u8 bright_counter;
 extern bool iic_busy; ///<iic繁忙标记
 extern void KT_AMFMStandby(void);					//0->Fail 1->Success
-
+#ifdef JOG_STICK_FUNC	 
+extern void JogDetect(void);
+#endif
 #if defined(USE_LCD_DRV_HT1621)
 extern void lcd_ht1621_init(void);
 #endif
@@ -184,6 +186,10 @@ void timer0isr(void)
     adc_scan();
     counter0++;
     usb_polling();
+
+#ifdef JOG_STICK_FUNC	 
+    JogDetect();
+#endif
 
     if ((counter0 % 5) == 0)			//10ms
     {
