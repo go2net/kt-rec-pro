@@ -473,7 +473,7 @@ xd_u8 KT_AMFMWakeUp(void) //0->Fail 1->Success
 {
 	xd_u16 regx;
 	regx = KT_Bus_Read(0x0F);
-	KT_Bus_Write(0x0F, regx & 0xe000);			//Write Standby bit to 0
+	KT_Bus_Write(0x0F, regx & 0xEFFF);			//Write Standby bit to 0
 	return (KT_AMFMInit());
 }
 #if 0
