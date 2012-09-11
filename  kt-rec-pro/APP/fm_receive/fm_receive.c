@@ -113,6 +113,12 @@ void set_radio_freq(u8 mode)
    
     set_brightness_all_on();
 #if defined(FAST_STICK_TUNE_FUNC)
+
+	  // EA =0;
+	    if(fast_step_cnt==0){
+			fast_step_cnt=1;
+	    }
+		
 	    if(cur_sw_fm_band==0){
 			
 			freq_step =1*fast_step_cnt; 
@@ -135,7 +141,8 @@ void set_radio_freq(u8 mode)
 			else{				
 				freq_step = 5*fast_step_cnt;
 			}
-	    }
+	   }
+	//EA =1;		
 #else
     if(cur_sw_fm_band==0){
 		
