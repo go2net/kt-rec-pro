@@ -186,12 +186,13 @@ void JogDetect(void)
 		last_reg=touchkeyval;
 	}
 	else{
-		
-		if(reset_cnt<12){
+
+		if(fast_step_cnt>0){
+
 			reset_cnt++;
-		}
-		else{
-			fast_step_cnt=0;
+			if(reset_cnt>=12){
+				fast_step_cnt=0;
+			}
 		}
 	}
 #endif
