@@ -79,8 +79,9 @@ void KT_Bus_Write(xd_u8 Register_Address, xd_u16 Word_Data)
 	xd_u8 write_reg_data[2]={0};
 	write_reg_data[1]=(u8)(Word_Data&0x00FF);
 	write_reg_data[0]=(u8)(Word_Data>>8);
-	
+    	EA =0;
 	iic_write((KTAMw_address),Register_Address,&write_reg_data,2);
+    	EA =1;
 #else
 	I2C_Start();
 	I2C_Senddata(device_address & 0xFE);
@@ -111,6 +112,7 @@ xd_u16 KT_Bus_Read(xd_u8 Register_Address)
 {
 	xd_u16 readdata;
 #if 1
+    EA =0;
     iic_start();                    //I2C启动
     iic_sendbyte((KTAMw_address));             //写命令
     iic_sendbyte(Register_Address);         //写地址
@@ -120,6 +122,7 @@ xd_u16 KT_Bus_Read(xd_u8 Register_Address)
     readdata=readdata<<8;
     readdata |= iic_revbyte(1);
     iic_stop();                     //I2C停止
+    EA =1;
 #else
 	iic_start();
 	IiC_Senddata(device_address & 0xFE);
@@ -261,13 +264,37 @@ xd_u8 KT_AMFMPreInit(void)
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
+xd_u8 KT_pre_init(void)
+{	
+	xd_u16 regx;
+
+#if 1
+	regx = KT_Bus_Read(0x01);           			//Read Manufactory ID 
+	//printf_u16(regx,'D');
+	if (regx != 0x4B54) return 0;
+	
+	//regx=KT_Bus_Read(0x12);						//Read power-up indicator
+	//printf_u16(regx,'S');
+
+	//if ((regx&0x8000)!=0x8000) return 0;
+	//deg_str("KT_AMFMInit  \n");
+
+#ifdef X32P768K
+	KT_Bus_Write(0x16, 0x0002);       				//reference clock=32.768K; XTALD=0
+#endif
+
+#ifdef R32P768K
+	KT_Bus_Write(0x16, 0x1002);       				//reference clock=32.768K; XTALD=1
+#endif
+
+	delay_10ms(120);
+#endif
+	return 1;
+}
 xd_u8 KT_AMFMInit(void)                            //0->Fail 1->Success
 {
-	//xd_u8 i=0;
-	xd_u16 regx=0;
-	
-	//mem_vol= 30;
-	//deg_str("KT_AMFMInit  \n");
+	xd_u16 regx;
+#if 0
 
 	regx = KT_Bus_Read(0x01);           			//Read Manufactory ID 
 	//printf_u16(regx,'D');
@@ -282,23 +309,8 @@ xd_u8 KT_AMFMInit(void)                            //0->Fail 1->Success
 #endif
 
 	delay_10ms(120);
-
-#if 1
-	 //for (i = 0;i < INIT_FAIL_TH;i++)
-	 {
-		  //delay_10ms(50);
-		  //regx=KT_Bus_Read(0x12);      //Read power-up indicator
-		  //if ((regx&0x8000)!=0x8000)continue;
-		 // break;
-	 }
-	 //if (i == INIT_FAIL_TH) return(0);
-
-#else
-	regx=KT_Bus_Read(0x12);						//Read power-up indicator
-	//printf_u16(regx,'S');
 #endif
-	//if ((regx&0x8000)!=0x8000) return 0;
-	//deg_str("KT_AMFMInit  \n");
+
 
 	KT_Bus_Write(0x10,0x6000);						// re-cali
 	
@@ -344,7 +356,7 @@ xd_u8 KT_AMFMInit(void)                            //0->Fail 1->Success
 	KT_Bus_Write(0x0E, regx | 0x7700);	
 		
 	regx = KT_Bus_Read(0x0F); 
-	KT_Bus_Write(0x0f, (regx & 0xFFE0)); 
+	KT_Bus_Write(0x0F, regx & 0xFFE0);		//Write volume to 0
 
 //	regx = KT_Bus_Read(0x0A);
 //	KT_Bus_Write(0x0A, (regx | 0x6000));			//
@@ -352,6 +364,28 @@ xd_u8 KT_AMFMInit(void)                            //0->Fail 1->Success
 //	regx = KT_Bus_Read(0x16);
 //	KT_Bus_Write(0x16, (regx | 0x0001));			//
 
+	return(1);
+}
+/************************************************************************************/
+/*函 数 名：KT_AMSetBW													 	 */
+/*功能描述：AM Channel Bandwidth设置程序									 */
+/*函数说明：																 */
+/*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
+/*全局变量：AMBW															 */
+/*输    入：xd_u8 AMBW														 */
+/*返    回：设置完毕：1														 */
+/*设 计 者：Yangpei					时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+xd_u8 KT_AMSetBW(xd_u8 AMBW)				//AM Channel Bandwidth=2 for 2KHz; 4 for 4KHz; 6 for 6KHz
+{
+	xd_u16 regx;
+	regx = KT_Bus_Read(0x22);
+	if (AMBW == 2) KT_Bus_Write(0x22, (regx & 0xFF3F) | 0x0000);
+	else if (AMBW == 4) KT_Bus_Write(0x22, (regx & 0xFF3F) | 0x0080);
+	else if (AMBW == 6) KT_Bus_Write(0x22, (regx & 0xFF3F) | 0x00C0);
+	else return(0);
 	return(1);
 }
 
@@ -370,6 +404,7 @@ xd_u8 KT_AMFMInit(void)                            //0->Fail 1->Success
 void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 {
 	xd_u16 regx;
+	KT_AMFMInit();
 	if (AMFM_MODE == FM_MODE)
 	{
 		regx = KT_Bus_Read(0x16);
@@ -383,17 +418,22 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		KT_Bus_Write(0x16,regx|0x8000);				//AM_FM=1
 
 		KT_Bus_Write(0x18,0x0000);						//Enable cap
-		
-   		regx = KT_Bus_Read(0x0a);
-		KT_Bus_Write(0x0a, (regx&(~0x6000)));  	
+
+		KT_AMTune(900);
+		regx = KT_Bus_Read(0x0F);       
+		KT_Bus_Write(0x0F, regx & 0xFFE0);		//Write volume to 0
+		delay_10ms(12);
 
 		regx = KT_Bus_Read(0x0E); 
-		KT_Bus_Write(0x0E, regx | 0x7700);			
+		KT_Bus_Write(0x0E, regx | 0x7700);	
+		
+   		regx = KT_Bus_Read(0x0a);
+		KT_Bus_Write(0x0a, (regx&(~0x6000)));  		
 	}
 	else
 	{
 		Current_Band.Band =SW_MODE;
-		//NSS = 1;
+
 		regx = KT_Bus_Read(0x16);
 		KT_Bus_Write(0x16,regx|0x8000);				//AM_FM=1
 
@@ -403,7 +443,7 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		regx = KT_Bus_Read(0x0F);       
 		KT_Bus_Write(0x0F, regx & 0xFFE0);		//Write volume to 0
 		
-		delay_10ms(20);
+		delay_10ms(12);
 		
 		KT_Bus_Write(0x18,0x8000);					//Disable cap
 		
@@ -413,30 +453,6 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 	//return(1);
 }
 
-/************************************************************************************/
-/*函 数 名：KT_AMSetBW													 	 */
-/*功能描述：AM Channel Bandwidth设置程序									 */
-/*函数说明：																 */
-/*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
-/*全局变量：AMBW															 */
-/*输    入：xd_u8 AMBW														 */
-/*返    回：设置完毕：1														 */
-/*设 计 者：Yangpei					时间：											*/
-/*修 改 者：Kanghekai				时间：2011-04-08								*/
-/*版    本：V4.0																	*/
-/************************************************************************************/
-#if 0
-xd_u8 KT_AMSetBW(xd_u8 AMBW)				//AM Channel Bandwidth=2 for 2KHz; 4 for 4KHz; 6 for 6KHz
-{
-	xd_u16 regx;
-	regx = KT_Bus_Read(0x22);
-	if (AMBW == 2) KT_Bus_Write(0x22, (regx & 0xFF3F) | 0x0000);
-	else if (AMBW == 4) KT_Bus_Write(0x22, (regx & 0xFF3F) | 0x0080);
-	else if (AMBW == 6) KT_Bus_Write(0x22, (regx & 0xFF3F) | 0x00C0);
-	else return(0);
-	return(1);
-}
-#endif
 /************************************************************************************/
 /*函 数 名：KT_AMFMStandby												 	 */
 /*功能描述：Standby程序												 */
@@ -454,7 +470,7 @@ void  KT_AMFMStandby(void)					//0->Fail 1->Success
 	xd_u16 regx;
 	regx = KT_Bus_Read(0x0F);
 	KT_Bus_Write(0x0F, regx | 0x1000);		//Write Standby bit to 1
-	//delay_10ms(20);
+	delay_10ms(20);
 }
 
 /************************************************************************************/
@@ -474,7 +490,17 @@ xd_u8 KT_AMFMWakeUp(void) //0->Fail 1->Success
 	xd_u16 regx;
 	regx = KT_Bus_Read(0x0F);
 	KT_Bus_Write(0x0F, regx & 0xEFFF);			//Write Standby bit to 0
+	delay_10ms(20);	
+#if 1
+	if(KT_pre_init()==1){
+
+		KT_AMFMInit();
+		return 1;
+	}
+	return 0;
+#else
 	return (KT_AMFMInit());
+#endif	
 }
 #if 0
 /************************************************************************************/
@@ -738,9 +764,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 #endif
 	}
 	//delay_10ms(100);
-	if(Current_Band.Band == MW_MODE){
-		delay_10ms(2);		
-	}
+
 #ifdef DISABLE_FAST_GAIN_UP
 	regx = KT_Bus_Read(0x23);
 	KT_Bus_Write(0x23, regx & 0xDFFF | 0x2000);				//disable the function of fast up in baseband AGC, by chend, 2010-05-21
