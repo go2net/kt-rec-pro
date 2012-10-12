@@ -25,8 +25,8 @@
 //#define NEW_DH_LCD_MODULE_SM5858
 
 
-#define JK_SZ_S900_MODULE
-//#define K289_MODULE
+//#define JK_SZ_S900_MODULE
+#define K289_MODULE
 //#define K129_MODULE
 //#define K299_MODULE
 

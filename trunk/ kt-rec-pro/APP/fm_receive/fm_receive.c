@@ -49,12 +49,15 @@ bool freq_step_flag=0;
 xd_u8 sw_fm_mod=0,cur_sw_fm_band=0;
 xd_u16 REG_MAX_FREQ=0,REG_MIN_FREQ=0;
 
+xd_u8 am_adj_timer=0;
+	
 extern void KT_AMFMSetMode(xd_u8 AMFM_MODE);
 extern void KT_FMTune(xd_u16 Frequency);
 extern void KT_AMTune(xd_u16 Frequency);
 extern xd_u8 KT_AMFMWakeUp(void); //0->Fail 1->Success
 extern void KT_AMFMStandby(void);					//0->Fail 1->Success
 extern xd_u8 KT_AMFMPreInit(void);			  
+extern void KT_AMFMMute(void);
 
 #if defined(K129_MODULE)
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
@@ -157,6 +160,13 @@ void set_radio_freq(u8 mode)
 				freq_step = 5*fast_step_cnt;
 			}
 	   }
+
+#if 1
+
+	if(fast_step_cnt>3){
+		am_adj_timer=2;
+	}
+#endif
 	//EA =1;		
 #else
     if(cur_sw_fm_band==0){
@@ -215,7 +225,10 @@ void set_radio_freq(u8 mode)
     }
     else{
 
-		KT_AMTune(frequency);
+		if(am_adj_timer<2)	
+			KT_AMTune(frequency);
+		//else
+		//	KT_AMFMMute();
     }
     disp_port(MENU_FM_MAIN);			
 
@@ -294,6 +307,7 @@ void fm_rev( void )
             break;
             //return;
         case MSG_MUSIC_FF:
+	 	am_adj_timer=2;			
 #if defined(K129_MODULE)
 		freq_step_flag=2;	
 		goto __FREQ_INC;
@@ -306,6 +320,7 @@ __FREQ_INC:
 		//disp_port(MENU_FM_MAIN);
 		break;
 	 case MSG_MUSIC_FR:
+	 	am_adj_timer=2;
 #if defined(K129_MODULE)
 		freq_step_flag=2;	
 		goto __FREQ_DEC;
@@ -321,6 +336,18 @@ __FREQ_DEC:
 #if defined(USE_BAT_MANAGEMENT)			
 	     bmt_hdlr();
 #endif
+
+#if 1
+    	 if(cur_sw_fm_band>0){
+
+		     if(am_adj_timer>0){
+				am_adj_timer--;
+				if(am_adj_timer==0){
+			    		set_radio_freq(FM_CUR_FRE);
+				}
+		     }
+	     }
+#endif		 
 	     set_brightness_fade_out();
             if (main_menu_conter < (SUB_MENU_TIME - 3))
             {
