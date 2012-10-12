@@ -536,13 +536,12 @@ xd_u8 KT_AMFMVolumeSet(xd_u8 vol)			//Input: 0~31
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-#if 0
-xd_u8 KT_AMFMMute(void)
+#if 1
+void KT_AMFMMute(void)
 {
 	xd_u16 regx;
 	regx = KT_Bus_Read(0x0F);       
 	KT_Bus_Write(0x0F, regx & 0xFFE0 );		//Write volume to 0
-	return(1);
 }
 #endif
 #if 0
@@ -597,7 +596,7 @@ void KT_FMTune(xd_u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and T
 	regx=KT_Bus_Read(0x0A);
 	if(
 		(Frequency == 8620) || (Frequency == 8780)	|| (Frequency == 9030)	|| (Frequency == 9440)	||
-		(Frequency == 9850) || (Frequency == 10260) || (Frequency == 10670) ||
+		(Frequency == 9850) || (Frequency == 10260) 	|| (Frequency == 10670) 	||
 		(Frequency == 9660)	|| (Frequency == 9860)	|| (Frequency == 10230)	|| (Frequency == 10240)	|| (Frequency == 10520) ||
 		(Frequency == 4380) || (Frequency == 4390)	|| (Frequency == 5260)	|| (Frequency == 5850)	||
 		(Frequency == 6570) || (Frequency == 6580)	|| (Frequency == 6590)	|| (Frequency == 7310)	|| (Frequency == 7890)
@@ -612,7 +611,7 @@ void KT_FMTune(xd_u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and T
 	regx=KT_Bus_Read(0x03);
 	KT_Bus_Write(0x03, (regx & 0xF000) | 0x8000 | (Frequency / 5));	   		//set tune bit to 1
 
-	//delay_10ms(1);
+	delay_10ms(1);
 
 	regx = KT_Bus_Read(0x0F);       
 	KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1D));		//Write volume to 0
@@ -763,7 +762,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 			KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #endif
 	}
-	//delay_10ms(100);
+	delay_10ms(1);
 
 #ifdef DISABLE_FAST_GAIN_UP
 	regx = KT_Bus_Read(0x23);

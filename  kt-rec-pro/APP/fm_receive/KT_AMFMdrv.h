@@ -182,7 +182,7 @@ xd_u8  KT_AMFMInit(void);
 void KT_AMFMStandby(void);
 xd_u8 KT_AMFMWakeUp(void);
 xd_u8 KT_AMFMVolumeSet(xd_u8 vol);
-xd_u8 KT_AMFMMute(void);
+void KT_AMFMMute(void);
 xd_u8 KT_AMFMUnMute(void);
 void KT_AMFMSetMode(xd_u8 AMFM_MODE);
 xd_u8 KT_AMSetBW(xd_u8 AMBW);
