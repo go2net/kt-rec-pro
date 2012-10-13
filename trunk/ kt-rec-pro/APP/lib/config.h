@@ -26,9 +26,78 @@
 
 
 //#define JK_SZ_S900_MODULE
-#define K289_MODULE
+#define JK_JF_168_MODULE
+//#define JK_DH_105_104_MODULE
+//#define JK289_MODULE
 //#define K129_MODULE
-//#define K299_MODULE
+//#define JK299_MODULE
+
+#if defined(JK_JF_168_MODULE)
+
+#define JF_168_LCD_MODULE
+
+#define SW_TWO_BAND_RANGE
+#define REC_PLAY_KEY_BREAK_POINT
+#define FM_FREQ_NUM_KEY_INPUT
+
+#define IIC_GPIO_USE_P00_P01
+#define MUTE_PORT_USE_P03
+
+#define REPEAT_MODE_USE_ONE_ALL
+
+#define EXCHANGE_AUX_CHANNEL
+#define USE_BAT_MANAGEMENT
+#define DEFAULT_VOL		MAX_MAIN_VOL
+#define LCD_GPIO_DRV
+#define NO_AUX_CHANNEL
+#define SAVE_BAND_FREQ_INFO
+#define JOG_STICK_FUNC
+#define FAST_STICK_TUNE_FUNC
+
+
+//#define CHARGER_DETECT_INDICATOR
+//#define DC_CHARGER_DET_SHARE_IIC
+//#define USE_GPIO_MEASURE_VOLT
+
+#define PLAY_MODE_IN_USE
+#define REPEAT_MODE_USE_ONE_ALL
+#define DISP_PLAY_MODE_STR
+#endif
+
+
+
+#if defined(JK_DH_105_104_MODULE)
+
+#define NEW_DH_107_105_104_LCD_MODULE
+
+#define SW_TWO_BAND_RANGE
+#define REC_PLAY_KEY_BREAK_POINT
+#define FM_FREQ_NUM_KEY_INPUT
+
+#define IIC_GPIO_USE_P00_P01
+#define MUTE_PORT_USE_P03
+
+#define REPEAT_MODE_USE_ONE_ALL
+
+#define EXCHANGE_AUX_CHANNEL
+#define USE_BAT_MANAGEMENT
+#define DEFAULT_VOL		MAX_MAIN_VOL
+#define LCD_GPIO_DRV
+#define NO_AUX_CHANNEL
+#define SAVE_BAND_FREQ_INFO
+#define JOG_STICK_FUNC
+#define FAST_STICK_TUNE_FUNC
+
+
+//#define CHARGER_DETECT_INDICATOR
+//#define DC_CHARGER_DET_SHARE_IIC
+//#define USE_GPIO_MEASURE_VOLT
+
+#define PLAY_MODE_IN_USE
+#define REPEAT_MODE_USE_ONE_ALL
+#define DISP_PLAY_MODE_STR
+#endif
+
 
 #if defined(JK_SZ_S900_MODULE)
 
@@ -65,7 +134,7 @@
 #define DISP_PLAY_MODE_STR
 #endif
 
-#if defined(K299_MODULE)
+#if defined(JK299_MODULE)
 
 #define USE_LCD_DRV_HT1621
 #define DISP_REC_ICON_WHEN_RECORDING
@@ -119,7 +188,7 @@
 
 #endif
 
-#if defined(K289_MODULE)
+#if defined(JK289_MODULE)
 
 #define NEW_DH_LCD_MODULE_SM5858
 

@@ -422,14 +422,14 @@ bool charger_detect(void)
 #endif
 
 #if 1
-			if(LDO_IN_Volt>=BAT_CHARGE_FULL){
+		if(LDO_IN_Volt>=BAT_CHARGE_FULL){
 				
-				batt_level = 3;
-			}
-			else{				
-				if(batt_level++>3)
-					batt_level=0;
-			}
+			batt_level = 3;
+		}
+		else{				
+			if(batt_level++>3)
+				batt_level=0;
+		}
 #endif		
 		return 1;
      }
