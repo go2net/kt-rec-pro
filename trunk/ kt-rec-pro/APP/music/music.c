@@ -38,7 +38,7 @@ u16 break_point_filenum;				 ///<断点信息对应的文件号
 u8 play_status;							///<播放状态
 u8 play_delay_time;
 
-u8 eq_mode;				  ///<EQ模式
+u8 eq_mode=0;				  ///<EQ模式
 u8 music_type;			  ///<音乐文件的格式
 u8 given_file_method;	  ///<获取文件的方式
 //u8 _pdata music_spec[9] _at_ 0x02;	 ///<频谱BUFF
@@ -80,7 +80,30 @@ extern u16 _idata user_code;
 extern u8 _bdata device_online;
 extern xd_u8 disp_scenario,rtc_setting_flag;
 extern bool rec_pley_bp_flag;
+/** 存放ID3V2信息的结构体变量 */
+ID3V2_PARSE _xdata s_id3v2; 
+/*----------------------------------------------------------------------------*/
+/**@brief  跳过ID3信息获取阶段
+   @param  无
+   @return  无
+   @note  void skip_music_tag(void)
+*/
+/*----------------------------------------------------------------------------*/
+void skip_music_tag(void)
+{
 
+    f_seek(SEEK_SET, dec_msg->tag_len, dec_msg->tag_len >> 16);
+    my_memset((u8 _xdata *)&s_id3v2, 0, sizeof(ID3V2_PARSE));
+    while (ff_id3v2_check(decode_buffer, &s_id3v2)) //检测获取ID3头的头信息
+    {
+        ff_cal_id3v2_tag_len(decode_buffer);
+        while (ff_id3v2_parse(decode_buffer, &s_id3v2))
+        {
+            f_seek(SEEK_CUR, s_id3v2.tlen,(s_id3v2.tlen ) >> 16);
+        }
+    }
+    fat_ptr1.flag = 0; 
+}
 /*----------------------------------------------------------------------------*/
 /**@brief MUSIC解码初始化
    @param 无
@@ -119,7 +142,6 @@ static void music_info_init(void)
         given_file_method = PLAY_BREAK_POINT;
         put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
     }
-
     else
     {
         given_device = DEVICE_SDMMC0;
@@ -263,7 +285,7 @@ void save_music_point(void)
 #if (BREAK_POINT_PLAY_EN == 1)
 static bool load_music_point(void)
 {
-    get_rec_mem_info();
+    //get_rec_mem_info();
 
     if ((device_active & (~VIRTUAL_DEVICE)) == DEVICE_SDMMC0)
     {
@@ -330,20 +352,20 @@ void restore_music_point(void)
 /*----------------------------------------------------------------------------*/
 void stop_decode(void)
 {
-    if(MAD_STOP == play_status)
-    {
-        //return;
-    }
-    play_status = MAD_STOP;						   
+    	if(MAD_STOP == play_status)
+    	{
+        	//return;
+    	}
+    	play_status = MAD_STOP;						   
 	if(MUSIC_MODE == work_mode)
 	{
 #if (1 == MUSIC_FADE_OUT_EN)
-        main_vol_set(0, CHANGE_VOL_NO_MEM | CHANGE_VOL_PEND);
+        	main_vol_set(0, CHANGE_VOL_NO_MEM | CHANGE_VOL_PEND);
 #endif	
 	}
 
-    mad_control(MAD_STOP, 0);
-    decode_init();									//解码初始化，会将解码的变量及状态清零
+    	mad_control(MAD_STOP, 0);
+    	decode_init();									//解码初始化，会将解码的变量及状态清零
 }
 
 
@@ -367,6 +389,7 @@ static u8 start_decode(void)
     }
     else if (music_type == IS_MP3)					//MP3
     {
+	 skip_music_tag();
         if (!get_mp3_total_time())
             return 1;
     }
@@ -386,8 +409,8 @@ static u8 start_decode(void)
         find_break_point_file_flag = load_music_point();
     }
 #endif
-	dsp_set_dcc_flt(14);
-    dsp_set_ch_mode(0);
+    dsp_set_dcc_flt(14);
+    dsp_set_ch_mode(1);  //1:双通道相加
     dsp_set_rinv_mode(0);
     mad_control(MAD_INIT, 0);
     mad_control(MAD_PLAY, 0);
@@ -482,17 +505,17 @@ void music_play(void)
 #endif
             if (res == GET_DEVICE_END)								//下一曲到设备的结束，查找下一个设备的第一首
             {
-                given_file_method = PLAY_FIRST_FILE;
-                given_device = DEVICE_AUTO_NEXT;
-                put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
-                break;
+                	given_file_method = PLAY_FIRST_FILE;
+                	given_device = DEVICE_AUTO_NEXT;
+                	put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
+                	break;
             }
             else if (res == GET_DEVICE_HEAD)								//上一曲到设备的结束，查找下一个设备的最后一首
             {
-                given_file_method = PLAY_LAST_FILE;
-                given_device = DEVICE_AUTO_PREV;
-                put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
-                break;
+                	given_file_method = PLAY_LAST_FILE;
+                	given_device = DEVICE_AUTO_PREV;
+                	put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
+                	break;
             }
             put_msg_lifo(MSG_MUSIC_PLAY_NEW_FILE);
             break;
@@ -536,14 +559,14 @@ void music_play(void)
         case MSG_DECODE_FILE_END:
             if ((dec_msg->play_time >= 5) || (play_status == MAD_FF) || (play_status == MAD_FR))     //当前歌曲的播放时间大于5S时，直接播放下一首
             {
-                given_file_method = PLAY_AUTO_NEXT;
-                put_msg_lifo(MSG_MUSIC_SELECT_NEW_FILE);
+                	given_file_method = PLAY_AUTO_NEXT;
+                	put_msg_lifo(MSG_MUSIC_SELECT_NEW_FILE);
             }
             else													//当前歌曲播放时间小于5S，有可能是不坏歌曲，等待一段时间
             {
-                play_delay_time = 0;
-                given_file_method = PLAY_AUTO_NEXT;
-                play_status = MAD_STOP_WAIT;
+                	play_delay_time = 0;
+                	given_file_method = PLAY_AUTO_NEXT;
+                	play_status = MAD_STOP_WAIT;
             }
 #ifdef REC_PLAY_KEY_BREAK_POINT
 		rec_pley_bp_flag=0;
@@ -798,19 +821,19 @@ void music_play(void)
 		
 /////////////////////////////////////////////////////////////
 //短歌曲或损坏的歌曲在这里跳到下一首
-	            if (play_status == MAD_STOP_WAIT)				//等待一段时间再自动选择下一首
-	            {
-	                if (play_delay_time < 4)
-	                    play_delay_time++;
-	                else
-	                {
-	                    put_msg_lifo(MSG_MUSIC_SELECT_NEW_FILE);
-	                }
-	            }
-			if(cur_menu == main_menu)
+		if (play_status == MAD_STOP_WAIT)				//等待一段时间再自动选择下一首
+		{
+			if (play_delay_time < 4)
+				play_delay_time++;
+			else
 			{
-			   disp_port(main_menu);
+				put_msg_lifo(MSG_MUSIC_SELECT_NEW_FILE);
 			}
+		}
+		if(cur_menu == main_menu)
+		{
+			disp_port(main_menu);
+		}
 ////////////////////////////////////////////////////////////
 //显示界面的切换
 
@@ -819,27 +842,27 @@ void music_play(void)
 			rtc_disp_hdlr();
 			break;
 		}	
-            if (main_menu_conter < (SUB_MENU_TIME - 3))
-            {
-                main_menu_conter++;
-            }
-            else if (cur_menu != main_menu)
-            {
-                if (cur_menu == MENU_INPUT_NUMBER)			//数字输入模式
-                {
-                    put_msg_lifo(MSG_PICH_SONG);
-                    break;
-                }
-                else if(RECODE_WORKING == encode_status)
-                {
-                    cur_menu = MENU_RECWORKING;
-                }
-                else
-                {
-                    cur_menu = main_menu;
-                }
+		if (main_menu_conter < (SUB_MENU_TIME - 3))
+		{
+                	main_menu_conter++;
+		}
+            	else if (cur_menu != main_menu)
+            	{
+			if (cur_menu == MENU_INPUT_NUMBER)			//数字输入模式
+			{
+				put_msg_lifo(MSG_PICH_SONG);
+                    		break;
+                	}
+                	else if(RECODE_WORKING == encode_status)
+                	{
+                    		cur_menu = MENU_RECWORKING;
+                	}
+                	else
+                	{
+                    		cur_menu = main_menu;
+                	}
 
-                disp_port(cur_menu);
+                	disp_port(cur_menu);
             }
 /////////////////////////////////////////////////////////////
 //调整显示亮度
@@ -885,6 +908,29 @@ void music_play(void)
             given_file_method = PLAY_BREAK_POINT;
             put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
             break;
+#endif		
+#if 0
+		  case	MSG_DEL_ALL_FILE:
+			if(0 == encode_filenum)
+				break;
+			disp_port(MENU_REC_DEL);		  
+			stop_decode();
+			device_active |=VIRTUAL_DEVICE;
+			given_file_number =1;
+			delay_10ms(20);
+			{
+				u16 i;
+				 for(i=0;i<encode_filenum;i++)
+				 {	 				 	
+					fs_getfile_bynumber(0, &fat_ptr1, filenum_logic_phy(given_file_number));
+		            delete_current_file((device_active & (~VIRTUAL_DEVICE)), &fat_ptr1);
+		            given_file_number = filenum_phy_logic(fs_msg.fileNumber);
+				 }	
+			}
+			given_file_method = PLAY_FIRST_FILE;
+			given_device = device_active &(~VIRTUAL_DEVICE);
+			put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
+			break;
 #endif			
         default :
 __HOT_MSG_HDLR:        			

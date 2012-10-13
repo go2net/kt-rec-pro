@@ -105,6 +105,7 @@ void init_rec_name(void)
    @note    u16 filenum_phy_logic(u16 filenumber)
 */
 /*----------------------------------------------------------------------------*/
+#if 0
 u16 filenum_phy_logic(u16 filenumber)
 {
 #if VIRTUAL_ENABLE
@@ -133,7 +134,7 @@ u16 filenum_phy_logic(u16 filenumber)
     return filenumber;
 #endif
 }
-
+#endif
 /*----------------------------------------------------------------------------*/
 /**@brief   文件号从逻辑文件号转换为物理文件号
    @param   无
@@ -141,6 +142,7 @@ u16 filenum_phy_logic(u16 filenumber)
    @note    u16 filenum_logic_phy(u16 filenumber)
 */
 /*----------------------------------------------------------------------------*/
+#if 0
 u16 filenum_logic_phy(u16 filenumber)
 {
 
@@ -167,8 +169,7 @@ u16 filenum_logic_phy(u16 filenumber)
     return filenumber;
 #endif
 }
-
-
+#endif
 /*----------------------------------------------------------------------------*/
 /**@brief   设备断点记忆的数据准备
    @param   无
@@ -176,6 +177,7 @@ u16 filenum_logic_phy(u16 filenumber)
    @note    void get_rec_mem_info(void)
 */
 /*----------------------------------------------------------------------------*/
+#if 0
 void get_rec_mem_info(void)
 {
 #if VIRTUAL_ENABLE
@@ -194,6 +196,7 @@ void get_rec_mem_info(void)
 #endif
 
 }
+#endif
 void api_stop_encode(void) 
 {
     lcd_clr_flash_icon();	

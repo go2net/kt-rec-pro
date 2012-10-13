@@ -36,6 +36,7 @@ extern u8 device_active;
 u16 input_number;	 ///<输入的数字的实际值
 bool vol_change_en;	 ///<音量修改允许位
 extern u8 device_online;
+bool rec_device_out;
 
 extern RTC_TIME _xdata curr_time;
 extern xd_u8 rtc_coordinate;
@@ -160,9 +161,10 @@ void ap_handle_hotkey(u8 key)
     case MSG_SDMMC_OUT:
         if((RECODE_WORKING == encode_status)||(RECODE_PAUSE == encode_status))
         {	
+			rec_device_out = 1;
+			api_stop_encode();
             if(work_mode == FM_RADIO_MODE){
 			main_menu = MENU_FM_MAIN;//
-        		break_encode();
 			disp_port(MENU_FM_MAIN);
             		break;
 	     }
@@ -346,16 +348,25 @@ void ap_handle_hotkey(u8 key)
         }
         break;
 
-    case MSG_ENCODE_END:
+    case MSG_ENCODE_END:   //设备写err  或 设备满
+		if(rec_device_out)		//录音时活动设备拔出,在设备拔出那里处理，在此不做处理
+		{
+			rec_device_out =0;
+			break;
+		}
 
         api_stop_encode();		//停止录音
+		put_msg_lifo(MSG_REC_PLAY);
+		break;
 
+	 case MSG_ENCODE_FAT_FULL:  //建文件时
+		api_stop_encode();		//停止录音
         if((!device_check())&& (REC_MIC_MODE == work_mode))
         {
              put_msg_lifo(MSG_MUSIC_NEW_DEVICE_IN);
              break;   
         }
-        break_encode();
+       // break_encode();
 
         disp_port(main_menu);
         break;
@@ -396,7 +407,8 @@ void ap_handle_hotkey(u8 key)
         put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
         break;
     case MSG_REC_START:		//开始录音
-
+		 rec_device_out = 0;
+		 rec_sys_set(0);  //0:24M   1:48M
         init_rec_name();
         device_active |= VIRTUAL_DEVICE;
         encode_device = device_active;	 //设置录音存储设备
@@ -425,7 +437,12 @@ void ap_handle_hotkey(u8 key)
         {
             CLKGAT |= SDCLK;
         }
-        start_encode(IS_MP3);			 //开始录音
+
+        if(1 != start_encode(IS_MP3))			 //开始录音
+		{
+			put_msg_lifo(MSG_ENCODE_FAT_FULL);
+			break;
+		}
         /*
         if(REC_MIC_MODE == work_mode)
         {

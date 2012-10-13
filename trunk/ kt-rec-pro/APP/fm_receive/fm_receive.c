@@ -30,7 +30,7 @@ extern u8 work_mode;
 extern u8 _idata last_work_mode;
 
 extern u8 fm_addr;
-extern u8 _code one_table[];
+//extern u8 _code one_table[];
 u16 frequency;                          ///<当前频点
 u8 fre_channel; 			///<总台数
 //u8 total_channel;///<当前频道

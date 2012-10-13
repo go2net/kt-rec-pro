@@ -207,7 +207,7 @@ void dsp_recode_channel(u8 channel);
 #define SYSTEM_CLK_DIV4() SYSTEM_CLK_DIV1()
 #define SYSTEM_CLK_DIV2() SYSTEM_CLK_DIV1()
 #else
-#define SYSTEM_CLK_DIV4()  /*usb_suspend();*/CLKCON1 |= 0x80; PCON |= BIT(1);timer_init(MAIN_CLK_12M);UTBAUD = (12000000/(8 * 115200)) - 1; /*解码模式下不可使用*/
+#define SYSTEM_CLK_DIV4()  usb_suspend();CLKCON1 |= 0x80; PCON |= BIT(1);timer_init(MAIN_CLK_12M);UTBAUD = (12000000/(8 * 115200)) - 1; /*解码模式下不可使用*/
 #define SYSTEM_CLK_DIV2()  CLKCON1 &= ~0x80;PCON |= BIT(1);timer_init(MAIN_CLK_24M);UTBAUD = (24000000/(8 * 115200)) - 1;
 #define SYSTEM_CLK_DIV1()  CLKCON1 &= ~0x80;PCON &= ~(BIT(1));timer_init(MAIN_CLK_48M);UTBAUD = (48000000/(8 * 115200)) - 1;
 #endif

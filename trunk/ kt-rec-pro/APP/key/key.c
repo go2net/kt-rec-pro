@@ -324,8 +324,8 @@ static void adckey_init(void)
 /*----------------------------------------------------------------------------*/
 void key_init(void)
 {
-    adckey_init();
-     MAX_IR_KEY = get_my_IR_key_MAX();
+    	adckey_init();
+     	MAX_IR_KEY = get_my_IR_key_MAX();
 }
 /*----------------------------------------------------------------------------*/
 /**@brief  按键功能表选择

@@ -26,7 +26,7 @@
 
 
 //#define JK_SZ_S900_MODULE
-#define JK_JF_168_MODULE
+//#define JK_JF_168_MODULE
 //#define JK_DH_105_104_MODULE
 //#define JK289_MODULE
 //#define K129_MODULE
@@ -209,10 +209,12 @@
 #define DEFAULT_VOL		MAX_MAIN_VOL
 #define LCD_GPIO_DRV
 #define NO_AUX_CHANNEL
-#define CHARGER_DETECT_INDICATOR
 #define SAVE_BAND_FREQ_INFO
 #define JOG_STICK_FUNC
 #define FAST_STICK_TUNE_FUNC
+
+
+#define CHARGER_DETECT_INDICATOR
 
 #define DC_CHARGER_DET_SHARE_IIC
 #define USE_GPIO_MEASURE_VOLT
@@ -335,6 +337,8 @@ extern void disp_port(u8 menu);
 #define    MUSIC_FADE_OUT_EN				1			//切换歌曲的淡出使能， 1有效
 #define    VIRTUAL_ENABLE                   0           //2/<虚拟设别使能 1：enable；0：disable；
 
+#define   KALAOK_FUNCTION     				0		   ///<开卡拉ok功能
+#define   CH_MODE_SUBTRACT					0          ///<在music模式下开了扩音机时是否要把歌曲声相减
 //sd检测模式
 
 #define SDMMC_CLK_MODE   1	  ///<使用SD clk 查询模式
