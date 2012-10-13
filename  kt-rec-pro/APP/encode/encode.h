@@ -45,6 +45,7 @@ extern u8 play_mode_rec;
 #define REC_FM     		0x00 
 #define REC_LINEIN 		0x01
 #define REC_MIC			0x02 
+#define REC_DAC			0x03 
 
 #define ENABLE_REC_DATA 0x81
 #define REC_NO_OPT      0x80
@@ -54,9 +55,9 @@ extern u8 play_mode_rec;
 
 extern void break_encode(void);
 extern void rec_mic_fun(void);
-extern void get_rec_mem_info(void);
-extern  u16 filenum_phy_logic(u16 filenumber);
-extern u16 filenum_logic_phy(u16 filenumber);
+//extern void get_rec_mem_info(void);
+//extern  u16 filenum_phy_logic(u16 filenumber);
+//extern u16 filenum_logic_phy(u16 filenumber);
 extern void init_rec_name(void);
 extern void api_stop_encode(void);
 #endif

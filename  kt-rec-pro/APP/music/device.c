@@ -11,7 +11,7 @@ extern u8 given_device;
 extern u8 given_file_method;
 extern u16 break_point_filenum;
 extern u8 _xdata win_buffer[512];
-extern u8 _code one_table[];
+//extern u8 _code one_table[];
 extern void stop_decode(void);
 extern FSAPIMSG _pdata fs_msg;
 extern FIL xdata fat_ptr1;
@@ -28,6 +28,7 @@ sbit udisk_connect = device_online^1;   ///<USB MASS storage在线状态标记寄存器；
 sbit pc_connect = device_online^4;      ///<PC在线状态标记寄存器；1:在线 0：不在线
 u8 device_active;                       ///<当前在线活动设备
 u8 const _code file_type[] = "MP1MP2MP3WMAWAV";  ///<解码文件格式
+#if 0
 
 #if VIRTUAL_ENABLE
 u8 _code  device_tab[4] = 
@@ -44,7 +45,6 @@ u8 _code  device_tab[2] =
     DEVICE_UDISK,
 };
 #endif
-
 u8 get_device_cnt(u8 dev)
 {
     u8 i;
@@ -57,6 +57,7 @@ u8 get_device_cnt(u8 dev)
     }
     return 0;
 }
+#endif
 /*----------------------------------------------------------------------------*/
 /**@brief   检测当前活动的设备
    @param   无
@@ -152,9 +153,9 @@ u8 device_init(void)
                // break_point = disk_mus_point[1 + encode_cnt].id0;
                 break_point =usb_music_bp;               
             }
-            break_point_filenum = fs_scan_disk(break_point);
+            	break_point_filenum = fs_scan_disk(break_point);
     		encode_fristfile = fs_msg_rec.firstfilenum;	  //录音文件总数
-            encode_filenum = fs_msg_rec.fileTotalInDir;	  //录音文件夹的第一个文件号
+            	encode_filenum = fs_msg_rec.fileTotalInDir;	  //录音文件夹的第一个文件号
             //if (break_point_filenum)
             {
                 //break_point_filenum = filenum_phy_logic(break_point_filenum);
@@ -200,22 +201,42 @@ u8 device_init(void)
 
 u8 find_device(u8 select)
 {
-    u8 i;
-    u8 cnt;
+    //u8 i;
+    //u8 cnt;
+	
     device_check();
 
-    i = one_table[device_online & 0x0f];
+    //i = one_table[device_online & 0x0f];
 
-    if (i == 0)				//无设备
+    if ((device_online&0x03) == 0)				//无设备
     {
         device_active = 0;
         return NO_DEV_ONLINE;
     }
-    if (select == DEVICE_AUTO_PREV)		//查找上一个设备
+    if((select == DEVICE_AUTO_PREV)||(select == DEVICE_AUTO_NEXT))		//查找上一个设备
     {
 //        if ((i == 1) && (device_active & device_online))			//当前设备已经选中
 //            return ONLY_ONE_DEVICE;
+#if 1
+	   if(device_active==DEVICE_UDISK){
+		device_active = DEVICE_SDMMC0;
+	   }
+	   else if(device_active==DEVICE_SDMMC0){
+		device_active = DEVICE_UDISK;
+	   }
+	   else{
+		device_active=0;
+	   }
 
+          if ((device_active & device_online) == 0){
+        	device_active = 0;
+        	return NO_EFFECTIVE_DEV;				//无有效可以使用的设备
+          }	
+
+          if (!device_init())             //找到有效设备
+                return FIND_DEV_OK;
+			
+#else
         for (i = 0;i < MAX_DEVICE;i++)
         {
             cnt = get_device_cnt(device_active);
@@ -239,11 +260,14 @@ u8 find_device(u8 select)
         }
         device_active = 0;
         return NO_EFFECTIVE_DEV;				//无有效可以使用的设备
-
+#endif
     }
+#if 0	
     else if (select == DEVICE_AUTO_NEXT)    //查找下一个设备
     {
-        
+#if 1
+
+#else
         for (i = 0;i < MAX_DEVICE;i++)
         {
             cnt = get_device_cnt(device_active);  
@@ -270,10 +294,11 @@ u8 find_device(u8 select)
 
         device_active = 0;
         return NO_EFFECTIVE_DEV;							//无有效可以使用的设备
+#endif        
     }
+#endif	
     else
     {
-
         if (select & device_online)
         {
 
@@ -289,6 +314,9 @@ u8 find_device(u8 select)
         else
             return NO_DEFINE_DEV;
     }
+
+     	return NO_EFFECTIVE_DEV;				//无有效可以使用的设备
+
 }
 /*----------------------------------------------------------------------------*/
 /**@brief   记录文件ID0，ID1信息到EEPROM

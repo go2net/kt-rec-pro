@@ -732,6 +732,17 @@ u8 delete_current_file(u8 device , FIL _xdata *fat_ptr1);
 */
 /*----------------------------------------------------------------------------*/
 void rec_dirfile_name(u8 _xdata *ptr);
+
+void dsp_set_adc_con(u16 reg);
+/*----------------------------------------------------------------------------*/
+/**@brief 	录音采样时钟设置   
+   @param	0：24M  1：48M
+   @return  无
+   @note   	void rec_sys_set(u8 clk)
+*/
+/*----------------------------------------------------------------------------*/
+void rec_sys_set(u8 clk);
+void dsp_kalaok_channel(void);
 #endif
 
 #endif

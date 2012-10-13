@@ -71,13 +71,13 @@ void amux_dsp_eq(void)
    @note    void EQ_SET(u8 n)
 */
 /*----------------------------------------------------------------------------*/
-
+#if 0
 void set_decode_eq(u8 n)
 {
-//    dec_msg->eq_table = EQTableCode[n];
-    decode_eq_switch(1);
+    //dec_msg->eq_table = EQTableCode[n];
+    //decode_eq_switch(1);
 }
-
+#endif
 /*----------------------------------------------------------------------------*/
 /**@brief   音效控制接口函数
    @param   n : 音效模式

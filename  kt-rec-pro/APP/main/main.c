@@ -34,7 +34,7 @@ extern u8 play_mode;
 extern bool pc_connect, udisk_connect, sdmmc_connect;
 extern u8 _xdata win_buffer[];
 //extern u8 _xdata alm_cnt;
-u8 _code one_table[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
+//u8 _code one_table[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
 
 bool input_number_en;				///<是否允许数字键输入功能
 //bool change_eq_en;					///<是否允许改变EQ的设置
