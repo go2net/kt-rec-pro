@@ -192,7 +192,7 @@ void set_radio_freq(u8 mode)
 			freq_step = 5;
 		
 		freq_step_flag=0;
-#elif defined(K289_MODULE)
+#elif defined(JK289_MODULE)
 		if(freq_step_flag==1)
 			freq_step = 10;
 		else
