@@ -317,7 +317,7 @@ void align_lcd_disp_buff(u8 offset,u8 letter_data)
        lcd_buff[3] |= (((letter_data & DIG_C)>>2)|((letter_data & DIG_E)>>3))<<digit_idx;
        lcd_buff[4] |= (((letter_data & DIG_D)>>3))<<digit_idx;   	 	 
 }
-#elif defined(NEW_DH_107_105_104_LCD_MODULE)
+#elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(JF_168_LCD_MODULE)
 u8 _code lcd_disbuf_offset[4] ={6,4,2,0};
 void align_lcd_disp_buff(u8 offset,u8 letter_data)
 {

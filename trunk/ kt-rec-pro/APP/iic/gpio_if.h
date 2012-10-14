@@ -176,9 +176,9 @@
 #define LCD_BACKLIGHT_OFF()		P04 =1;
 #endif
 
-//#define OC_SRC_GPIO_INIT()		P0DIR &= ~(BIT(4));P0PU |=BIT(4);
-//#define SRC_OPT_EN()		P0|=(BIT(4))
-//#define SRC_COA_EN()		P0&=~(BIT(4))
+#define PLAY_LED_GPIO_INIT()		P0DIR &= ~(BIT(4));P0PU |=BIT(4);
+#define PLAY_LED_ON()				P04=1
+#define PLAY_LED_OFF()				P04=0
 
 //#define HDMI_SRC_GPIO_INIT()		P3DIR &= ~(BIT(4));P3PU |=BIT(4); 
 //#define SRC_HDMI_1_EN()		P3|=(BIT(4))

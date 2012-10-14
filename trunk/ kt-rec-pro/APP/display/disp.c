@@ -181,9 +181,12 @@ void set_brightness_all_on(void)
 /*----------------------------------------------------------------------------*/
 void init_display(void)
 {
-    init_lcd_disp();
+    	init_lcd_disp();
  //   disp_power_on();
-    LCD_BACKLIGHT_ON();
+    	LCD_BACKLIGHT_ON();
+#ifdef PLAY_STATUS_LED_FUNC
+	play_status_led_init(); 
+#endif
 }
 
 
@@ -689,6 +692,10 @@ void update_disp_icon()
 #if defined(USE_LCD_DRV_HT1621)
 	UpdateLcd_HT1621_Buf();
 #endif
+
+#ifdef PLAY_STATUS_LED_FUNC
+	play_status_led_hdlr();
+#endif
 }
 /*----------------------------------------------------------------------------*/
 /**@brief 显示界面集中处理
@@ -818,7 +825,43 @@ void disp_port(u8 menu)
 	update_disp_icon();
 }
 
+#ifdef PLAY_STATUS_LED_FUNC
+xd_u8 playled_spark=0,led_spark_div=0;
+void play_status_led_init()
+{
+	PLAY_LED_GPIO_INIT();
+	set_play_status_led_spark(PLED_ON);
+}
+void set_p_led_port(bool led_level)
+{
+	if(led_level){
+		PLAY_LED_ON();
+	}
+	else{
+		PLAY_LED_OFF();
+	}
+}
+void set_play_status_led_spark(u8 speed)
+{
+	playled_spark=speed;
+}
+void play_status_led_hdlr()
+{
+	static bool pled_bit=0;
+	if(PLED_OFF == playled_spark){
+		PLAY_LED_OFF();
+	}
+	else if(PLED_ON== playled_spark){
+		PLAY_LED_ON();
+	}
+	else if(PLED_SPARK_NOR== playled_spark){
 
+		led_spark_div++;
+		if((led_spark_div%100)==0)pled_bit=~pled_bit;
+		set_p_led_port(pled_bit);
+	}	
+}
+#endif
 
 
 #endif

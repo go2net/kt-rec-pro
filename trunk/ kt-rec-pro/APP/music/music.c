@@ -415,6 +415,10 @@ static u8 start_decode(void)
     mad_control(MAD_INIT, 0);
     mad_control(MAD_PLAY, 0);
     play_status = MAD_PLAY;
+	
+#ifdef PLAY_STATUS_LED_FUNC
+	set_play_status_led_spark(PLED_SPARK_NOR);
+#endif	
     //flashled(2);
     //amp_mute(0);	
     return 0;
@@ -609,13 +613,21 @@ void music_play(void)
                 disp_port(MENU_PAUSE);
                 mad_control(MAD_PAUSE, 0);
                 play_status = MAD_PAUSE;
+#ifdef PLAY_STATUS_LED_FUNC
+		 set_play_status_led_spark(PLED_ON);
+#endif	
+				
             }
             else if (play_status == MAD_PAUSE)
             {
                 main_menu = MENU_MUSIC_MAIN;
                 disp_port(MENU_MUSIC_MAIN);
                 mad_control(MAD_PLAY, 0);
-                play_status = MAD_PLAY;			
+                play_status = MAD_PLAY;		
+#ifdef PLAY_STATUS_LED_FUNC
+		 set_play_status_led_spark(PLED_SPARK_NOR);
+#endif	
+				
             }
             flush_all_msg();
             break;
@@ -979,4 +991,8 @@ void music_decode(void)
     main_vol_set(0, CHANGE_VOL_NO_MEM);
     given_device = NO_DEVICE;
     break_encode();
+#ifdef PLAY_STATUS_LED_FUNC
+    set_play_status_led_spark(PLED_ON);
+#endif	
+	
 }

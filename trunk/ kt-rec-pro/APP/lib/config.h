@@ -26,8 +26,8 @@
 
 
 //#define JK_SZ_S900_MODULE
-//#define JK_JF_168_MODULE
-#define JK_DH_105_104_MODULE
+#define JK_JF_168_MODULE
+//#define JK_DH_105_104_MODULE
 //#define JK289_MODULE
 //#define K129_MODULE
 //#define JK299_MODULE
@@ -57,6 +57,8 @@
 //#define CHARGER_DETECT_INDICATOR
 //#define DC_CHARGER_DET_SHARE_IIC
 //#define USE_GPIO_MEASURE_VOLT
+#define PLAY_STATUS_LED_FUNC
+
 
 #define PLAY_MODE_IN_USE
 #define REPEAT_MODE_USE_ONE_ALL
