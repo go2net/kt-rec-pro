@@ -58,7 +58,7 @@
 #define F_P1_DEV		(Ht1621_buf[0])	
 
 #define SW_MHZ_MASK	0x0010
-#define F_SW_DEV		(Ht1621_buf[19])	
+#define F_SW_MHZ_DEV	(Ht1621_buf[19])	
 
 #define SW_P2_MASK		0x0000
 #define F_P2_DEV		(Ht1621_buf[0])	
@@ -112,8 +112,8 @@ enum   ///<LED±êÖ¾Î»
 	USB_ICON,
 	SD_ICON,
 	AUX_ICON,
-	FM_MHZ_ICON,
-	AM_KHZ_ICON,
+	FM_ICON,
+	AM_ICON,
 	SW_ICON,
 	REC_ICON,
 	REP_1_ICON,

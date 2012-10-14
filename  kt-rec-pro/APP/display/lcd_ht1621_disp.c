@@ -98,11 +98,11 @@ void lcd_disp_icon(u8 id)
 	case REC_ICON:
 		F_REC_DEV |=REC_ICON_MASK;
 		break;	
-	case FM_MHZ_ICON:
+	case FM_ICON:
 		F_FM_DEV |=FM_DEV_MASK;
 		F_MHZ_DEV |=FM_MHZ_MASK;	
 		break;
-	case AM_KHZ_ICON:
+	case AM_ICON:
 		F_AM_DEV |=AM_DEV_MASK;
 		F_KHZ_DEV |=AM_KHZ_MASK;
 		break;
@@ -153,12 +153,12 @@ void lcd_clr_icon(u8 id)
 	case REC_ICON:
 		F_REC_DEV &=~REC_ICON_MASK;
 		break;		
-	case FM_MHZ_ICON:
+	case FM_ICON:
 		F_FM_DEV &=~FM_DEV_MASK;
 		F_MHZ_DEV &=~FM_MHZ_MASK;
 		break;
 
-	case AM_KHZ_ICON:
+	case AM_ICON:
 		F_AM_DEV &=~AM_DEV_MASK;		
 		F_KHZ_DEV &=~AM_KHZ_MASK;
 		break;

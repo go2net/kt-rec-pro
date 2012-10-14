@@ -80,21 +80,32 @@ void lcd_disp_icon(u8 id)
 		F_AUX_DEV |=AUX_DEV_MASK;
 		break;
 #endif		
-	case FM_MHZ_ICON:
+	case FM_ICON:
+		
 		F_MHZ_DEV |=FM_MHZ_MASK;
+		
 #if defined(NEW_DH_LCD_MODULE_SM5858)
 		F_P1_DEV |=FM_P1_MASK;
+#elif defined(NEW_DH_107_105_104_LCD_MODULE)
+		F_P1_DEV |=FM_P1_MASK;
+		F_FM_DEV |=FM_DEV_MASK;
 #endif		
 		break;
-	case AM_KHZ_ICON:
+	case AM_ICON:
+#if defined(NEW_DH_107_105_104_LCD_MODULE)
+		F_AM_DEV |=AM_DEV_MASK;
+#endif		
 		F_KHZ_DEV |=AM_KHZ_MASK;
 		break;
 	case SW_ICON:
-		F_SW_DEV |=SW_MHZ_MASK;
+		F_SW_MHZ_DEV |=SW_MHZ_MASK;
 #if defined(NEW_DH_LCD_MODULE_SM5901)
 		F_P1_DEV |=FM_P1_MASK;
 #elif defined(NEW_DH_LCD_MODULE_SM5858)
 		F_P2_DEV |=SW_P2_MASK;
+#elif defined(NEW_DH_107_105_104_LCD_MODULE)
+		F_P2_DEV |=SW_P2_MASK;
+		F_SW_DEV |=SW_DEV_MASK;
 #endif			
 		break;				
 	case REP_1_ICON:
@@ -172,21 +183,33 @@ void lcd_clr_icon(u8 id)
 		F_AUX_DEV &=~AUX_DEV_MASK;
 		break;
 #endif		
-	case FM_MHZ_ICON:
+	case FM_ICON:
+
 		F_MHZ_DEV &=~FM_MHZ_MASK;
-		break;
+
 #if defined(NEW_DH_LCD_MODULE_SM5858)
 		F_P1_DEV &=~FM_P1_MASK;
-#endif
-	case AM_KHZ_ICON:
+#elif defined(NEW_DH_107_105_104_LCD_MODULE)
+		F_P1_DEV &=~FM_P1_MASK;
+		F_FM_DEV &=~FM_DEV_MASK;
+#endif		
+		break;
+	case AM_ICON:
+#if defined(NEW_DH_107_105_104_LCD_MODULE)
+		F_AM_DEV &=~AM_DEV_MASK;
+#endif		
+		
 		F_KHZ_DEV &=~AM_KHZ_MASK;
 		break;
 	case SW_ICON:
-		F_SW_DEV &=~SW_MHZ_MASK;
+		F_SW_MHZ_DEV &=~SW_MHZ_MASK;
 #if defined(NEW_DH_LCD_MODULE_SM5901)
 		F_P1_DEV &=~FM_P1_MASK;
 #elif defined(NEW_DH_LCD_MODULE_SM5858)
 		F_P2_DEV &=~SW_P2_MASK;
+#elif defined(NEW_DH_107_105_104_LCD_MODULE)
+		F_P2_DEV &=~SW_P2_MASK;
+		F_SW_DEV &=~SW_DEV_MASK;
 #endif			
 		break;			
 	case REP_1_ICON:
@@ -447,6 +470,7 @@ void seg_lcd_disp_scan(void)
     TRADEMARK_ICON |=TRADEMARK_MASK;
 
     update_disp_icon();
+
     lcd_flash_timer++;
     if (lcd_flash_timer == 220)
     {
@@ -466,21 +490,13 @@ void seg_lcd_disp_scan(void)
     close_com(temp);
     if(cnt & 0x01){
 	  seg07_port(lcd_buff[temp]);
-#if defined(K129_MODULE000000000000)
-
-#else	  
 	  seg8_port( ( ((lcd_buff[temp]&0x0100)>0)?1:0 ) );
-#endif
 	  clr_com(temp);
     }
     else
    {                            
-	  seg07_port(~lcd_buff[temp]);
-#if defined(K129_MODULE0000000000000000)
-
-#else	 	  
+	  seg07_port(~lcd_buff[temp]); 	  
 	  seg8_port(( ((lcd_buff[temp]&0x0100)>0)?0:1 ));
-#endif
 	  set_com(temp);
    }
 
