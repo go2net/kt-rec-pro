@@ -62,6 +62,16 @@ enum
     MENU_POWER_DOWN,
 };
 
+enum
+{
+    PLED_OFF= 0,
+    PLED_ON,
+    PLED_SPARK_V_FAST,
+    PLED_SPARK_FAST,
+    PLED_SPARK_NOR,
+    PLED_SPARK_SLOW,
+};
+
 void disp_power_on(void);
 void disp_fm_freq(void);
 void disp_input_number(u16 num);
@@ -81,6 +91,13 @@ void init_display(void);
 void disp_flash_icon(u8 id);
 
 void disp_rec_working(void);
+
+#ifdef PLAY_STATUS_LED_FUNC
+void play_status_led_init();
+void set_play_status_led_spark(u8 speed);
+void play_status_led_hdlr();
+#endif
+
 #endif
 
 #define SUB_MENU_TIME         (1*6)
