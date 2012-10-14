@@ -244,11 +244,11 @@ void disp_fm_main(void)
 #if defined(K129_MODULE0000000000)
 	if(cur_sw_fm_band==0){
 		freq =frequency;
-	 	lcd_disp_icon(FM_MHZ_ICON);		
+	 	lcd_disp_icon(FM_ICON);		
 	}
 	else if(cur_sw_fm_band==1){
 		freq =frequency;
-	 	lcd_disp_icon(AM_KHZ_ICON);
+	 	lcd_disp_icon(AM_ICON);
 	}
 	else if(cur_sw_fm_band==2){
 		
@@ -287,11 +287,11 @@ void disp_fm_main(void)
 #else	
 	if(cur_sw_fm_band==0){
 		freq =frequency;
-	 	lcd_disp_icon(FM_MHZ_ICON);		
+	 	lcd_disp_icon(FM_ICON);		
 	}
 	else if(cur_sw_fm_band==1){
 		freq =frequency;
-	 	lcd_disp_icon(AM_KHZ_ICON);
+	 	lcd_disp_icon(AM_ICON);
 	}
 	else{
 		freq =frequency/10;

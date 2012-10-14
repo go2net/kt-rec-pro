@@ -40,17 +40,6 @@ SEG8     P34
 #define   seg8_port(n)	P34 = n
 #define   bklt_init()	  P3DIR &= ~(1<<0);P3 |= (1<<0);
 
-#elif defined(K129_MODULE0000000000000000000000000)
-
-#define   com_init()      P3PU |= (0x1F);P3PD |= (0x1F)
-#define   close_com(n)    com_init();P3DIR |= (0x1F);P3DIR &= ~(1<<(n))
-    
-#define	set_com(n)      P3 |= (1<<(n))
-#define   clr_com(n)       P3 &= ~(1<<(n)) 
-	
-#define   seg_init()      	P1DIR = 0;P0DIR &= ~(BIT(2));P0PU &= ~(BIT(2))//;P3PD &= ~(BIT(4))
-#define   seg07_port(n)   	P1 = n
-
 #else
 
 #define   com_init()      P3PU |= (0x1F);P3PD |= (0x1F)
@@ -76,8 +65,8 @@ enum {
 	USB_ICON,
 	SD_ICON,
 	AUX_ICON,
-	FM_MHZ_ICON,
-	AM_KHZ_ICON,
+	FM_ICON,
+	AM_ICON,
 	SW_ICON,
 	REC_ICON,
 	REP_1_ICON,
@@ -121,7 +110,7 @@ enum {
 #define F_P1_DEV		(lcd_buff[3])	
 
 #define SW_MHZ_MASK	0x0001
-#define F_SW_DEV		(lcd_buff[1])	
+#define F_SW_MHZ_DEV	(lcd_buff[1])	
 
 
 #define RTC_ICON_MASK	0x0000
@@ -248,6 +237,7 @@ enum {
 #define S4_ICON_BUF		(lcd_buff[0])
 
 #define FIGURE_NUM	4
+
 #elif defined(NEW_DH_107_105_104_LCD_MODULE)
 
 #define USB_DEV_MASK	0x0080
@@ -298,10 +288,10 @@ enum {
 #define RTC_AM_MASK	0x0000
 #define F_RTC_AM		(lcd_buff[3])
 
-#define REC_ICON_MASK	0x0000
-#define F_REC_DEV		(lcd_buff[4])	
+#define REC_ICON_MASK	0x0002
+#define F_REC_DEV		(lcd_buff[0])	
 
-#define SPK_MUTE_MASK	0x0080
+#define SPK_MUTE_MASK	0x0008
 #define F_SPK_DEV		(lcd_buff[0])	
 
 #define BATTERY_MASK	0x0000
@@ -358,7 +348,7 @@ enum {
 #define F_P1_DEV		(lcd_buff[0])	
 
 #define SW_MHZ_MASK	0x0080
-#define F_SW_DEV		(lcd_buff[2])	
+#define F_SW_MHZ_DEV		(lcd_buff[2])	
 
 
 #define RTC_ICON_MASK	0x0000
@@ -432,7 +422,7 @@ enum {
 #define F_P1_DEV		(lcd_buff[0])	
 
 #define SW_MHZ_MASK	0x0001
-#define F_SW_DEV		(lcd_buff[0])	
+#define F_SW_MHZ_DEV		(lcd_buff[0])	
 
 #define SW_P2_MASK		0x0040
 #define F_P2_DEV		(lcd_buff[0])	
@@ -508,7 +498,7 @@ enum {
 #define F_P1_DEV		(lcd_buff[3])	
 
 #define SW_MHZ_MASK	0x0041
-#define F_SW_DEV		(lcd_buff[0])	
+#define F_SW_MHZ_DEV	(lcd_buff[0])	
 
 
 #define RTC_ICON_MASK	0x0000
