@@ -711,18 +711,6 @@ void ad_mod_sel_hdlr()
                 break;
 #else	
 
-#if defined(K129_MODULE)
-	 	if(fm_sw_volt>ADKEY2_RES_4)
-	      	   	sw_fm_mod =SW2_MODE ;
-	 	else if(fm_sw_volt>ADKEY2_RES_3)
-	      	   	sw_fm_mod =SW1_MODE ;
-	 	else if(fm_sw_volt>ADKEY2_RES_2)
-	      	   	sw_fm_mod =SW_MODE ;
-	 	else if(fm_sw_volt>ADKEY2_RES_1)
-	      	   	sw_fm_mod =MW_MODE ;
-	  	else 
-	      	   	sw_fm_mod =FM_MODE ;
-#else
 	  	//if(fm_sw_volt>ADKEY2_RES_NOKEY)
 	      	//   	sw_fm_mod =SW9_MODE ;
 	     	 if(fm_sw_volt>ADKEY2_RES_10)
@@ -747,7 +735,7 @@ void ad_mod_sel_hdlr()
 	      	   	sw_fm_mod =MW_MODE ;
 	  	else 
 	      	   	sw_fm_mod =FM_MODE ;
-#endif		
+
 
 		if(cur_sw_fm_band !=sw_fm_mod){
 			cur_sw_fm_band=sw_fm_mod;
