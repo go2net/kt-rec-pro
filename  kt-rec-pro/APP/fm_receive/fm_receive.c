@@ -41,11 +41,9 @@ extern u8 _xdata decode_buffer[];
 extern xd_u8 fast_step_cnt;
 #endif
 
-#if defined(K129_MODULE)
-xd_u8 freq_step_flag=0;
-#else
+
 bool freq_step_flag=0;
-#endif
+
 xd_u8 sw_fm_mod=0,cur_sw_fm_band=0;
 xd_u16 REG_MAX_FREQ=0,REG_MIN_FREQ=0;
 
@@ -59,16 +57,8 @@ extern void KT_AMFMStandby(void);					//0->Fail 1->Success
 extern xd_u8 KT_AMFMPreInit(void);			  
 extern void KT_AMFMMute(void);
 
-#if defined(K129_MODULE)
-FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
-{
-	875,		1080,
-	520,		1630,
-	3200,	7700,
-	7710,	22000,
-	//23010,	25000,
-};
-#elif defined(SW_TWO_BAND_RANGE)
+
+#if defined(SW_TWO_BAND_RANGE)
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
 	875,		1080,
@@ -183,24 +173,8 @@ void set_radio_freq(u8 mode)
 		}
     }
     else{
-#if defined(K129_MODULE)
-		if(freq_step_flag==2)
-			freq_step = 100;
-		else if(freq_step_flag==1)
-			freq_step = 10;
-		else
-			freq_step = 5;
-		
-		freq_step_flag=0;
-#elif defined(JK289_MODULE)
-		if(freq_step_flag==1)
-			freq_step = 10;
-		else
-			freq_step = 5;
-		freq_step_flag=0;
-#else		
+	
 		freq_step = 5;
-#endif
     }	
 #endif
 	
@@ -308,27 +282,17 @@ void fm_rev( void )
             //return;
         case MSG_MUSIC_FF:
 	 	am_adj_timer=2;			
-#if defined(K129_MODULE)
-		freq_step_flag=2;	
-		goto __FREQ_INC;
-#endif
         case MSG_MUSIC_NEXT_FILE:
 		freq_step_flag=1;
         case MSG_FM_NEXT_STEP:
-__FREQ_INC:			
     		set_radio_freq(FM_FRE_INC);
 		//disp_port(MENU_FM_MAIN);
 		break;
 	 case MSG_MUSIC_FR:
 	 	am_adj_timer=2;
-#if defined(K129_MODULE)
-		freq_step_flag=2;	
-		goto __FREQ_DEC;
-#endif	 	
 	 case MSG_MUSIC_PREV_FILE:
 		freq_step_flag=1;	 	
         case MSG_FM_PREV_STEP:
-__FREQ_DEC:			
     	     set_radio_freq(FM_FRE_DEC);
 	    //disp_port(MENU_FM_MAIN);			
 	     break;		 
