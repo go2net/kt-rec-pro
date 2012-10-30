@@ -43,7 +43,7 @@
 #define DISP_PAU_STR
 #endif
 
-#define SW_TWO_BAND_RANGE
+#define SW_FULL_BAND_RANGE_END_AT_23MHZ
 
 #define REC_PLAY_KEY_BREAK_POINT
 #define FM_FREQ_NUM_KEY_INPUT

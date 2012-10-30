@@ -99,7 +99,7 @@ u8 device_init(void)
             }
             else
             {
-				return 0xff;                       ///<¼ø¶¨Ê§°Ü
+			return 0xff;                       ///<¼ø¶¨Ê§°Ü
             }
 
         }

@@ -767,9 +767,9 @@ void disp_port(u8 menu)
 		disp_rec_err();
 		break;
 
-	case MENU_REC_MAIN:
-		disp_music_main();
-		break;
+	//case MENU_REC_MAIN:
+	//	disp_music_main();
+	//	break;
 
 	case MENU_SET_EQ:
             disp_eq();
