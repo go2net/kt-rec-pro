@@ -73,6 +73,13 @@ FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 	520,		1630,
 	3200,	25000,
 };
+#elif defined(SW_FULL_BAND_RANGE_END_AT_23MHZ)
+FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
+{
+	875,		1080,
+	520,		1630,
+	3200,	23000,
+};
 #else
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
