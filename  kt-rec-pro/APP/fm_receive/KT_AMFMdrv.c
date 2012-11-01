@@ -600,6 +600,7 @@ void KT_FMTune(xd_u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and T
 		(Frequency == 9660)	|| (Frequency == 9860)	|| (Frequency == 10230)	|| (Frequency == 10240)	|| (Frequency == 10520) ||
 		(Frequency == 4380) || (Frequency == 4390)	|| (Frequency == 5260)	|| (Frequency == 5850)	||
 		(Frequency == 6570) || (Frequency == 6580)	|| (Frequency == 6590)	|| (Frequency == 7310)	|| (Frequency == 7890)
+		|| (Frequency == 9610)|| (Frequency == 10790)|| (Frequency == 10800)
 	  )
 	{
 		KT_Bus_Write(0x0A, regx | 0x0040);
