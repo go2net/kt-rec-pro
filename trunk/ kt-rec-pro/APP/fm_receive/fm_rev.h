@@ -17,7 +17,7 @@
 #define MAX_BAND    4
 #elif defined(SW_TWO_BAND_RANGE)
 #define MAX_BAND    4
-#elif defined(SW_FULL_BAND_RANGE)
+#elif defined(SW_FULL_BAND_RANGE)||defined(SW_FULL_BAND_RANGE_END_AT_23MHZ)
 #define MAX_BAND    3
 #else
 #define MAX_BAND    11
