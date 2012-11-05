@@ -6,7 +6,7 @@
    @note   AC309N
 */
 /*----------------------------------------------------------------------------*/
-
+#if 0
 //#define UART_ENABLE
 #ifdef UART_ENABLE
 #define USE_UART_P24_P25
@@ -25,8 +25,9 @@
 //#define NEW_DH_LCD_MODULE_SM5858
 
 
-#define JK_HT_998_MODULE
+//#define JK_HT_998_MODULE
 //#define JK_SZ_S900_MODULE
+#define JK_JF_689_MODULE
 //#define JK_JF_168_MODULE
 //#define JK_DH_105_104_MODULE
 //#define JK289_MODULE
@@ -67,6 +68,39 @@
 
 #define DC_CHARGER_DET_SHARE_IIC
 #define USE_GPIO_MEASURE_VOLT
+
+#define PLAY_MODE_IN_USE
+#define REPEAT_MODE_USE_ONE_ALL
+#define DISP_PLAY_MODE_STR
+#endif
+
+#if defined(JK_JF_689_MODULE)
+
+#define JF_168_LCD_MODULE
+
+#define SW_TWO_BAND_RANGE
+#define REC_PLAY_KEY_BREAK_POINT
+#define FM_FREQ_NUM_KEY_INPUT
+
+#define IIC_GPIO_USE_P00_P01
+#define MUTE_PORT_USE_P03
+
+#define REPEAT_MODE_USE_ONE_ALL
+
+#define EXCHANGE_AUX_CHANNEL
+#define DEFAULT_VOL		MAX_MAIN_VOL
+#define LCD_GPIO_DRV
+#define NO_AUX_CHANNEL
+#define SAVE_BAND_FREQ_INFO
+#define JOG_STICK_FUNC
+#define FAST_STICK_TUNE_FUNC
+
+//#define USE_BAT_MANAGEMENT
+//#define CHARGER_DETECT_INDICATOR
+//#define DC_CHARGER_DET_SHARE_IIC
+//#define USE_GPIO_MEASURE_VOLT
+#define PLAY_STATUS_LED_FUNC
+
 
 #define PLAY_MODE_IN_USE
 #define REPEAT_MODE_USE_ONE_ALL
@@ -279,7 +313,8 @@
 
 
 
-
+#endif
+#include "Custom_config.h"
 
 #ifndef _CONFIG_
 #define _CONFIG_

@@ -7,6 +7,8 @@
    @note
 */
 /*----------------------------------------------------------------------------*/
+#include "Custom_config.h"
+
 #include "key.h"
 #include "my_IR_key.h"
 
