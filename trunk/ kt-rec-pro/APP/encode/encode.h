@@ -36,7 +36,7 @@ extern u16 _xdata logic_fileTotal;
 extern u8 encode_cnt;
 extern u8 mem_addr;
 
-extern u8 play_mode_rec;
+//extern u8 play_mode_rec;
 
 #define TRACK_ALL    0 
 #define TRACK_RIGHT  1 

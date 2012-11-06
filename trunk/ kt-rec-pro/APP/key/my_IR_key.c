@@ -65,10 +65,12 @@ _code MY_IR_KEY_STRUCT My_IRTab[]=       /*user code is 0xFF*/
 	{My_IR_KEY_CHN_DN,		IR_20},
 };
 #endif
+#if 0
 u8 get_my_IR_key_MAX()
 {
 	return (u8)((sizeof(My_IRTab))/2);
 }
+#endif
 #endif
 
 

@@ -65,7 +65,7 @@
 #define My_IR_KEY_RETURN		0xFF
 #define My_IR_KEY_NONE 			0xFF
 
-#define My_IR_KEY_TATOL		23
+#define My_IR_KEY_TATOL		21
 
 
 typedef struct{
