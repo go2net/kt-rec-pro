@@ -36,8 +36,8 @@ u8 _code lifo_msg_tab[] = 						//高优先级消息，需要后进先出
 #if 1
 #include "my_IR_key.h"
 extern _code MY_IR_KEY_STRUCT My_IRTab[];       /*user code is 0xFF*/
-extern u8 get_my_IR_key_MAX();
-static u8 _xdata MAX_IR_KEY = 0;
+//extern u8 get_my_IR_key_MAX();
+//static u8 _xdata MAX_IR_KEY = 0;
 #endif
 bool key_mode;			  ///<按键消息的类型
 u16 _idata user_code;     ///<红外遥控提取的用户码
@@ -325,7 +325,7 @@ static void adckey_init(void)
 void key_init(void)
 {
     	adckey_init();
-     	MAX_IR_KEY = get_my_IR_key_MAX();
+     	//MAX_IR_KEY = get_my_IR_key_MAX();
 }
 /*----------------------------------------------------------------------------*/
 /**@brief  按键功能表选择
@@ -608,7 +608,7 @@ u8 keyDetect(void)
        #if 0
             	keyTemp = IRTabff00[(u8)irda_data];
        #else
-		for(key_index = 0;key_index <MAX_IR_KEY;key_index++){
+		for(key_index = 0;key_index <My_IR_KEY_TATOL;key_index++){
 	            if((My_IRTab[key_index].IR_Key_Value)==(irda_data & 0xff)){
 				keyTemp = (My_IRTab[key_index].APP_Key);
 			        //printf_u16(keyTemp,'R');
@@ -815,7 +815,7 @@ void keyScan(void)
         key_counter++;
         if (KEY_BASE_CNT == key_counter)			//去抖
         {
-            //key_style = 0;
+            key_style = 0;
             //set_key_tone();
         }
         else if (KEY_LONG_CNT == key_counter)				//长按

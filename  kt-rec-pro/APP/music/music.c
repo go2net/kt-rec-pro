@@ -31,7 +31,7 @@ extern bool vol_change_en;
 //extern bool key_voice_en;
 //extern u8 _idata last_work_mode;
 u8 play_mode;							 ///<循环模式
-u8 play_mode_rec;							 ///<循环模式
+//u8 play_mode_rec;							 ///<循环模式
 u8 given_device;						 ///<需要查找的设备
 u16 given_file_number;					 ///<需要查找的文件号
 u16 break_point_filenum;				 ///<断点信息对应的文件号
@@ -135,19 +135,21 @@ static void music_info_init(void)
     if ( (given_device & (~VIRTUAL_DEVICE)) == DEVICE_SDMMC0)
     {
         given_file_method = PLAY_BREAK_POINT;
-        put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
+       //put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
     }
     else if ((given_device & (~VIRTUAL_DEVICE)) == DEVICE_UDISK)
     {
         given_file_method = PLAY_BREAK_POINT;
-        put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
+        //put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
     }
     else
     {
         given_device = DEVICE_SDMMC0;
         given_file_method = PLAY_FIRST_FILE;
-        put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
     }
+
+    put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
+
 }
 #if 0//USE_RTC_RAM
 /*----------------------------------------------------------------------------*/

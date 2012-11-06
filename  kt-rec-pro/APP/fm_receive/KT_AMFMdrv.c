@@ -68,7 +68,8 @@
 xd_u8 mem_snr[3];			  //Rememberred SNR values for previous, current and next stations
 #endif
 
-Str_Band  Current_Band;
+//Str_Band  Current_Band;
+extern xd_u8 cur_sw_fm_band;
 
 #define I2C
 #ifdef I2C
@@ -378,6 +379,7 @@ xd_u8 KT_AMFMInit(void)                            //0->Fail 1->Success
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
+#if 0
 xd_u8 KT_AMSetBW(xd_u8 AMBW)				//AM Channel Bandwidth=2 for 2KHz; 4 for 4KHz; 6 for 6KHz
 {
 	xd_u16 regx;
@@ -388,7 +390,7 @@ xd_u8 KT_AMSetBW(xd_u8 AMBW)				//AM Channel Bandwidth=2 for 2KHz; 4 for 4KHz; 6
 	else return(0);
 	return(1);
 }
-
+#endif
 /************************************************************************************/
 /*函 数 名：KT_AMFMSetMode												 	 */
 /*功能描述：工作模式设置程序												 */
@@ -412,7 +414,7 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 	}
 	else if (AMFM_MODE == MW_MODE)
 	{
-		Current_Band.Band =MW_MODE;
+		//Current_Band.Band =MW_MODE;
 		//NSS = 0;
 		regx = KT_Bus_Read(0x16);
 		KT_Bus_Write(0x16,regx|0x8000);				//AM_FM=1
@@ -432,7 +434,7 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 	}
 	else
 	{
-		Current_Band.Band =SW_MODE;
+		//Current_Band.Band =SW_MODE;
 
 		regx = KT_Bus_Read(0x16);
 		KT_Bus_Write(0x16,regx|0x8000);				//AM_FM=1
@@ -600,10 +602,21 @@ void KT_FMTune(xd_u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and T
 		(Frequency == 9660)	|| (Frequency == 9860)	|| (Frequency == 10230)	|| (Frequency == 10240)	|| (Frequency == 10520) ||
 		(Frequency == 4380) || (Frequency == 4390)	|| (Frequency == 5260)	|| (Frequency == 5850)	||
 		(Frequency == 6570) || (Frequency == 6580)	|| (Frequency == 6590)	|| (Frequency == 7310)	|| (Frequency == 7890)
-		|| (Frequency == 9610)|| (Frequency == 10790)|| (Frequency == 10800)
 	  )
 	{
 		KT_Bus_Write(0x0A, regx | 0x0040);
+	}
+	else if((Frequency == 9600) || (Frequency == 9610))
+	{
+	  	KT_Bus_Write(0x1F, 0x029D);     //DIVIDERN<9:0>=669
+	  	KT_Bus_Write(0x16, (regx & 0xD0FF) | 0x2000);   //CTCLK=1;reference clock=32.768K;
+	  	KT_Bus_Write(0x03, 0x8000 | (Frequency - 15) / 5 );     //set tune bit to 1
+	}
+	else if((Frequency == 10790) || (Frequency == 10800))
+	{
+	 	KT_Bus_Write(0x1F, 0x02A0);     //DIVIDERN<9:0>=672
+	 	KT_Bus_Write(0x16, (regx & 0xD0FF) | 0x2000);   //CTCLK=1;reference clock=32.768K;
+	  	KT_Bus_Write(0x03, 0x8000 | (Frequency - 65) / 5 );     //set tune bit to 1
 	}
 	else
 	{
@@ -718,7 +731,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	regx = KT_Bus_Read(0x0F);       
 	KT_Bus_Write(0x0F, regx & 0xFFE0);		//Write volume to 0
 
-	if(Current_Band.Band == MW_MODE){
+	if(cur_sw_fm_band >= MW_MODE){
 		
 		KT_Bus_Write(0x18,0x0000);						//Enable cap
 	}
@@ -759,7 +772,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 		KT_Bus_Write(0x16, 	regx & 0xD0FF);       				//reference clock=32.768K;
 		KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #ifdef KT0915
-		if(Current_Band.Band >= SW_MODE)
+		if(cur_sw_fm_band >= MW_MODE)
 			KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #endif
 	}
@@ -773,7 +786,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	regx = KT_Bus_Read(0x0F);       
 
 #ifdef KT0915
-		if(Current_Band.Band >= SW_MODE)
+		if(cur_sw_fm_band >= MW_MODE)
 #endif
 	{
 		KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1D));		//Write volume to 0
@@ -951,7 +964,7 @@ xd_u8 KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip an
 
 	KT_Bus_Write(0x17, 0x8000 | Frequency);	   					//set tune bit to 1
 #ifdef	KT0915
-	if(Current_Band.Band >= SW_MODE)
+	if(cur_sw_fm_band >= MW_MODE)
 		KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #endif
 	//delay_10ms(100);
