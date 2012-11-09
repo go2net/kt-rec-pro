@@ -1,4 +1,7 @@
 /*lcd segment*/
+
+#include "Custom_config.h"
+
 #include "config.h"
 
 #include "lcdsegment.h"
@@ -86,7 +89,7 @@ void lcd_disp_icon(u8 id)
 		
 #if defined(NEW_DH_LCD_MODULE_SM5858)
 		F_P1_DEV |=FM_P1_MASK;
-#elif defined(NEW_DH_107_105_104_LCD_MODULE)
+#elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(NEW_FP_LCD_211_MODULE)
 		F_P1_DEV |=FM_P1_MASK;
 		F_FM_DEV |=FM_DEV_MASK;
 #endif		
@@ -103,7 +106,7 @@ void lcd_disp_icon(u8 id)
 		F_P1_DEV |=FM_P1_MASK;
 #elif defined(NEW_DH_LCD_MODULE_SM5858)
 		F_P2_DEV |=SW_P2_MASK;
-#elif defined(NEW_DH_107_105_104_LCD_MODULE)
+#elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(NEW_FP_LCD_211_MODULE)
 		F_P2_DEV |=SW_P2_MASK;
 		F_SW_DEV |=SW_DEV_MASK;
 #endif			
@@ -189,7 +192,7 @@ void lcd_clr_icon(u8 id)
 
 #if defined(NEW_DH_LCD_MODULE_SM5858)
 		F_P1_DEV &=~FM_P1_MASK;
-#elif defined(NEW_DH_107_105_104_LCD_MODULE)
+#elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(NEW_FP_LCD_211_MODULE)
 		F_P1_DEV &=~FM_P1_MASK;
 		F_FM_DEV &=~FM_DEV_MASK;
 #endif		
@@ -207,7 +210,7 @@ void lcd_clr_icon(u8 id)
 		F_P1_DEV &=~FM_P1_MASK;
 #elif defined(NEW_DH_LCD_MODULE_SM5858)
 		F_P2_DEV &=~SW_P2_MASK;
-#elif defined(NEW_DH_107_105_104_LCD_MODULE)
+#elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(NEW_FP_LCD_211_MODULE)
 		F_P2_DEV &=~SW_P2_MASK;
 		F_SW_DEV &=~SW_DEV_MASK;
 #endif			
@@ -298,6 +301,43 @@ void align_lcd_disp_buff(u8 offset,u8 letter_data)
        lcd_buff[2] |= (((letter_data & DIG_B))|((letter_data & DIG_F)>>5))<<digit_idx;
        lcd_buff[3] |= (((letter_data & DIG_C)>>1)|((letter_data & DIG_G)>>6))<<digit_idx;
        lcd_buff[4] |= (((letter_data & DIG_D)>>2)|((letter_data & DIG_E)>>4))<<digit_idx;   	 
+}
+#elif defined(NEW_FP_LCD_211_MODULE)
+u8 _code lcd_disbuf_offset[4] ={0,1,3,5};
+void align_lcd_disp_buff(u8 offset,u8 letter_data)
+{
+	u8 digit_idx=offset;
+	
+	digit_idx= lcd_disbuf_offset[offset];
+	
+	if(digit_idx==0)
+	{
+		 lcd_buff[1]&=~0x0001;
+		 lcd_buff[2]&=~0x0001;
+	        lcd_buff[3]&=~0x0001;
+			
+		 if((letter_data == LCD_NUMBER[1])){
+			lcd_buff[2]|=0x0001;
+			lcd_buff[3]|=0x0001;
+		    }
+		    else if((letter_data == LCD_NUMBER[2])){
+			lcd_buff[1]|=0x0001;
+			lcd_buff[3]|=0x0001;
+		   }	
+	   	return;
+	}
+	else{
+		
+		lcd_buff[4] &= ~(0x0002<<digit_idx);
+		lcd_buff[3] &= ~(0x0003<<digit_idx);
+		lcd_buff[2] &= ~(0x0003<<digit_idx);
+		lcd_buff[1] &= ~(0x0003<<digit_idx);
+
+	       lcd_buff[4] |= ((letter_data & DIG_A)<<1)<<digit_idx;
+	       lcd_buff[3] |= (((letter_data & DIG_B))|((letter_data & DIG_F)>>5))<<digit_idx;
+	       lcd_buff[2] |= (((letter_data & DIG_C)>>1)|((letter_data & DIG_G)>>6))<<digit_idx;
+	       lcd_buff[1] |= (((letter_data & DIG_D)>>2)|((letter_data & DIG_E)>>4))<<digit_idx;   	
+	}	   
 }
 #elif defined(JF_168_LCD_MODULE)
 u8 _code lcd_disbuf_offset[4] ={6,4,2,0};
@@ -459,6 +499,57 @@ void led_putchar(u8 chardata,u8 loc)
 #if defined(USE_BAT_MANAGEMENT)
 extern void Bat_icon_chk(void);
 #endif
+
+#if defined(LCD_DRV_5_COM_8_SEG)
+void seg_lcd_disp_scan(void)
+{
+    static xd_u8 cnt = 0;
+    xd_u8 temp;
+    static bool flash;
+#if defined(USE_BAT_MANAGEMENT)
+    Bat_icon_chk();
+#endif
+    TRADEMARK_ICON |=TRADEMARK_MASK;
+
+    update_disp_icon();
+#if 0
+    	clear_lcd_disp_buf();
+	led_putchar('1',0);
+	led_putchar('2',1);
+	led_putchar('3',2);
+#endif
+
+    lcd_flash_timer++;
+    if (lcd_flash_timer == 220)
+    {
+        lcd_flash_timer = 0;
+        flash = !flash;
+    }
+    if (flash)
+    {
+        lcd_clr_icon(lcd_flash_icon_id);   
+    }
+    else
+    {
+        lcd_disp_icon(lcd_flash_icon_id); 
+    }
+	
+    temp = cnt>>1;
+    close_com(temp);
+    if(cnt & 0x01){
+	  seg07_port(lcd_buff[temp]);
+	  clr_com(temp);
+    }
+    else
+   {                            
+	  seg07_port(~lcd_buff[temp]); 	  
+	  set_com(temp);
+   }
+
+   cnt++;
+   if(cnt>9)cnt = 0;
+}
+#else
 void seg_lcd_disp_scan(void)
 {
     static xd_u8 cnt = 0;
@@ -503,6 +594,8 @@ void seg_lcd_disp_scan(void)
    cnt++;
    if(cnt>9)cnt = 0;
 }
+#endif
+
 #endif
 
 
