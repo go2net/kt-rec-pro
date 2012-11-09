@@ -7,6 +7,7 @@
    @note
 */
 /*----------------------------------------------------------------------------*/
+#include "Custom_config.h"
 
 #include "uart.h"
 #include "resource.h"
@@ -106,8 +107,11 @@ uart_init();
 
     get_hex_data(((u8 *)(&dat))[1] >> 4);
     get_hex_data(((u8 *)(&dat))[1] & 0xf);
-    putchar(c);
-	//putchar('\n');
+    putchar(' ');
+	    putchar(c);
+
+	putchar('\r');
+	putchar('\n');
 }
 
 /*
