@@ -216,9 +216,9 @@ void ap_handle_hotkey(u8 key)
 
 		given_device = read_info(MEM_ACTIVE_DEV);
 
-		if(given_device == DEVICE_SDMMC0_REC)
-			given_device = DEVICE_SDMMC0_REC;
-		else
+		if(given_device != DEVICE_SDMMC0_REC)
+		//	given_device = DEVICE_SDMMC0_REC;
+		//else
 			given_device = DEVICE_SDMMC0;
 
         given_file_method = PLAY_BREAK_POINT;
@@ -238,9 +238,9 @@ void ap_handle_hotkey(u8 key)
 	   
 		given_device = read_info(MEM_ACTIVE_DEV);
 
-		if(given_device == DEVICE_UDISK_REC)
-			given_device = DEVICE_UDISK_REC;
-		else
+		if(given_device != DEVICE_UDISK_REC)
+		//	given_device = DEVICE_UDISK_REC;
+		//else
 	    	given_device = DEVICE_UDISK;
 
         given_file_method = PLAY_BREAK_POINT;      

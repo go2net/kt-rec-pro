@@ -209,7 +209,7 @@
 #define DISP_PLAY_MODE_STR
 #endif
 
-#if defined(JK299_MODULE)
+#if defined(JK_KN_299_MODULE)
 
 #define USE_LCD_DRV_HT1621
 #define DISP_REC_ICON_WHEN_RECORDING

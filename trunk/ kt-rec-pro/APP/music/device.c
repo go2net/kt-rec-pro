@@ -146,16 +146,22 @@ u8 device_init(void)
             if ((device_active & (~VIRTUAL_DEVICE)) == DEVICE_SDMMC0)
             {
                 //break_point = disk_mus_point[0 + encode_cnt].id0;
-                break_point =sd_music_bp;
+			break_point = read_info(MEM_SD_PLAYPOINT_ID0);
+			break_point=break_point<<8;
+			break_point |= read_info(MEM_SD_PLAYPOINT_ID0+1);                
             }
             else if ((device_active & (~VIRTUAL_DEVICE) ) == DEVICE_UDISK)
             {
                // break_point = disk_mus_point[1 + encode_cnt].id0;
-                break_point =usb_music_bp;               
-            }
+			break_point = read_info(MEM_USB_PLAYPOINT_ID0);
+			break_point=break_point<<8;
+			break_point |= read_info(MEM_USB_PLAYPOINT_ID0+1);                
+		}
+			
             	break_point_filenum = fs_scan_disk(break_point);
     		encode_fristfile = fs_msg_rec.firstfilenum;	  //录音文件总数
             	encode_filenum = fs_msg_rec.fileTotalInDir;	  //录音文件夹的第一个文件号
+
             //if (break_point_filenum)
             {
                 //break_point_filenum = filenum_phy_logic(break_point_filenum);
@@ -301,7 +307,6 @@ u8 find_device(u8 select)
     {
         if (select & device_online)
         {
-
             device_active = select;
             if (!device_init())
                 return FIND_DEV_OK;
@@ -348,9 +353,12 @@ void write_file_info(u8 cmd)
     {
 
 #if 1
-	sd_music_bp = id;
-	write_info(MEM_SD_PLAYPOINT_ID0,(((u8 *)(&sd_music_bp))[0]));
-	write_info(MEM_SD_PLAYPOINT_ID0+1,(((u8 *)(&sd_music_bp))[1]));
+	write_info(MEM_SD_PLAYPOINT_ID0+1 , (u8)(id&(0x00FF)));
+	write_info(MEM_SD_PLAYPOINT_ID0, (u8)((id>>8)&(0x00FF)));
+
+	//sd_music_bp = id;
+	//write_info(MEM_SD_PLAYPOINT_ID0,(((u8 *)(&sd_music_bp))[0]));
+	//write_info(MEM_SD_PLAYPOINT_ID0+1,(((u8 *)(&sd_music_bp))[1]));
 #else
         disk_mus_point[0+encode_cnt].id0 = id;
         disk_mus_point[0+encode_cnt].id1 = 0;
@@ -364,9 +372,12 @@ void write_file_info(u8 cmd)
     else if ((device_active & (~VIRTUAL_DEVICE)) == DEVICE_UDISK)
     {
 #if 1
-	usb_music_bp = id;
-	write_info(MEM_USB_PLAYPOINT_ID0,(((u8 *)(&usb_music_bp))[0]));
-	write_info(MEM_USB_PLAYPOINT_ID0+1,(((u8 *)(&usb_music_bp))[1]));
+
+	write_info(MEM_USB_PLAYPOINT_ID0+1, (u8)(id&(0x00FF)));
+	write_info(MEM_USB_PLAYPOINT_ID0, (u8)((id>>8)&(0x00FF)));
+	//usb_music_bp = id;
+	//write_info(MEM_USB_PLAYPOINT_ID0,(((u8 *)(&usb_music_bp))[0]));
+	//write_info(MEM_USB_PLAYPOINT_ID0+1,(((u8 *)(&usb_music_bp))[1]));
 #else    
         disk_mus_point[1 + encode_cnt].id0 = id;
         disk_mus_point[1 + encode_cnt].id1 = 0;
