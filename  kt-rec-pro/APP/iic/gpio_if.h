@@ -75,57 +75,67 @@
 
 #if 1
 //4 ----- IIC ¡£H
-#if 1//defined(IIC_GPIO_USE_P00_P01)
-#define iic_data_out()    P0DIR &= ~(BIT(0));P0PU |= BIT(0) 	
-#define iic_data_in()     P0DIR |= (BIT(0));P0PU |= BIT(0)	
-#define iic_data_r()      P00
-#define iic_data_h()      P00 = 1
-#define iic_data_l()      P00 = 0
+#if defined(IIC_GPIO_USE_P00_P01)
+#define iic_data_out()    	P0DIR &= ~(BIT(0));P0PU |= BIT(0) 	
+#define iic_data_in()     	P0DIR |= (BIT(0));P0PU |= BIT(0)	
+#define iic_data_r()      	P00
+#define iic_data_h()      	P00 = 1
+#define iic_data_l()      	P00 = 0
 
-#define iic_clk_out()    P0DIR &= ~(BIT(1));P0PU |= (BIT(1))
-#define iic_clk_h()      P01 = 1
-#define iic_clk_l()      P01 = 0
-#elif defined(IIC_GPIO_USE_P00_P01)
-#define iic_data_out()    P0DIR &= ~(BIT(1));P0PU |= BIT(1) 	
-#define iic_data_in()     P0DIR |= (BIT(1));P0PU |= BIT(1)	
-#define iic_data_r()      P01
-#define iic_data_h()      P01 = 1
-#define iic_data_l()      P01 = 0
+#define iic_clk_out()    	P0DIR &= ~(BIT(1));P0PU |= (BIT(1))
+#define iic_clk_h()      	P01 = 1
+#define iic_clk_l()      		P01 = 0
+#elif defined(IIC_GPIO_USE_P00_P07)
+#define iic_data_out()    	P0DIR &= ~(BIT(0));P0PU |= BIT(0) 	
+#define iic_data_in()     	P0DIR |= (BIT(0));P0PU |= BIT(0)	
+#define iic_data_r()      	P00
+#define iic_data_h()      	P00 = 1
+#define iic_data_l()      	P00 = 0
 
-#define iic_clk_out()    P0DIR &= ~(BIT(0));P0PU |= (BIT(0))
-#define iic_clk_h()      P00 = 1
-#define iic_clk_l()      P00 = 0
+#define iic_clk_out()    	P0DIR &= ~(BIT(7));P0PU |= (BIT(7))
+#define iic_clk_h()      	P07 = 1
+#define iic_clk_l()      		P07= 0
+#elif defined(IIC_GPIO_USE_P01_P00)
+#define iic_data_out()    	P0DIR &= ~(BIT(1));P0PU |= BIT(1) 	
+#define iic_data_in()     	P0DIR |= (BIT(1));P0PU |= BIT(1)	
+#define iic_data_r()      	P01
+#define iic_data_h()      	P01 = 1
+#define iic_data_l()      	P01 = 0
+
+#define iic_clk_out()    	P0DIR &= ~(BIT(0));P0PU |= (BIT(0))
+#define iic_clk_h()      	P00 = 1
+#define iic_clk_l()      		P00 = 0
 
 #elif defined(IIC_GPIO_USE_P05_P17)
-#define iic_data_out()    P1DIR &= ~(BIT(7));P1PU |= (BIT(7))
-#define iic_data_in()      P1DIR |= (BIT(7));P1PU |= (BIT(7))
-#define iic_data_r()       P17
-#define iic_data_h()       P17 = 1
-#define iic_data_l()        P17 = 0
+#define iic_data_out()    	P1DIR &= ~(BIT(7));P1PU |= (BIT(7))
+#define iic_data_in()      	P1DIR |= (BIT(7));P1PU |= (BIT(7))
+#define iic_data_r()       	P17
+#define iic_data_h()      	P17 = 1
+#define iic_data_l()        	P17 = 0
 
-#define iic_clk_out()     P0DIR &= ~(BIT(5));P0PU |= (BIT(5))
-#define iic_clk_h()        P05 = 1
-#define iic_clk_l()         P05 = 0
+#define iic_clk_out()     	P0DIR &= ~(BIT(5));P0PU |= (BIT(5))
+#define iic_clk_h()        	P05 = 1
+#define iic_clk_l()         	P05 = 0
 #elif defined(IIC_GPIO_USE_P02_P03)
-#define iic_data_out()    P0DIR &= ~(1<<2);P0PU |= (1<<2)
-#define iic_data_in()     P0DIR |= (1<<2);P0PU |= (1<<2)
-#define iic_data_r()      P02
-#define iic_data_h()      P02 = 1
-#define iic_data_l()      P02 = 0
+#define iic_data_out()    	P0DIR &= ~(1<<2);P0PU |= (1<<2)
+#define iic_data_in()     	P0DIR |= (1<<2);P0PU |= (1<<2)
+#define iic_data_r()      	P02
+#define iic_data_h()      	P02 = 1
+#define iic_data_l()      	P02 = 0
 
-#define iic_clk_out()    P0DIR &= ~(1<<3);P0PU |= (1<<3)
-#define iic_clk_h()      P03 = 1
-#define iic_clk_l()      P03 = 0
+#define iic_clk_out()    	P0DIR &= ~(1<<3);P0PU |= (1<<3)
+#define iic_clk_h()      	P03 = 1
+#define iic_clk_l()      		P03 = 0
 #else
-#define iic_data_out()   P1DIR &= ~(1<<6);//P0PU |= (1<<2)
-#define iic_data_in()    P1DIR |= (1<<6);P1PU |= (1<<6)
-#define iic_data_r()     P16
-#define iic_data_h()     P16 = 1
-#define iic_data_l()     P16 = 0
-
-#define iic_clk_out()    P1DIR &= ~(1<<7);//P0PU |= (1<<3)
-#define iic_clk_h()      P17 = 1
-#define iic_clk_l()      P17 = 0
+#define iic_data_out()   	P1DIR &= ~(1<<6);//P0PU |= (1<<2)
+#define iic_data_in()    	P1DIR |= (1<<6);P1PU |= (1<<6)
+#define iic_data_r()     	P16
+#define iic_data_h()     	P16 = 1
+#define iic_data_l()     	P16 = 0
+	
+#define iic_clk_out()    	P1DIR &= ~(1<<7);//P0PU |= (1<<3)
+#define iic_clk_h()      	P17 = 1
+#define iic_clk_l()      		P17 = 0
 #endif
 #endif
 
@@ -161,13 +171,14 @@
 #endif
 //4 ----- KEY ¡£H
 
-#define ADC_KEY_IO6    0xfe
-#define ADC_KEY_IO7    0xff
-#define ADC_KEY_IO5    0xfd
-#define ADC_KEY_IO3    0xfb
-#define ADC_KEY_IO2    0xfa
-#define ADC_VDD_12     0xf8
-#define ADC_LDOIN      0xf9
+#define ADC_KEY_IO6    0xFE
+#define ADC_KEY_IO7    0xFF
+#define ADC_KEY_IO5    0xFD
+#define ADC_KEY_IO4    0xFC
+#define ADC_KEY_IO3    0xFB
+#define ADC_KEY_IO2    0xFA
+#define ADC_VDD_12     0xF8
+#define ADC_LDOIN        0xF9
 #define ADC_MAX_USED   (0x03+2)
 
 #if defined(USE_LCD_DRV_HT1621)
