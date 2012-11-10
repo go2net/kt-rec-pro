@@ -302,6 +302,24 @@ void align_lcd_disp_buff(u8 offset,u8 letter_data)
        lcd_buff[3] |= (((letter_data & DIG_C)>>1)|((letter_data & DIG_G)>>6))<<digit_idx;
        lcd_buff[4] |= (((letter_data & DIG_D)>>2)|((letter_data & DIG_E)>>4))<<digit_idx;   	 
 }
+#elif defined(NEW_FT_LCD_780_MODULE)
+u8 _code lcd_disbuf_offset[4] ={6,4,2,0};
+void align_lcd_disp_buff(u8 offset,u8 letter_data)
+{
+	u8 digit_idx=offset;
+	
+	digit_idx= lcd_disbuf_offset[offset];
+
+	lcd_buff[1] &= ~(0x0003<<digit_idx);
+	lcd_buff[2] &= ~(0x0003<<digit_idx);
+	lcd_buff[3] &= ~(0x0003<<digit_idx);
+	lcd_buff[4] &= ~(0x0001<<digit_idx);
+
+       lcd_buff[1] |= ((letter_data & DIG_A)|((letter_data & DIG_F)>>4))<<digit_idx;
+       lcd_buff[2] |= (((letter_data & DIG_B)>>1)|((letter_data & DIG_G)>>5))<<digit_idx;
+       lcd_buff[3] |= (((letter_data & DIG_C)>>2)|((letter_data & DIG_E)>>3))<<digit_idx;
+       lcd_buff[4] |= (((letter_data & DIG_D)>>3))<<digit_idx;   	 	 
+}
 #elif defined(NEW_FP_LCD_211_MODULE)
 u8 _code lcd_disbuf_offset[4] ={0,1,3,5};
 void align_lcd_disp_buff(u8 offset,u8 letter_data)

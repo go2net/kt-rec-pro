@@ -353,6 +353,16 @@ void key_table_sel(u8 sel)
 }
 #endif
 
+#ifdef USE_GPIO_MEASURE_VOLT_AT_P03
+
+#define GPIO_MEASURE_VOLT_INIT()	P0PD &= ~(BIT(3));P0DIR |= BIT(3); ADCCON = ADC_KEY_IO3; P0IE = ~(BIT(3))
+#define USE_GPIO_MEASURE_VOLT
+
+#elif defined(USE_GPIO_MEASURE_VOLT_AT_P04)
+
+#define GPIO_MEASURE_VOLT_INIT()	P0PD &= ~(BIT(4));P0DIR |= BIT(4); ADCCON = ADC_KEY_IO4; P0IE = ~(BIT(4))
+#define USE_GPIO_MEASURE_VOLT
+#endif
 /*----------------------------------------------------------------------------*/
 /**@brief  LDO IN µçÁ¿¼ì²â
    @param  ÎÞ
@@ -363,7 +373,7 @@ void key_table_sel(u8 sel)
 #ifndef USE_GPIO_MEASURE_VOLT
 u8 ldoin_voltage(void)
 {
-    return 	((((u16)adc_vddio*248+5)/10)/adc_vdd12);
+    return ((((u16)adc_vddio*248+5)/10)/adc_vdd12);
 }
 #endif
 
@@ -384,43 +394,34 @@ xd_u8 LDO_IN_Volt=0,batt_level=0;
 
 #if defined(CHARGER_DETECT_INDICATOR)
 
-#ifdef DC_CHARGER_DET_SHARE_IIC
-#define CHARGER_DET_PORT	P01
+#ifdef DC_CHARGER_DET_SHARE_IIC_P01
 
+#define CHARGER_DET_LEVEL		0
+#define CHARGER_DET_PORT		P01
+#define CHARGE_DET_INPUT()		CHARGER_DET_PORT =1;P0PD &=~(BIT(1));P0DIR |= (BIT(1))
+#define CHARGE_DET_OUTPUT()	P0DIR &=~ (BIT(1))		
+
+#elif defined(DC_CHARGER_DET_SHARE_IIC_P07)
+
+#define CHARGER_DET_LEVEL		0
+#define CHARGER_DET_PORT		P07
+#define CHARGE_DET_INPUT()		CHARGER_DET_PORT =1;P0PD &=~(BIT(7));P0DIR |= (BIT(7))
+#define CHARGE_DET_OUTPUT()	P0DIR &=~ (BIT(7))		
 #else
-#define CHARGER_DET_PORT	P03
+
+#define CHARGER_DET_LEVEL		1
+#define CHARGER_DET_PORT		P03
+#define CHARGE_DET_INPUT()		CHARGER_DET_PORT =0;P0PU  &= ~(BIT(3));P0PD|= (BIT(3));P0DIR |= (BIT(3))
+#define CHARGE_DET_OUTPUT()
 #endif
 
-//bool charger_in_flag=0;
 bool charger_detect(void)
 {
-    //static bool charger_det=0;
+     CHARGE_DET_INPUT();
 	
-#ifdef DC_CHARGER_DET_SHARE_IIC
+     if(CHARGER_DET_PORT==CHARGER_DET_LEVEL){
 
-    	CHARGER_DET_PORT =1;
-	P0PD &=~(BIT(1));
-	P0DIR |= (BIT(1));
-
-	if(!CHARGER_DET_PORT){
-
-#else
-
-    	CHARGER_DET_PORT =0;
-
-    	P0PU  &= ~(BIT(3));
-    	P0PD|= (BIT(3));
-    	P0DIR |= (BIT(3));
-
-     if(CHARGER_DET_PORT){
-
-#endif
-
-
-#ifdef DC_CHARGER_DET_SHARE_IIC
-		P0DIR &=~ (BIT(1));
-#endif
-
+		CHARGE_DET_OUTPUT();
 #if 1
 		if(LDO_IN_Volt>=BAT_CHARGE_FULL){
 				
@@ -433,10 +434,8 @@ bool charger_detect(void)
 #endif		
 		return 1;
      }
-//     charger_in_flag =0;
-#ifdef DC_CHARGER_DET_SHARE_IIC
-		P0DIR &=~ (BIT(1));
-#endif
+
+     CHARGE_DET_OUTPUT();
      return 0;
 }
 #endif
@@ -528,10 +527,7 @@ void adc_scan(void)
         adc_vdd12 = ADCDATH;//
         //adc_vdd12l = ADCDATL;
 #ifdef USE_GPIO_MEASURE_VOLT
-    	 P0PD &= ~(BIT(3));
-	 P0DIR |= BIT(3);
-        ADCCON = ADC_KEY_IO3; //
-        P0IE = ~(BIT(3));	 
+	GPIO_MEASURE_VOLT_INIT();		
 #else
         ADCCON = ADC_LDOIN;
 #endif
@@ -542,42 +538,54 @@ void adc_scan(void)
         //adc_vddiol = ADCDATL;//
 #if defined(ADKEY_PORT_P06)
         ADCCON = ADC_KEY_IO6; //
-        P0IE = ~(BIT(6));	 
+        P0IE = ~(BIT(6));	 		
 #elif defined(ADKEY_PORT_P02)
         ADCCON = ADC_KEY_IO2; //
         P0IE = ~(BIT(2));	 
 #else        
         ADCCON = ADC_KEY_IO7; //
-        P0IE = ~(BIT(7));	 
+        P0IE = ~(BIT(7));	 		
 #endif		
     }
     else if (cnt == 2)
     {
+    
         ((u8 *)(&adkey_value1))[0] = ADCDATH;
         ((u8 *)(&adkey_value1))[1] = ADCDATL;
 		
-        ADCCON = ADC_KEY_IO6; //
-        P0IE = ~(BIT(6));	 
+#if defined(RADIO_BAND_SWITCH_AD_PORT_P04)
+        ADCCON = ADC_KEY_IO4; 
+        P0IE = ~(BIT(4);	 		
+#else
+        ADCCON = ADC_KEY_IO6; 
+        P0IE = ~(BIT(6));	 		
+#endif
+
     }
     else if (cnt == 3)
     {
         fm_sw_volt = ADCDATH;
-        //((u8 *)(&adkey_value1))[1] = ADCDATL;		
-        ADCCON = ADC_KEY_IO5; //
-        P0IE = ~(BIT(5));	 
+#if defined(FUNCTION_SWITCH_AD_PORT_P05)
+        ADCCON = ADC_KEY_IO5; 
+        P0IE = ~(BIT(5));	 		
+#else        
+        ADCCON = ADC_KEY_IO5; 
+        P0IE = ~(BIT(5));	 		
+#endif		
     }	
     else if (cnt == 4)
     {
         sys_mod_volt = ADCDATH;
-        //((u8 *)(&adkey_value1))[1] = ADCDATL;		
         ADCCON = ADC_VDD_12;
     }		
     else
     {
         cnt = 0;
     }
+	
     cnt++;
-    if (cnt >= ADC_MAX_USED)
+	
+    if(cnt >= ADC_MAX_USED)
         cnt = 0;
 }
 
