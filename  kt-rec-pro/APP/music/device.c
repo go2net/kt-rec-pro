@@ -208,7 +208,7 @@ u8 device_init(void)
 u8 find_device(u8 select)
 {
     //u8 i;
-    //u8 cnt;
+    u8 last_active_dev=0;
 	
     device_check();
 
@@ -224,24 +224,36 @@ u8 find_device(u8 select)
 //        if ((i == 1) && (device_active & device_online))			//当前设备已经选中
 //            return ONLY_ONE_DEVICE;
 #if 1
-	   if(device_active==DEVICE_UDISK){
+	   last_active_dev =device_active;
+
+	   if((device_active & (~VIRTUAL_DEVICE))==DEVICE_UDISK){
 		device_active = DEVICE_SDMMC0;
 	   }
-	   else if(device_active==DEVICE_SDMMC0){
+	   else if((device_active & (~VIRTUAL_DEVICE))==DEVICE_SDMMC0){
 		device_active = DEVICE_UDISK;
 	   }
 	   else{
 		device_active=0;
 	   }
-
+	  
           if ((device_active & device_online) == 0){
-        	device_active = 0;
-        	return NO_EFFECTIVE_DEV;				//无有效可以使用的设备
+
+		if(last_active_dev!=0){
+	        	device_active = last_active_dev;
+		}
+		else{
+			device_active=0;
+        		return NO_EFFECTIVE_DEV;				//无有效可以使用的设备
+		}
           }	
 
-          if (!device_init())             //找到有效设备
+
+          if (!device_init()){             //找到有效设备
+
                 return FIND_DEV_OK;
-			
+          }
+
+           return NO_EFFECTIVE_DEV;				//无有效可以使用的设备		
 #else
         for (i = 0;i < MAX_DEVICE;i++)
         {

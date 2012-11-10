@@ -70,15 +70,15 @@ const u8 _code event_msg_table[] =
 {
     MSG_USB_DISK_IN,
     MSG_USB_DISK_OUT,
-   // MSG_USB_PC_IN,
-   // MSG_USB_PC_OUT,
+    MSG_USB_PC_IN,
+    MSG_USB_PC_OUT,
     MSG_SDMMC_IN,
     MSG_SDMMC_OUT,
-    //MSG_PC_MUTE,
-   // MSG_PC_UNMUTE,
-   // MSG_AUX_IN,
-    //MSG_AUX_OUT,
-    //MSG_ALM_ON,
+    MSG_PC_MUTE,
+    MSG_PC_UNMUTE,
+    MSG_AUX_IN,
+    MSG_AUX_OUT,
+    MSG_ALM_ON,
     MSG_ENCODE_END
 };
 /*----------------------------------------------------------------------------*/
@@ -815,17 +815,15 @@ void keyScan(void)
         key_counter++;
         if (KEY_BASE_CNT == key_counter)			//去抖
         {
-            key_style = 0;
-            //set_key_tone();
+            //key_style = 0;
+
         }
         else if (KEY_LONG_CNT == key_counter)				//长按
         {
-            //set_key_tone();
             key_style = 1;
         }
         else if ((KEY_LONG_CNT + KEY_HOLD_CNT) == key_counter)			//连按
         {
-            //set_key_tone();
             key_style = 2;
             key_counter = KEY_LONG_CNT;
         }
