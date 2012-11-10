@@ -555,7 +555,7 @@ void adc_scan(void)
 		
 #if defined(RADIO_BAND_SWITCH_AD_PORT_P04)
         ADCCON = ADC_KEY_IO4; 
-        P0IE = ~(BIT(4);	 		
+        P0IE = ~(BIT(4));	 		
 #else
         ADCCON = ADC_KEY_IO6; 
         P0IE = ~(BIT(6));	 		
