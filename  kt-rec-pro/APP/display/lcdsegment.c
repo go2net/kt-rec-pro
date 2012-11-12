@@ -115,8 +115,8 @@ void lcd_disp_icon(u8 id)
 #if defined(DISP_SW2_ICON)
 	case SW2_ICON:
 		F_SW_MHZ_DEV |=SW_MHZ_MASK;
-		F_P1_DEV |=FM_P1_MASK;
-		F_SW_DEV |=SW_DEV_MASK;
+		F_P2_DEV |=SW_P2_MASK;
+		F_SW_2_DEV |=SW_2_DEV_MASK;
 		break;
 #endif
 
@@ -346,7 +346,7 @@ void align_lcd_disp_buff(u8 offset,u8 letter_data)
 	
 	digit_idx= lcd_disbuf_offset[offset];
 	
-	if(digit_idx==0)
+	if(offset==0)
 	{
 		 lcd_buff[1]&=~0x0040;
 		 lcd_buff[0]&=~0x0040;
@@ -590,6 +590,7 @@ void seg_lcd_disp_scan(void)
 	led_putchar('1',0);
 	led_putchar('2',1);
 	led_putchar('3',2);
+	led_putchar('4',3);
 #endif
 
     lcd_flash_timer++;

@@ -18,6 +18,7 @@
 enum
 {
     MENU_NULL = 0,
+    MENU_VER= 0,
     MENU_PLAY,
     MENU_PAUSE,
     MENU_MAIN_VOL,

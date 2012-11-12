@@ -196,4 +196,12 @@
 //
 //#define SRC_HDMI_2_EN()		P3&=~(BIT(4))
 
+#if defined(ADKEY_PORT_P06)
+#define ADKEY_PORT		P06
+#elif defined(ADKEY_PORT_P02)
+#define ADKEY_PORT		P02
+#else
+#define ADKEY_PORT		P07
+#endif
+
 #endif

@@ -10,7 +10,7 @@
 
 #include "config.h"
 #include "resource.h"
-
+#if 0
 
 _code unsigned char CharsTable[96*16] _at_ 0x901b;
 
@@ -148,7 +148,7 @@ _code unsigned char gImage_wav[44] =   /* 0X22,0X01,0X16,0X00,0X10,0X00, */
     0X01,0X01,0X01,0X01,0X01,0XFE,0X00,0X3F,0X7F,0X41,0X6F,0X77,0X6F,0X41,0X7F,0X47,
     0X6B,0X6D,0X6B,0X47,0X7F,0X71,0X6F,0X5F,0X6F,0X71,0X7F,0X3F,
 };
-
+#endif
 #if 0//×ÖÌå
 
 _code unsigned char const CharsTableL[]=   //[96][16] = //8 * 16

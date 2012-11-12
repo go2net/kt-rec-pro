@@ -394,6 +394,7 @@ static bool load_music_point(void)
    @note void music_info_init(void)
 */
 /*----------------------------------------------------------------------------*/
+#if 0
 void restore_music_point(void)
 {
 #if 1
@@ -421,7 +422,7 @@ void restore_music_point(void)
 #endif
 
 }
-
+#endif
 /*----------------------------------------------------------------------------*/
 /**@brief   Í£Ö¹½âÂë
    @param   ÎÞ
@@ -431,10 +432,10 @@ void restore_music_point(void)
 /*----------------------------------------------------------------------------*/
 void stop_decode(void)
 {
-    	if(MAD_STOP == play_status)
-    	{
+    	//if(MAD_STOP == play_status)
+    	//{
         	//return;
-    	}
+    	//}
     	play_status = MAD_STOP;						   
 	if(MUSIC_MODE == work_mode)
 	{

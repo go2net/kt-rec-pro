@@ -189,7 +189,7 @@ enum {
 #elif defined(NEW_FT_LCD_780_MODULE)
 
 #define USB_DEV_MASK	0x0100
-#define F_USB_DEV  		(lcd_buff[4])	
+#define F_USB_DEV  		(lcd_buff[1])	
 
 #define AUX_DEV_MASK	0x0000
 #define F_AUX_DEV  		(lcd_buff[4])
@@ -256,12 +256,12 @@ enum {
 #define F_NUM_1BC		(lcd_buff[2])	
 
 #define REP_ALL_MASK	0x0004
-#define REP_ONE_MASK	0x0010
+#define REP_ONE_MASK	0x0014
 #define F_REP_ALL		(lcd_buff[3])
 #define F_REP_ONE 		(lcd_buff[3])
 
-#define PLAY_MASK		0x0080
-#define PAUSE_MASK		0x0040
+#define PLAY_MASK		0x0040
+#define PAUSE_MASK		0x0080
 #define F_PLAY_DEV		(lcd_buff[3])
 #define F_PAUSE_DEV		(lcd_buff[3])
 
