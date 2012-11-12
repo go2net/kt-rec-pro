@@ -541,12 +541,14 @@ void disp_music_pause(void)
     disp_device();
 #if defined(DISP_PAU_STR)
     printf_str("PAU",1);
+    lcd_clr_icon(COL_ICON);
 #elif defined(DISP_PAUSE_ICON)
-	lcd_disp_icon(PAUSE_ICON);
+    lcd_disp_icon(PAUSE_ICON);
+    lcd_disp_icon(COL_ICON);
 #else
     printf_str("PAUS",0);
-#endif	
     lcd_clr_icon(COL_ICON);
+#endif	
 
 }
 /*----------------------------------------------------------------------------*/
@@ -560,8 +562,6 @@ void disp_scan_disk(void)
 {
     printf_str(" Lod",0);
 }
-
-
 
 #if RTC_ENABLE
 
@@ -685,6 +685,7 @@ void disp_rec_pause(void)
 	disp_rec_time();
 	disp_device();
 }
+
 extern bool sys_mute_flag;
 void update_disp_icon()
 {
@@ -710,6 +711,13 @@ void update_disp_icon()
 	play_status_led_hdlr();
 #endif
 }
+#if (DISP_VER!=0)
+void disp_version(void)
+{
+    led_putchar('U',1);
+    printf_num(DISP_VER,2,2);
+}
+#endif
 /*----------------------------------------------------------------------------*/
 /**@brief 显示界面集中处理
    @param 	void
@@ -733,6 +741,11 @@ void disp_port(u8 menu)
 
         switch (menu)
         {
+#if (DISP_VER!=0)
+        case MENU_VER:
+            disp_version();
+            break;
+#endif			
         case MENU_PAUSE:
             disp_music_pause();
             break;

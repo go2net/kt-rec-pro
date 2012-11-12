@@ -296,6 +296,7 @@ u8 app_get_msg(void)
    @note   void adckey_init(void)
 */
 /*----------------------------------------------------------------------------*/
+#if 0
 static void adckey_init(void)
 {
 #if defined(ADKEY_PORT_P06)
@@ -315,6 +316,7 @@ static void adckey_init(void)
 //	ADCCON = 0xff;					//select P07 for ADC key
 
 }
+#endif
 /*----------------------------------------------------------------------------*/
 /**@brief  按键初始化
    @param  无
@@ -324,8 +326,22 @@ static void adckey_init(void)
 /*----------------------------------------------------------------------------*/
 void key_init(void)
 {
-    	adckey_init();
-     	//MAX_IR_KEY = get_my_IR_key_MAX();
+#if defined(ADKEY_PORT_P06)
+    P0PD &= ~(BIT(6));
+    P0IE = ~(BIT(6));
+    P0DIR |= BIT(6);
+#elif defined(ADKEY_PORT_P02)
+    P0PD &= ~(BIT(2));
+    P0IE = ~(BIT(2));
+    P0DIR |= BIT(2);
+#else
+    P0PD &= ~(BIT(7));
+    P0IE = ~(BIT(7));
+    P0DIR |= BIT(7);
+#endif	
+    ADCCON = ADC_VDD_12;
+//	ADCCON = 0xff;					//select P07 for ADC key
+
 }
 /*----------------------------------------------------------------------------*/
 /**@brief  按键功能表选择

@@ -261,7 +261,7 @@ static void sys_info_init(void)
     dac_init(MAX_MAIN_VOL);
     delay_10ms(50);										//µÈ´ý,¼ì²âUSB,SDÔÚÏß×´Ì¬
     //init_rec_name();
-    restore_music_point();
+    //restore_music_point();
 #if 0
 #if RTC_ENABLE
     if (work_mode != RTC_MODE)
@@ -388,6 +388,13 @@ void main(void)
     clear_all_event();
     flush_all_msg();
     set_brightness_all_on();
+#if (DISP_VER!=0)
+    if(ADKEY_PORT==0){
+
+	disp_port(MENU_VER);
+	delay_10ms(80);
+    }
+#endif	
     delay_10ms(10);
     ///*
     while (1)
