@@ -299,6 +299,13 @@ void disp_fm_main(void)
 	}
 	else{
 		freq =frequency/10;
+
+#if defined(DISP_SW2_ICON)
+		if(cur_sw_fm_band==3){
+	 		lcd_disp_icon(SW2_ICON);		
+		}
+		else
+#endif		
 	 	lcd_disp_icon(SW_ICON);		
 
 	}
@@ -441,9 +448,11 @@ void disp_music_format(void)
 void disp_music_main(void)
 {
     	disp_music_play_time();
-//	lcd_disp_icon(PLAY_ICON);
 	disp_device();
 
+#if defined(DISP_PLAY_ICON)	
+	lcd_disp_icon(PLAY_ICON);
+#endif
 //	lcd_disp_icon(MP3_ICON);
 
 }
@@ -514,10 +523,10 @@ void disp_play_mode(void)
    @note   无
 */
 /*----------------------------------------------------------------------------*/
-void disp_main_menu_refresh(void)
-{
-       disp_music_main();
-}
+//void disp_main_menu_refresh(void)
+//{
+//       disp_music_main();
+//}
 /*----------------------------------------------------------------------------*/
 /**@brief 显示音乐模式下的暂停界面
    @param 	void
@@ -532,10 +541,13 @@ void disp_music_pause(void)
     disp_device();
 #if defined(DISP_PAU_STR)
     printf_str("PAU",1);
+#elif defined(DISP_PAUSE_ICON)
+	lcd_disp_icon(PAUSE_ICON);
 #else
     printf_str("PAUS",0);
 #endif	
     lcd_clr_icon(COL_ICON);
+
 }
 /*----------------------------------------------------------------------------*/
 /**@brief 显示扫描设备界面
@@ -815,11 +827,11 @@ void disp_port(u8 menu)
     else												//局部显示替换和更新
     {
 
-      	switch (menu)
-        {
-        	case MENU_HALF_SEC_REFRESH:
-            disp_main_menu_refresh();
-            break;
+      		switch (menu)
+        	{
+        		case MENU_HALF_SEC_REFRESH:
+	       		disp_music_main();
+            			break;
 
         }
     }
