@@ -89,13 +89,13 @@ void lcd_disp_icon(u8 id)
 		
 #if defined(NEW_DH_LCD_MODULE_SM5858)
 		F_P1_DEV |=FM_P1_MASK;
-#elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(NEW_FP_LCD_211_MODULE)
+#elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(NEW_FP_LCD_211_MODULE)||defined(NEW_FT_LCD_780_MODULE)
 		F_P1_DEV |=FM_P1_MASK;
 		F_FM_DEV |=FM_DEV_MASK;
 #endif		
 		break;
 	case AM_ICON:
-#if defined(NEW_DH_107_105_104_LCD_MODULE)
+#if defined(NEW_DH_107_105_104_LCD_MODULE)||defined(NEW_FT_LCD_780_MODULE)
 		F_AM_DEV |=AM_DEV_MASK;
 #endif		
 		F_KHZ_DEV |=AM_KHZ_MASK;
@@ -106,11 +106,20 @@ void lcd_disp_icon(u8 id)
 		F_P1_DEV |=FM_P1_MASK;
 #elif defined(NEW_DH_LCD_MODULE_SM5858)
 		F_P2_DEV |=SW_P2_MASK;
-#elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(NEW_FP_LCD_211_MODULE)
+#elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(NEW_FP_LCD_211_MODULE)||defined(NEW_FT_LCD_780_MODULE)
 		F_P2_DEV |=SW_P2_MASK;
 		F_SW_DEV |=SW_DEV_MASK;
 #endif			
-		break;				
+		break;	
+
+#if defined(DISP_SW2_ICON)
+	case SW2_ICON:
+		F_SW_MHZ_DEV |=SW_MHZ_MASK;
+		F_P1_DEV |=FM_P1_MASK;
+		F_SW_DEV |=SW_DEV_MASK;
+		break;
+#endif
+
 	case REP_1_ICON:
 		F_REP_ONE|=REP_ONE_MASK;
 		break;
@@ -123,6 +132,14 @@ void lcd_disp_icon(u8 id)
 	case MUTE_ICON:
 		F_SPK_DEV |=SPK_MUTE_MASK;
 		break;
+#if defined(DISP_PLAY_ICON)	
+	case PLAY_ICON:
+		F_PLAY_DEV|=PLAY_MASK;
+		break;
+	case PAUSE_ICON:
+		F_PAUSE_DEV |=PAUSE_MASK;
+		break;		
+#endif		
 #if defined(USE_BAT_MANAGEMENT)		
 	case BAT_ICON:
 		F_BAT_ICON_BUF |=BATTERY_MASK;
@@ -192,13 +209,13 @@ void lcd_clr_icon(u8 id)
 
 #if defined(NEW_DH_LCD_MODULE_SM5858)
 		F_P1_DEV &=~FM_P1_MASK;
-#elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(NEW_FP_LCD_211_MODULE)
+#elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(NEW_FP_LCD_211_MODULE)||defined(NEW_FT_LCD_780_MODULE)
 		F_P1_DEV &=~FM_P1_MASK;
 		F_FM_DEV &=~FM_DEV_MASK;
 #endif		
 		break;
 	case AM_ICON:
-#if defined(NEW_DH_107_105_104_LCD_MODULE)
+#if defined(NEW_DH_107_105_104_LCD_MODULE)||defined(NEW_FT_LCD_780_MODULE)
 		F_AM_DEV &=~AM_DEV_MASK;
 #endif		
 		
@@ -210,11 +227,20 @@ void lcd_clr_icon(u8 id)
 		F_P1_DEV &=~FM_P1_MASK;
 #elif defined(NEW_DH_LCD_MODULE_SM5858)
 		F_P2_DEV &=~SW_P2_MASK;
-#elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(NEW_FP_LCD_211_MODULE)
+#elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(NEW_FP_LCD_211_MODULE)||defined(NEW_FT_LCD_780_MODULE)
 		F_P2_DEV &=~SW_P2_MASK;
 		F_SW_DEV &=~SW_DEV_MASK;
 #endif			
-		break;			
+		break;	
+
+#if defined(DISP_SW2_ICON)
+	case SW2_ICON:
+		F_SW_MHZ_DEV &=~SW_MHZ_MASK;
+		F_P2_DEV &=~SW_P2_MASK;
+		F_SW_2_DEV &=~SW_2_DEV_MASK;
+		break;	
+#endif			
+
 	case REP_1_ICON:
 		F_REP_ONE&=~REP_ONE_MASK;
 		break;
@@ -227,6 +253,16 @@ void lcd_clr_icon(u8 id)
 	case MUTE_ICON:
 		F_SPK_DEV &=~SPK_MUTE_MASK;
 		break;	
+		
+#if defined(DISP_PLAY_ICON)	
+	case PLAY_ICON:
+		F_PLAY_DEV&=~PLAY_MASK;
+		break;
+	case PAUSE_ICON:
+		F_PAUSE_DEV&=~PAUSE_MASK;
+		break;	
+#endif	
+
 #if defined(USE_BAT_MANAGEMENT)
 	case BAT_ICON:
 		F_BAT_ICON_BUF &=~BATTERY_MASK;
@@ -303,22 +339,41 @@ void align_lcd_disp_buff(u8 offset,u8 letter_data)
        lcd_buff[4] |= (((letter_data & DIG_D)>>2)|((letter_data & DIG_E)>>4))<<digit_idx;   	 
 }
 #elif defined(NEW_FT_LCD_780_MODULE)
-u8 _code lcd_disbuf_offset[4] ={6,4,2,0};
+u8 _code lcd_disbuf_offset[4] ={0,4,2,0};
 void align_lcd_disp_buff(u8 offset,u8 letter_data)
 {
 	u8 digit_idx=offset;
 	
 	digit_idx= lcd_disbuf_offset[offset];
+	
+	if(digit_idx==0)
+	{
+		 lcd_buff[1]&=~0x0040;
+		 lcd_buff[0]&=~0x0040;
+	        lcd_buff[4]&=~0x0040;
+			
+		 if((letter_data == LCD_NUMBER[1])){
+			lcd_buff[1]|=0x0040;
+			lcd_buff[4]|=0x0040;
+		    }
+		    else if((letter_data == LCD_NUMBER[2])){
+			lcd_buff[1]|=0x0040;
+			lcd_buff[0]|=0x0040;
+		   }	
+	   	return;
+	}
+	else{
+		
+		lcd_buff[2] &= ~(0x0001<<digit_idx);
+		lcd_buff[1] &= ~(0x0003<<digit_idx);
+		lcd_buff[0] &= ~(0x0003<<digit_idx);
+		lcd_buff[4] &= ~(0x0003<<digit_idx);
 
-	lcd_buff[1] &= ~(0x0003<<digit_idx);
-	lcd_buff[2] &= ~(0x0003<<digit_idx);
-	lcd_buff[3] &= ~(0x0003<<digit_idx);
-	lcd_buff[4] &= ~(0x0001<<digit_idx);
-
-       lcd_buff[1] |= ((letter_data & DIG_A)|((letter_data & DIG_F)>>4))<<digit_idx;
-       lcd_buff[2] |= (((letter_data & DIG_B)>>1)|((letter_data & DIG_G)>>5))<<digit_idx;
-       lcd_buff[3] |= (((letter_data & DIG_C)>>2)|((letter_data & DIG_E)>>3))<<digit_idx;
-       lcd_buff[4] |= (((letter_data & DIG_D)>>3))<<digit_idx;   	 	 
+	       lcd_buff[2] |= ((letter_data & DIG_A))<<digit_idx;
+	       lcd_buff[1] |= (((letter_data & DIG_B)>>1)|((letter_data & DIG_F)>>4))<<digit_idx;
+	       lcd_buff[0] |= (((letter_data & DIG_C)>>2)|((letter_data & DIG_G)>>5))<<digit_idx;
+	       lcd_buff[4] |= (((letter_data & DIG_D)>>3)|((letter_data & DIG_E)>>3))<<digit_idx; 
+	}	   
 }
 #elif defined(NEW_FP_LCD_211_MODULE)
 u8 _code lcd_disbuf_offset[4] ={0,1,3,5};
