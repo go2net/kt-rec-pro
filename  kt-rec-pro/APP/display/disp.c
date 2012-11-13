@@ -667,12 +667,13 @@ void disp_rec_working(void)
    @note  	void disp_rec(void)
 */
 /*----------------------------------------------------------------------------*/
+#if 0
 void disp_rec(void)
 {
     printf_str("REC",1);
     disp_device();
 }
-
+#endif
 /*----------------------------------------------------------------------------*/
 /**@brief 	¬º“Ù‘›Õ£œ‘ æ
    @param 	void
@@ -680,11 +681,14 @@ void disp_rec(void)
    @note  	void disp_rec_err(void)
 */
 /*----------------------------------------------------------------------------*/
+#if 0
+
 void disp_rec_pause(void)
 {
 	disp_rec_time();
 	disp_device();
 }
+#endif
 
 extern bool sys_mute_flag;
 void update_disp_icon()
