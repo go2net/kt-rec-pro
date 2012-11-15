@@ -741,13 +741,6 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	KT_Bus_Write(0x23, regx & 0xDFFF);							//Enable fast gain function
 #endif
 
-/*	if((Frequency == 1368) || (Frequency == 1404))
-	{
-		KT_Bus_Write(0x1F, 0x029D);								//DIVIDERN<9:0>=669
-		KT_Bus_Write(0x17, 0x8000 | (Frequency - 2));	   			//set tune bit to 1
-	}
-*/
-
 	if((Frequency == 1368) || (Frequency == 1370) || (Frequency == 1404))
 	{
 		KT_Bus_Write(0x1E, 0x0001);								//DIVIDERP<9:0>=1

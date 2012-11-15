@@ -378,6 +378,12 @@ void key_table_sel(u8 sel)
 
 #define GPIO_MEASURE_VOLT_INIT()	P0PD &= ~(BIT(4));P0DIR |= BIT(4); ADCCON = ADC_KEY_IO4; P0IE = ~(BIT(4))
 #define USE_GPIO_MEASURE_VOLT
+
+#elif defined(USE_GPIO_MEASURE_VOLT_AT_P06)
+
+#define GPIO_MEASURE_VOLT_INIT()	P0PD &= ~(BIT(6));P0DIR |= BIT(6); ADCCON = ADC_KEY_IO6; P0IE = ~(BIT(6))
+#define USE_GPIO_MEASURE_VOLT
+
 #endif
 /*----------------------------------------------------------------------------*/
 /**@brief  LDO IN µÁ¡øºÏ≤‚
@@ -571,7 +577,10 @@ void adc_scan(void)
 		
 #if defined(RADIO_BAND_SWITCH_AD_PORT_P04)
         ADCCON = ADC_KEY_IO4; 
-        P0IE = ~(BIT(4));	 		
+        P0IE = ~(BIT(4));	 
+#elif defined(RADIO_BAND_SWITCH_AD_PORT_P05)
+        ADCCON = ADC_KEY_IO5; 
+        P0IE = ~(BIT(5));	 		
 #else
         ADCCON = ADC_KEY_IO6; 
         P0IE = ~(BIT(6));	 		
@@ -583,7 +592,10 @@ void adc_scan(void)
         fm_sw_volt = ADCDATH;
 #if defined(FUNCTION_SWITCH_AD_PORT_P05)
         ADCCON = ADC_KEY_IO5; 
-        P0IE = ~(BIT(5));	 		
+        P0IE = ~(BIT(5));	 	
+#elif defined(FUNCTION_SWITCH_AD_PORT_P04)
+        ADCCON = ADC_KEY_IO4; 
+        P0IE = ~(BIT(4));	 			
 #else        
         ADCCON = ADC_KEY_IO5; 
         P0IE = ~(BIT(5));	 		
