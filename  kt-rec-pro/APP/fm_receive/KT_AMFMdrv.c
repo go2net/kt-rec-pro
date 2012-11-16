@@ -608,12 +608,14 @@ void KT_FMTune(xd_u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and T
 	}
 	else if((Frequency == 9600) || (Frequency == 9610))
 	{
+		KT_Bus_Write(0x0A, regx & 0xFFBF);  		
 	  	KT_Bus_Write(0x1F, 0x029D);     //DIVIDERN<9:0>=669
 	  	KT_Bus_Write(0x16, (regx & 0xD0FF) | 0x2000);   //CTCLK=1;reference clock=32.768K;
 	  	KT_Bus_Write(0x03, 0x8000 | (Frequency - 15) / 5 );     //set tune bit to 1
 	}
 	else if((Frequency == 10790) || (Frequency == 10800))
 	{
+		KT_Bus_Write(0x0A, regx & 0xFFBF);  	
 	 	KT_Bus_Write(0x1F, 0x02A0);     //DIVIDERN<9:0>=672
 	 	KT_Bus_Write(0x16, (regx & 0xD0FF) | 0x2000);   //CTCLK=1;reference clock=32.768K;
 	  	KT_Bus_Write(0x03, 0x8000 | (Frequency - 65) / 5 );     //set tune bit to 1
