@@ -27,11 +27,11 @@
 //#define JK_FP_211_MODULE
 //#define JK_HT_998_MODULE
 //#define JK_SZ_S900_MODULE
-#define JK_JF_933_MODULE
+//#define JK_JF_933_MODULE
 //#define JK_JF_689_MODULE
 //#define JK_JF_168_MODULE
 //#define JK_DH_105_104_MODULE
-//#define JK289_MODULE
+//#define JK_DH_289_MODULE
 //#define K129_MODULE
 //#define JK299_MODULE
 
@@ -399,7 +399,7 @@
 #define DISP_PLAY_MODE_STR
 #endif
 
-#if defined(JK289_MODULE)
+#if defined(JK_DH_289_MODULE)
 
 #define NEW_DH_LCD_MODULE_SM5858
 

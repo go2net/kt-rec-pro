@@ -103,7 +103,7 @@
 #define FM_ADKEY_L_UP_08		NO_MSG
 #define FM_ADKEY_L_UP_09		NO_MSG
 
-#elif defined(JK_JF_689_MODULE)
+#elif defined(JK_JF_689_MODULE)||defined(JK_JF_933_MODULE)
 #define MUSIC_ADKEY_SHORT_00		NO_MSG
 #define MUSIC_ADKEY_SHORT_01		NO_MSG
 #define MUSIC_ADKEY_SHORT_02		NO_MSG
