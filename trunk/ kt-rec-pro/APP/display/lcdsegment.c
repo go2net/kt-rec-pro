@@ -87,7 +87,7 @@ void lcd_disp_icon(u8 id)
 		
 		F_MHZ_DEV |=FM_MHZ_MASK;
 		
-#if defined(NEW_DH_LCD_MODULE_SM5858)
+#if defined(NEW_DH_289_LCD_MODULE_SM5858)
 		F_P1_DEV |=FM_P1_MASK;
 #elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(JF_168_LCD_MODULE_NEW_BOARD)||defined(NEW_FP_LCD_211_MODULE)||defined(NEW_FT_LCD_780_MODULE)
 		F_P1_DEV |=FM_P1_MASK;
@@ -102,9 +102,9 @@ void lcd_disp_icon(u8 id)
 		break;
 	case SW_ICON:
 		F_SW_MHZ_DEV |=SW_MHZ_MASK;
-#if defined(NEW_DH_LCD_MODULE_SM5901)
+#if defined(NEW_DH_228_LCD_MODULE_SM5901)
 		F_P1_DEV |=FM_P1_MASK;
-#elif defined(NEW_DH_LCD_MODULE_SM5858)
+#elif defined(NEW_DH_289_LCD_MODULE_SM5858)
 		F_P2_DEV |=SW_P2_MASK;
 #elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(JF_168_LCD_MODULE_NEW_BOARD)||defined(NEW_FP_LCD_211_MODULE)||defined(NEW_FT_LCD_780_MODULE)
 		F_P2_DEV |=SW_P2_MASK;
@@ -207,7 +207,7 @@ void lcd_clr_icon(u8 id)
 
 		F_MHZ_DEV &=~FM_MHZ_MASK;
 
-#if defined(NEW_DH_LCD_MODULE_SM5858)
+#if defined(NEW_DH_289_LCD_MODULE_SM5858)
 		F_P1_DEV &=~FM_P1_MASK;
 #elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(JF_168_LCD_MODULE_NEW_BOARD)||defined(NEW_FP_LCD_211_MODULE)||defined(NEW_FT_LCD_780_MODULE)
 		F_P1_DEV &=~FM_P1_MASK;
@@ -223,9 +223,9 @@ void lcd_clr_icon(u8 id)
 		break;
 	case SW_ICON:
 		F_SW_MHZ_DEV &=~SW_MHZ_MASK;
-#if defined(NEW_DH_LCD_MODULE_SM5901)
+#if defined(NEW_DH_228_LCD_MODULE_SM5901)
 		F_P1_DEV &=~FM_P1_MASK;
-#elif defined(NEW_DH_LCD_MODULE_SM5858)
+#elif defined(NEW_DH_289_LCD_MODULE_SM5858)
 		F_P2_DEV &=~SW_P2_MASK;
 #elif defined(NEW_DH_107_105_104_LCD_MODULE)||defined(JF_168_LCD_MODULE_NEW_BOARD)||defined(NEW_FP_LCD_211_MODULE)||defined(NEW_FT_LCD_780_MODULE)
 		F_P2_DEV &=~SW_P2_MASK;
@@ -466,7 +466,7 @@ void align_lcd_disp_buff(u8 offset,u8 letter_data)
        lcd_buff[3] |= (((letter_data & DIG_C)>>2)|((letter_data & DIG_E)>>3))<<digit_idx;
        lcd_buff[4] |= (((letter_data & DIG_D)>>3))<<digit_idx;   	 	 
 }
-#elif defined(NEW_DH_LCD_MODULE_SM5858)
+#elif defined(NEW_DH_289_LCD_MODULE_SM5858)
 u8 _code lcd_disbuf_offset[4] ={0,5,3,1};
 void align_lcd_disp_buff(u8 offset,u8 letter_data)
 {
@@ -503,7 +503,7 @@ void align_lcd_disp_buff(u8 offset,u8 letter_data)
 	       lcd_buff[1] |= (((letter_data & DIG_D)>>3)|((letter_data & DIG_E)>>3))<<digit_idx; 
 	}	   
 }
-#elif defined(NEW_DH_LCD_MODULE_SM5901)
+#elif defined(NEW_DH_228_LCD_MODULE_SM5901)
 u8 _code lcd_disbuf_offset[4] ={0,1,3,5};
 void align_lcd_disp_buff(u8 offset,u8 letter_data)
 {

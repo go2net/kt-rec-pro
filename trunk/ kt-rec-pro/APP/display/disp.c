@@ -493,7 +493,7 @@ void disp_play_mode(void)
     {
 	if(play_mode==REPEAT_ALL){
 #ifdef DISP_PLAY_MODE_STR
-#if defined(NEW_DH_LCD_MODULE_SM5901)
+#if defined(NEW_DH_228_LCD_MODULE_SM5901)
 		    printf_str("ALL",1);
 #else
 		    printf_str("ALL",1);
@@ -504,7 +504,7 @@ void disp_play_mode(void)
 	else if(play_mode==REPEAT_ONE){
 
 #ifdef DISP_PLAY_MODE_STR
-#if defined(NEW_DH_LCD_MODULE_SM5901)
+#if defined(NEW_DH_228_LCD_MODULE_SM5901)
 		    printf_str("ONE",1);
 #else
 		    printf_str("ONE",1);

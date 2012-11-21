@@ -519,7 +519,7 @@ enum {
 #define S4_ICON_BUF		(lcd_buff[0])
 
 #define FIGURE_NUM	4
-#elif defined(NEW_DH_LCD_MODULE_SM5901)
+#elif defined(NEW_DH_228_LCD_MODULE_SM5901)
 
 #define USB_DEV_MASK	0x0001
 #define F_USB_DEV  		(lcd_buff[1])	
