@@ -25,7 +25,7 @@
 
 //#define JK_FT_780_MODULE
 //#define JK_FP_211_MODULE
-#define JK_HT_998_MODULE
+//#define JK_HT_998_MODULE
 //#define JK_SZ_S900_MODULE
 //#define JK_JF_933_MODULE
 //#define JK_JF_689_MODULE
@@ -166,7 +166,7 @@
 
 #define DISP_PAU_STR
 
-#define SW_FULL_BAND_RANGE_END_AT_23MHZ
+#define SW_TWO_BAND_RANGE
 
 #define REC_PLAY_KEY_BREAK_POINT
 #define FM_FREQ_NUM_KEY_INPUT
