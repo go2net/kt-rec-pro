@@ -490,7 +490,7 @@ static u8 start_decode(void)
     }
 #endif
     dsp_set_dcc_flt(14);
-    dsp_set_ch_mode(1);  //1:双通道相加
+    dsp_set_ch_mode(0);  //1:双通道相加
     dsp_set_rinv_mode(0);
     mad_control(MAD_INIT, 0);
     mad_control(MAD_PLAY, 0);
