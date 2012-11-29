@@ -34,7 +34,7 @@
 //#define KT0830EG     0
 //#define QN8035       0
 #if 1//def __C51__
-void fm_radio(void);
+void radio_hdlr(void);
 //void fm_rev( void );
 //void dealmsgforfm(u8 msg);
 //void enter_fm_rev(void);

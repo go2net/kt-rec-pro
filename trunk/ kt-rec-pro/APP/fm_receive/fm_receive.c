@@ -262,7 +262,7 @@ void radio_band_hdlr()
    @note   void fm_rev( void )
 */
 /*----------------------------------------------------------------------------*/
-void fm_rev( void )
+void radio_rev_hdlr( void )
 {
     u8 key;
 
@@ -366,7 +366,7 @@ void fm_rev( void )
    @note  void fm_radio(void)
 */
 /*----------------------------------------------------------------------------*/
-void fm_radio(void)
+void radio_hdlr(void)
 {
 
 #ifdef UART_ENABLE
@@ -398,7 +398,7 @@ void fm_radio(void)
 	//dac_out_select(DAC_AMUX1, 0);
     encode_channel = REC_FM;
     encode_vol = 3;
-    fm_rev();
+    radio_rev_hdlr();
     main_vol_set(0, CHANGE_VOL_NO_MEM);
 
     KT_AMFMStandby();
