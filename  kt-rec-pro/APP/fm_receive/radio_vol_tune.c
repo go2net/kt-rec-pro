@@ -60,46 +60,6 @@ extern xd_u8 KT_AMFMPreInit(void);
 extern void KT_AMFMMute(void);
 
 
-#if defined(SW_TWO_BAND_RANGE)
-FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
-{
-	875,		1080,
-	520,		1630,
-	3200,	17900,
-	17905,	25000,
-};
-#elif defined(SW_FULL_BAND_RANGE)
-FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
-{
-	875,		1080,
-	520,		1630,
-	3200,	25000,
-};
-#elif defined(SW_FULL_BAND_RANGE_END_AT_23MHZ)
-FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
-{
-	875,		1080,
-	520,		1630,
-	3200,	23000,
-};
-#else
-FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
-{
-	875,		1080,
-	520,		1630,
-	3200,	5200,
-	5210,	7300,
-	7310,	9400,
-	9410,	11500,
-	11510,	13800,
-	13810,	15800,
-	15810,	17900,
-	17910,	22000,
-	22010,	23000,
-	//23010,	25000,
-};
-#endif
-
 void radio_band_hdlr()
 {
 	REG_MAX_FREQ = radio_freq_tab[cur_sw_fm_band].MAX_FREQ;
