@@ -412,7 +412,7 @@ void main(void)
 
 #if FM_MODULE                     
         case FM_RADIO_MODE:
-            fm_radio();
+            radio_hdlr();
             break;
 #endif
         //case AUX_MODE:
