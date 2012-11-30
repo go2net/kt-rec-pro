@@ -187,6 +187,22 @@
 #define LCD_BACKLIGHT_OFF()		P04 =1;
 #endif
 
+
+#ifdef LCD_BACK_LIGHT_USE_P06
+#define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(6));P0PU|= (BIT(6))
+#define LCD_BACKLIGHT_ON()		P06 =0;
+#define LCD_BACKLIGHT_OFF()		P06=1;
+#elif defined(LCD_BACK_LIGHT_USE_P03)
+#define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(3));P0PU|= (BIT(3))
+#define LCD_BACKLIGHT_ON()		P03 =0;
+#define LCD_BACKLIGHT_OFF()		P03=1;
+#else
+#define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(4));P0PU|= (BIT(4))
+#define LCD_BACKLIGHT_ON()		P04 =0;
+#define LCD_BACKLIGHT_OFF()		P04 =1;
+#endif
+
+
 #define PLAY_LED_GPIO_INIT()		P0DIR &= ~(BIT(4));P0PU |=BIT(4);
 #define PLAY_LED_ON()				P04=1
 #define PLAY_LED_OFF()				P04=0
