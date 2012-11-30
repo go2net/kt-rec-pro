@@ -31,11 +31,8 @@ extern u16 input_number;
 extern u8 work_mode;
 extern u8 _idata last_work_mode;
 
-extern u8 fm_addr;
-//extern u8 _code one_table[];
 u16 frequency;                          ///<当前频点
-u8 fre_channel; 			///<总台数
-//u8 total_channel;///<当前频道
+
 extern  bool vol_change_en;
 extern u8 eq_mode;
 extern u8 _xdata decode_buffer[];
@@ -47,7 +44,7 @@ extern xd_u8 fast_step_cnt;
 bool freq_step_flag=0;
 
 xd_u8 sw_fm_mod=0,cur_sw_fm_band=0;
-xd_u16 REG_MAX_FREQ=0,REG_MIN_FREQ=0;
+xd_u16 REG_MAX_FREQ=0,REG_MIN_FREQ=0,REG_STEP;
 
 xd_u8 am_adj_timer=0;
 	

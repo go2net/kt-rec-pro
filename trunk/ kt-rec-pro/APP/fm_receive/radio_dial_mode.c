@@ -8,12 +8,10 @@
 */
 /*----------------------------------------------------------------------------*/
 #include "Custom_config.h"
-
 #include "config.h"
 
-#include "fm_rev.h"
-
 #if (FM_MODULE == 2)
+#include "fm_rev.h"
 #include "disp.h"
 #include "key.h"
 #include "msgfor_hot.h"
@@ -34,37 +32,79 @@ extern u8 _idata last_work_mode;
 extern u8 fm_addr;
 //extern u8 _code one_table[];
 u16 frequency;                          ///<当前频点
-u8 fre_channel; 			///<总台数
 //u8 total_channel;///<当前频道
 extern  bool vol_change_en;
-extern u8 eq_mode;
-extern u8 _xdata decode_buffer[];
-#ifdef FAST_STICK_TUNE_FUNC
-extern xd_u8 fast_step_cnt;
-#endif
 
-
-bool freq_step_flag=0;
+xd_u16 freq_regx=0;
 
 xd_u8 sw_fm_mod=0,cur_sw_fm_band=0;
-xd_u16 REG_MAX_FREQ=0,REG_MIN_FREQ=0;
-
-xd_u8 am_adj_timer=0;
+xd_u16 REG_MAX_FREQ=0,REG_MIN_FREQ=0,REG_STEP=0;
 	
 extern void KT_AMFMSetMode(xd_u8 AMFM_MODE);
-extern void KT_FMTune(xd_u16 Frequency);
-extern void KT_AMTune(xd_u16 Frequency);
 extern xd_u8 KT_AMFMWakeUp(void); //0->Fail 1->Success
 extern void KT_AMFMStandby(void);					//0->Fail 1->Success
 extern xd_u8 KT_AMFMPreInit(void);			  
-extern void KT_AMFMMute(void);
 
 
+#if defined(SW_TWO_BAND_RANGE)
+FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
+{
+	875,		1080,	100,
+	520,		1630,	9,
+	3200,	17900,	5,
+	17905,	25000,	5,
+};
+#elif defined(SW_FULL_BAND_RANGE)
+FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
+{
+	875,		1080,	100,
+	520,		1630,	9,
+	3200,	25000,	5,
+};
+#elif defined(SW_FULL_BAND_RANGE_END_AT_23MHZ)
+FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
+{
+	875,		1080,	100,
+	520,		1630,	9,
+	3200,	23000,	5,
+};
+#else
+FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
+{
+	875,		1080,	100,
+	520,		1630,	9,
+	3200,	5200,	5,
+	5210,	7300,	5,
+	7310,	9400,	5,
+	9410,	11500,	5,
+	11510,	13800,	5,
+	13810,	15800,	5,
+	15810,	17900,	5,
+	17910,	22000,	5,
+	22010,	23000,	5,
+	//23010,	25000,
+};
+#endif
+
+u16 get_radio_freq()
+{
+	if(cur_sw_fm_band==0){
+		return KT_FMGetFreq();
+	}
+	else{
+		return KT_AMGetFreq();
+	}
+}
 void radio_band_hdlr()
 {
 	REG_MAX_FREQ = radio_freq_tab[cur_sw_fm_band].MAX_FREQ;
 	REG_MIN_FREQ = radio_freq_tab[cur_sw_fm_band].MIN_FREQ;
 
+	REG_STEP=radio_freq_tab[cur_sw_fm_band].FREQ_STEP;
+	
+	KT_AMFMSetMode(cur_sw_fm_band);	
+
+	frequency=get_radio_freq();
 }
 void radio_rev_hdlr( void )
 {
@@ -85,12 +125,18 @@ void radio_rev_hdlr( void )
         
         case MSG_CHANGE_WORK_MODE:
             return;
-        case MSG_MUSIC_NEW_DEVICE_IN:							//有新设备接入
-            //work_mode = MUSIC_MODE;
-            break;
-            //return;
-        case MSG_200MS:
 
+        case MSG_MUSIC_NEW_DEVICE_IN:							//有新设备接入
+            break;
+
+        case MSG_200MS:
+			
+	     freq_regx=get_radio_freq();
+	     if(freq_regx!=frequency){
+
+			frequency=freq_regx;
+    			disp_port(MENU_FM_MAIN);			
+	     }
 	     break;		 
         case MSG_HALF_SECOND:
 #if defined(USE_BAT_MANAGEMENT)			
@@ -143,10 +189,8 @@ void radio_hdlr(void)
 
     if (KT_AMFMWakeUp()==0)
     {
-#if 0
-    	   work_mode = MUSIC_MODE;
-	   return;
-#endif
+		disp_port(MENU_REC_ERR);
+		delay_10ms(100);
     }
 
     input_number_en = 1;

@@ -355,6 +355,28 @@ xd_u8 KT_AMFMInit(void)                            //0->Fail 1->Success
 
 	regx = KT_Bus_Read(0x0E); 
 	KT_Bus_Write(0x0E, regx | 0x7700);	
+
+#ifdef RADIO_VAR_VOL_TUNE
+	regx = KT_Bus_Read(0x1D);
+	KT_Bus_Write(0x1D, (regx & 0xFFF0) | 0x000A);			//gpio2=gpio1=dial
+
+	regx = KT_Bus_Read(0x16);
+	KT_Bus_Write(0x16, regx | 0x4000);						//userband enable
+
+#ifdef FM50KSTEP
+	regx = KT_Bus_Read(0x02);
+	KT_Bus_Write(0x02,regx & 0xFFF3 | 0x0008);				//FM_SPACE=50K
+#endif
+
+#ifdef FM100KSTEP
+	regx = KT_Bus_Read(0x02);
+	KT_Bus_Write(0x02,regx & 0xFFF3 | 0x0004);				//FM_SPACE=100K
+#endif
+
+//	regx = KT_Bus_Read(0x33);
+//	KT_Bus_Write(0x33,regx & 0x3FFF | 0x4000);				//AM_SPACE=9K
+
+#endif
 		
 	regx = KT_Bus_Read(0x0F); 
 	KT_Bus_Write(0x0F, regx & 0xFFE0);		//Write volume to 0
@@ -409,6 +431,13 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 	KT_AMFMInit();
 	if (AMFM_MODE == FM_MODE)
 	{
+
+#ifdef RADIO_VAR_VOL_TUNE
+		KT_Bus_Write(0x2F, (REG_MIN_FREQ/5));														//user_start_chan
+		KT_Bus_Write(0x30, 0x0002);																					//user_start_mum
+		KT_Bus_Write(0x31, (REG_MAX_FREQ -REG_MIN_FREQ) / REG_STEP);	//user_chan_num
+#endif
+	
 		regx = KT_Bus_Read(0x16);
 		KT_Bus_Write(0x16,regx&0x7FFF);				//AM_FM=0
 	}
@@ -416,6 +445,15 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 	{
 		//Current_Band.Band =MW_MODE;
 		//NSS = 0;
+#ifdef RADIO_VAR_VOL_TUNE
+		regx = KT_Bus_Read(0x33);
+		KT_Bus_Write(0x33,regx & 0x3FFF | 0x4000);				//AM_SPACE=9K
+
+		KT_Bus_Write(0x2F, REG_MIN_FREQ);																//user_start_chan
+		KT_Bus_Write(0x30, 0x0002);																					//user_start_mum
+		KT_Bus_Write(0x31, (REG_MAX_FREQ - REG_MIN_FREQ) / REG_STEP);				//user_chan_num
+#endif
+		
 		regx = KT_Bus_Read(0x16);
 		KT_Bus_Write(0x16,regx|0x8000);				//AM_FM=1
 
@@ -435,6 +473,14 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 	else
 	{
 		//Current_Band.Band =SW_MODE;
+#ifdef RADIO_VAR_VOL_TUNE
+		regx = KT_Bus_Read(0x33);
+		KT_Bus_Write(0x33,regx & 0x3FFF);				//AM_SPACE=1K
+
+		KT_Bus_Write(0x2F, REG_MIN_FREQ);																//user_start_chan
+		KT_Bus_Write(0x30, 0x0002);																					//user_start_mum
+		KT_Bus_Write(0x31, (REG_MAX_FREQ - REG_MIN_FREQ) / REG_STEP);				//user_chan_num
+#endif
 
 		regx = KT_Bus_Read(0x16);
 		KT_Bus_Write(0x16,regx|0x8000);				//AM_FM=1
@@ -582,6 +628,8 @@ xd_u8 KT_AMFMUnMute(void)
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
+#ifndef RADIO_VAR_VOL_TUNE
+
 void KT_FMTune(xd_u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and Tune to Frequency
 {
 	xd_u16 regx;
@@ -798,7 +846,9 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 
 	//return(1);
 }
-#if 0
+#endif
+
+#ifdef RADIO_VAR_VOL_TUNE
 /*****************************************************************************/
 /*函 数 名：KT_FMGetFreq												 	 */
 /*功能描述：FM读当前电台频率程序													*/

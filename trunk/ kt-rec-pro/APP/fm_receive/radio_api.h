@@ -7,6 +7,7 @@
    @note
 */
 /*----------------------------------------------------------------------------*/
+#include "Custom_config.h"
 
 #ifndef _FM_API_H_
 #define _FM_API_H_
@@ -35,6 +36,9 @@
 typedef struct{
 	u16	MIN_FREQ;
 	u16 	MAX_FREQ;
+#ifdef RADIO_VAR_VOL_TUNE
+	u16 	FREQ_STEP;
+#endif	
 }FREQ_RAGE;
 
 #define FM_CUR_FRE          0
