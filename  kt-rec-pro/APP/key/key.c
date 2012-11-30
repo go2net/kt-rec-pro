@@ -15,7 +15,7 @@
 #include "irff00.h"
 #include "dsp.h"
 #include "dac.h"
-#include "KT_AMFMdrv.h"
+#include "KT_radio_drv.h"
 #include "lcdsegment.h"
 #if defined(USE_LCD_DRV_HT1621)
 #include "lcd_ht1621_drv.h"

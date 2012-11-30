@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------*/
-/**@file   fm_rev.h
+/**@file   radio_rev.h
    @brief  dacÍ·ÎÄ¼þ
    @details
    @author
@@ -8,8 +8,8 @@
 */
 /*----------------------------------------------------------------------------*/
 
-#ifndef _FM_REV_
-#define _FM_REV_
+#ifndef _RADIO_REV_
+#define _RADIO_REV_
 
 #include "config.h"
 //#include "iic.h"

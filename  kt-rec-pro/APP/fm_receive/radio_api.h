@@ -9,8 +9,8 @@
 /*----------------------------------------------------------------------------*/
 #include "Custom_config.h"
 
-#ifndef _FM_API_H_
-#define _FM_API_H_
+#ifndef _RADIO_API_H_
+#define _RADIO_API_H_
 
 #include "config.h"
 

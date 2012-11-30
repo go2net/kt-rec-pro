@@ -11,14 +11,14 @@
 
 #include "config.h"
 
-#include "fm_rev.h"
+#include "radio_rev.h"
 
 #if (FM_MODULE == 1)
 #include "disp.h"
 #include "key.h"
 #include "msgfor_hot.h"
 #include "main.h"
-#include "fm_api.h"
+#include "radio_api.h"
 #include "dac.h"
 #include "rtc_api.h"
 #include "eq.h"

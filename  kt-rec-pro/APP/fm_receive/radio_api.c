@@ -10,7 +10,7 @@
 
 
 #include "fm_api.h"
-#include "fm_rev.h"
+#include "radio_rev.h"
 #if 0//(FM_MODULE == 1)
 
 extern u16 frequency;

@@ -1,6 +1,6 @@
 
-#ifndef _KT_AMFMDRV_H_
-#define _KT_AMFMDRV_H_
+#ifndef _KT_RADIO_DRV_H_
+#define _KT_RADIO_DRV_H_
 
 #include "iic.h"
 //#include "typedef.h"
