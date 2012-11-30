@@ -11,7 +11,7 @@
 #include "config.h"
 
 #if (FM_MODULE == 2)
-#include "fm_rev.h"
+#include "radio_rev.h"
 #include "disp.h"
 #include "key.h"
 #include "msgfor_hot.h"
