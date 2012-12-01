@@ -468,10 +468,10 @@ void align_lcd_disp_buff(u8 offset,u8 letter_data)
 		lcd_buff[1] &= ~(0x0003<<digit_idx);
 		lcd_buff[0] &= ~(0x0003<<digit_idx);
 		
-	       lcd_buff[4] |= ((letter_data & DIG_A)<<1)<<digit_idx;
-	       lcd_buff[3] |= (((letter_data & DIG_B))|((letter_data & DIG_F)>>5))<<digit_idx;
-	       lcd_buff[2] |= (((letter_data & DIG_C)>>1)|((letter_data & DIG_G)>>6))<<digit_idx;
-	       lcd_buff[1] |= (((letter_data & DIG_D)>>2)|((letter_data & DIG_E)>>4))<<digit_idx;   	 
+	       lcd_buff[3] |= ((letter_data & DIG_A)<<1)<<digit_idx;
+	       lcd_buff[2] |= (((letter_data & DIG_B))|((letter_data & DIG_F)>>5))<<digit_idx;
+	       lcd_buff[1] |= (((letter_data & DIG_C)>>1)|((letter_data & DIG_G)>>6))<<digit_idx;
+	       lcd_buff[0] |= (((letter_data & DIG_D)>>2)|((letter_data & DIG_E)>>4))<<digit_idx;   	 
 		   
 	}	   
 }

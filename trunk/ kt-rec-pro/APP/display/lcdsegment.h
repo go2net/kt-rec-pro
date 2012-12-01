@@ -642,7 +642,7 @@ enum {
 #define RTC_AM_MASK	0x0000
 #define F_RTC_AM		(lcd_buff[3])
 
-#define REC_ICON_MASK	0x0001
+#define REC_ICON_MASK	0x0080
 #define F_REC_DEV		(lcd_buff[3])	
 
 #define SPK_MUTE_MASK	0x0080
@@ -659,19 +659,17 @@ enum {
 #define F_NUM_1BC		(lcd_buff[2])	
 
 #define REP_ALL_MASK	0//0x0004
-#define REP_ONE_MASK	0x0008
+#define REP_ONE_MASK	0x0020
 #define F_REP_ALL		(lcd_buff[4])
 #define F_REP_ONE 		(lcd_buff[3])
 
 //#define L_ICON_BUF		(lcd_buff[4])
-#define S1_ICON_MASK	0x0040
+#define S1_ICON_MASK	0x0010
 #define S1_ICON_BUF		(lcd_buff[4])
-#define S2_ICON_MASK	0x0010
+#define S2_ICON_MASK	0x0004
 #define S2_ICON_BUF		(lcd_buff[4])
-#define S3_ICON_MASK	0x0004
+#define S3_ICON_MASK	0x0001
 #define S3_ICON_BUF		(lcd_buff[4])
-#define S4_ICON_MASK	0x0001
-#define S4_ICON_BUF		(lcd_buff[4])
 
 #elif defined(JK_JF_689_LCD_MODULE)
 
@@ -741,7 +739,7 @@ enum {
 #define F_NUM_1BC		(lcd_buff[2])	
 
 #define REP_ALL_MASK	0//0x0004
-#define REP_ONE_MASK	0x0010
+#define REP_ONE_MASK	0x0004
 #define F_REP_ALL		(lcd_buff[4])
 #define F_REP_ONE 		(lcd_buff[0])
 
