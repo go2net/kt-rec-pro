@@ -70,6 +70,7 @@ xd_u8 mem_snr[3];			  //Rememberred SNR values for previous, current and next st
 
 //Str_Band  Current_Band;
 extern xd_u8 cur_sw_fm_band;
+extern xd_u16 REG_MAX_FREQ,REG_MIN_FREQ,REG_STEP;
 
 #define I2C
 #ifdef I2C
@@ -458,12 +459,13 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		KT_Bus_Write(0x16,regx|0x8000);				//AM_FM=1
 
 		KT_Bus_Write(0x18,0x0000);						//Enable cap
+#ifndef RADIO_VAR_VOL_TUNE
 
 		KT_AMTune(900);
 		regx = KT_Bus_Read(0x0F);       
 		KT_Bus_Write(0x0F, regx & 0xFFE0);		//Write volume to 0
 		delay_10ms(12);
-
+#endif
 		regx = KT_Bus_Read(0x0E); 
 		KT_Bus_Write(0x0E, regx | 0x7700);	
 		
@@ -482,17 +484,20 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		KT_Bus_Write(0x31, (REG_MAX_FREQ - REG_MIN_FREQ) / REG_STEP);				//user_chan_num
 #endif
 
+
 		regx = KT_Bus_Read(0x16);
 		KT_Bus_Write(0x16,regx|0x8000);				//AM_FM=1
+#ifndef RADIO_VAR_VOL_TUNE		
 
 		KT_Bus_Write(0x18,0x0000);						//Enable cap
+
 		KT_AMTune(900);
 		
 		regx = KT_Bus_Read(0x0F);       
 		KT_Bus_Write(0x0F, regx & 0xFFE0);		//Write volume to 0
 		
 		delay_10ms(12);
-		
+#endif		
 		KT_Bus_Write(0x18,0x8000);					//Disable cap
 		
    		regx = KT_Bus_Read(0x0a);

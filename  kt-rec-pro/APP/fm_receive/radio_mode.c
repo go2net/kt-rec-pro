@@ -53,7 +53,6 @@ extern void KT_FMTune(xd_u16 Frequency);
 extern void KT_AMTune(xd_u16 Frequency);
 extern xd_u8 KT_AMFMWakeUp(void); //0->Fail 1->Success
 extern void KT_AMFMStandby(void);					//0->Fail 1->Success
-extern xd_u8 KT_AMFMPreInit(void);			  
 extern void KT_AMFMMute(void);
 
 
