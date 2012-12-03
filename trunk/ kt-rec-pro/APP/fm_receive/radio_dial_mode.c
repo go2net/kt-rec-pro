@@ -16,7 +16,7 @@
 #include "key.h"
 #include "msgfor_hot.h"
 #include "main.h"
-#include "fm_api.h"
+#include "radio_api.h"
 #include "dac.h"
 #include "rtc_api.h"
 #include "eq.h"
@@ -44,44 +44,46 @@ extern void KT_AMFMSetMode(xd_u8 AMFM_MODE);
 extern xd_u8 KT_AMFMWakeUp(void); //0->Fail 1->Success
 extern void KT_AMFMStandby(void);					//0->Fail 1->Success
 extern xd_u8 KT_AMFMPreInit(void);			  
+extern xd_u16 KT_FMGetFreq(void);
+extern xd_u16 KT_AMGetFreq(void);
 
 
 #if defined(SW_TWO_BAND_RANGE)
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
-	875,		1080,	100,
+	875,		1080,	5,
 	520,		1630,	9,
-	3200,	17900,	5,
-	17905,	25000,	5,
+	3200,	17900,	1,
+	17905,	25000,	1,
 };
 #elif defined(SW_FULL_BAND_RANGE)
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
-	875,		1080,	100,
+	875,		1080,	5,
 	520,		1630,	9,
-	3200,	25000,	5,
+	3200,	25000,	1,
 };
 #elif defined(SW_FULL_BAND_RANGE_END_AT_23MHZ)
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
-	875,		1080,	100,
+	875,		1080,	5,
 	520,		1630,	9,
-	3200,	23000,	5,
+	3200,	23000,	1,
 };
 #else
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
-	875,		1080,	100,
+	875,		1080,	5,
 	520,		1630,	9,
-	3200,	5200,	5,
-	5210,	7300,	5,
-	7310,	9400,	5,
-	9410,	11500,	5,
-	11510,	13800,	5,
-	13810,	15800,	5,
-	15810,	17900,	5,
-	17910,	22000,	5,
-	22010,	23000,	5,
+	3200,	5200,	1,
+	5210,	7300,	1,
+	7310,	9400,	1,
+	9410,	11500,	1,
+	11510,	13800,	1,
+	13810,	15800,	1,
+	15810,	17900,	1,
+	17910,	22000,	1,
+	22010,	23000,	1,
 	//23010,	25000,
 };
 #endif
@@ -97,6 +99,7 @@ u16 get_radio_freq()
 }
 void radio_band_hdlr()
 {
+
 	REG_MAX_FREQ = radio_freq_tab[cur_sw_fm_band].MAX_FREQ;
 	REG_MIN_FREQ = radio_freq_tab[cur_sw_fm_band].MIN_FREQ;
 
@@ -105,6 +108,15 @@ void radio_band_hdlr()
 	KT_AMFMSetMode(cur_sw_fm_band);	
 
 	frequency=get_radio_freq();
+
+	disp_port(MENU_FM_MAIN);			
+#ifdef UART_ENABLE
+	deg_str("radio_band_hdlr \n");
+	printf_u16(cur_sw_fm_band,'B');
+	printf_u16(REG_MAX_FREQ,'-');
+	printf_u16(REG_MIN_FREQ,'-');
+#endif
+	
 }
 void radio_rev_hdlr( void )
 {
@@ -122,7 +134,9 @@ void radio_rev_hdlr( void )
 
         switch (key)
         {
-        
+        case MSG_CHANGE_FM_MODE:
+	     radio_band_hdlr();
+	     break;        
         case MSG_CHANGE_WORK_MODE:
             return;
 
@@ -132,6 +146,10 @@ void radio_rev_hdlr( void )
         case MSG_200MS:
 			
 	     freq_regx=get_radio_freq();
+#ifdef UART_ENABLE
+			printf_u16(freq_regx,'F');
+#endif
+
 	     if(freq_regx!=frequency){
 
 			frequency=freq_regx;
@@ -141,6 +159,9 @@ void radio_rev_hdlr( void )
         case MSG_HALF_SECOND:
 #if defined(USE_BAT_MANAGEMENT)			
 	     bmt_hdlr();
+#endif
+#ifdef UART_ENABLE
+		//deg_str("MSG_HALF_SECOND \n");
 #endif
 
 	     set_brightness_fade_out();
@@ -177,7 +198,6 @@ void radio_hdlr(void)
 {
 
 #ifdef UART_ENABLE
-	uart_init();
 	deg_str("fm_radio \n");
 #endif
 
