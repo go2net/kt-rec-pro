@@ -107,6 +107,7 @@ void radio_band_hdlr()
 	
 	KT_AMFMSetMode(cur_sw_fm_band);	
 
+	delay_10ms(10);
 	frequency=get_radio_freq();
 
 	disp_port(MENU_FM_MAIN);			

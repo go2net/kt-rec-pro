@@ -406,6 +406,8 @@
 
 #if defined(JK_DH_289_MODULE)
 
+#define DISP_VER		2
+
 #define NEW_DH_289_LCD_MODULE_SM5858
 
 #ifdef NEW_DH_289_LCD_MODULE_SM5858
