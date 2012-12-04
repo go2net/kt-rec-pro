@@ -135,16 +135,21 @@ static void music_info_init(void)
     if ( (given_device & (~VIRTUAL_DEVICE)) == DEVICE_SDMMC0)
     {
         given_file_method = PLAY_BREAK_POINT;
-       //put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
     }
     else if ((given_device & (~VIRTUAL_DEVICE)) == DEVICE_UDISK)
     {
         given_file_method = PLAY_BREAK_POINT;
-        //put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
     }
     else
     {
-        given_device = DEVICE_SDMMC0;
+    	//delay_10ms(20);
+    	if((get_device_online_status()&0x02)>0){
+	        given_device = DEVICE_UDISK;
+    	}
+	else{
+	        given_device = DEVICE_SDMMC0;
+
+	}
         given_file_method = PLAY_FIRST_FILE;
     }
 
@@ -538,6 +543,8 @@ void music_play(void)
     u8 key;
     u8 res;
 
+    clear_all_event();
+	
     while (1)
     {
 #if (FF_FR_MUSIC == 0)
