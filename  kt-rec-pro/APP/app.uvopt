@@ -494,7 +494,7 @@
   </Group>
 
   <Group>
-    <GroupName>fm_receive</GroupName>
+    <GroupName>radio_rev</GroupName>
     <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
@@ -504,13 +504,27 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
+      <ColumnNumber>0</ColumnNumber>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>0</TopLine>
+      <CurrentLine>0</CurrentLine>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\radio_rev\KT_radio_drv.c</PathWithFileName>
+      <FilenameWithoutPath>KT_radio_drv.c</FilenameWithoutPath>
+    </File>
+    <File>
+      <GroupNumber>5</GroupNumber>
+      <FileNumber>0</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
       <ColumnNumber>15</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
       <TopLine>1</TopLine>
-      <CurrentLine>21</CurrentLine>
+      <CurrentLine>12</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\fm_receive\radio_mode.c</PathWithFileName>
-      <FilenameWithoutPath>radio_mode.c</FilenameWithoutPath>
+      <PathWithFileName>.\radio_rev\radio_api.c</PathWithFileName>
+      <FilenameWithoutPath>radio_api.c</FilenameWithoutPath>
     </File>
     <File>
       <GroupNumber>5</GroupNumber>
@@ -523,7 +537,7 @@
       <TopLine>0</TopLine>
       <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\fm_receive\radio_dial_mode.c</PathWithFileName>
+      <PathWithFileName>.\radio_rev\radio_dial_mode.c</PathWithFileName>
       <FilenameWithoutPath>radio_dial_mode.c</FilenameWithoutPath>
     </File>
     <File>
@@ -537,8 +551,8 @@
       <TopLine>0</TopLine>
       <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\fm_receive\KT_radio_drv.c</PathWithFileName>
-      <FilenameWithoutPath>KT_radio_drv.c</FilenameWithoutPath>
+      <PathWithFileName>.\radio_rev\radio_mode.c</PathWithFileName>
+      <FilenameWithoutPath>radio_mode.c</FilenameWithoutPath>
     </File>
   </Group>
 

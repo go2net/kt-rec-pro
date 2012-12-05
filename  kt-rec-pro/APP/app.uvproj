@@ -294,7 +294,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\display;.\main;.\music;.\rtc;.\usb_device;.\fm_receive;.\key;.\aux_fun;.\lib;.\msg;.\iic;.\aux_fun;.\usb_device;.\encode;.\output</IncludePath>
+              <IncludePath>.\display;.\main;.\music;.\rtc;.\usb_device;.\radio_rev;.\key;.\aux_fun;.\lib;.\msg;.\iic;.\aux_fun;.\usb_device;.\encode;.\output</IncludePath>
             </VariousControls>
           </C51>
           <Ax51>
@@ -306,7 +306,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\display;.\main;.\music;.\rtc;.\usb_device;.\fm_receive;.\key;.\aux_fun;.\lib;.\msg;.\iic;.\aux_fun;.\usb_device;.\output</IncludePath>
+              <IncludePath>.\display;.\main;.\music;.\rtc;.\usb_device;.\radio_rev;.\key;.\aux_fun;.\lib;.\msg;.\iic;.\aux_fun;.\usb_device;.\output</IncludePath>
             </VariousControls>
           </Ax51>
           <Lx51>
@@ -594,7 +594,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>fm_receive</GroupName>
+          <GroupName>radio_rev</GroupName>
           <GroupOption>
             <CommonProperty>
               <UseCPPCompiler>0</UseCPPCompiler>
@@ -649,19 +649,24 @@
           </GroupOption>
           <Files>
             <File>
-              <FileName>radio_mode.c</FileName>
+              <FileName>KT_radio_drv.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\fm_receive\radio_mode.c</FilePath>
+              <FilePath>.\radio_rev\KT_radio_drv.c</FilePath>
+            </File>
+            <File>
+              <FileName>radio_api.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\radio_rev\radio_api.c</FilePath>
             </File>
             <File>
               <FileName>radio_dial_mode.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\fm_receive\radio_dial_mode.c</FilePath>
+              <FilePath>.\radio_rev\radio_dial_mode.c</FilePath>
             </File>
             <File>
-              <FileName>KT_radio_drv.c</FileName>
+              <FileName>radio_mode.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\fm_receive\KT_radio_drv.c</FilePath>
+              <FilePath>.\radio_rev\radio_mode.c</FilePath>
             </File>
           </Files>
         </Group>
