@@ -364,7 +364,7 @@ xd_u8 KT_AMFMInit(void)                            //0->Fail 1->Success
 	regx = KT_Bus_Read(0x16);
 	KT_Bus_Write(0x16, regx | 0x4000);						//userband enable
 
-#if 1//def FM50KSTEP
+#ifdef FM50KSTEP
 	regx = KT_Bus_Read(0x02);
 	KT_Bus_Write(0x02,regx & 0xFFF3 | 0x0008);				//FM_SPACE=50K
 #endif
@@ -434,6 +434,16 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 	{
 
 #ifdef RADIO_VAR_VOL_TUNE
+
+		if(REG_STEP==10){
+			regx = KT_Bus_Read(0x02);
+			KT_Bus_Write(0x02,regx & 0xFFF3 | 0x0004);				//FM_SPACE=100K
+		}
+		else{
+			regx = KT_Bus_Read(0x02);
+			KT_Bus_Write(0x02,regx & 0xFFF3 | 0x0008);				//FM_SPACE=50K
+		}
+
 		KT_Bus_Write(0x2F, (REG_MIN_FREQ/5));														//user_start_chan
 		KT_Bus_Write(0x30, 0x0002);																					//user_start_mum
 		KT_Bus_Write(0x31, (REG_MAX_FREQ -REG_MIN_FREQ) / REG_STEP);	//user_chan_num
@@ -447,9 +457,15 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		//Current_Band.Band =MW_MODE;
 		//NSS = 0;
 #ifdef RADIO_VAR_VOL_TUNE
-		regx = KT_Bus_Read(0x33);
-		KT_Bus_Write(0x33,regx & 0x3FFF | 0x4000);				//AM_SPACE=9K
 
+		if(REG_STEP==9){
+			regx = KT_Bus_Read(0x33);
+			KT_Bus_Write(0x33,regx & 0x3FFF | 0x4000);				//AM_SPACE=9K
+		}
+		else{
+			regx = KT_Bus_Read(0x33);
+			KT_Bus_Write(0x33,regx & 0x3FFF | 0x8000);				//AM_SPACE=10K
+		}
 		KT_Bus_Write(0x2F, REG_MIN_FREQ);																//user_start_chan
 		KT_Bus_Write(0x30, 0x0002);																					//user_start_mum
 		KT_Bus_Write(0x31, ((REG_MAX_FREQ - REG_MIN_FREQ) / REG_STEP));				//user_chan_num
@@ -476,14 +492,20 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 	{
 		//Current_Band.Band =SW_MODE;
 #ifdef RADIO_VAR_VOL_TUNE
-		regx = KT_Bus_Read(0x33);
-		KT_Bus_Write(0x33,regx & 0x3FFF);				//AM_SPACE=1K
 
+		if(REG_STEP==1){
+			regx = KT_Bus_Read(0x33);
+			KT_Bus_Write(0x33,regx & 0x3FFF);				//AM_SPACE=1K
+		}
+		else{
+			regx = KT_Bus_Read(0x33);
+			KT_Bus_Write(0x33,regx & 0x3FFF | 0x8000);				//AM_SPACE=10K
+		}
+		
 		KT_Bus_Write(0x2F, REG_MIN_FREQ);																//user_start_chan
 		KT_Bus_Write(0x30, 0x0002);																					//user_start_mum
 		KT_Bus_Write(0x31, ((REG_MAX_FREQ - REG_MIN_FREQ) / REG_STEP));				//user_chan_num
 #endif
-
 
 		regx = KT_Bus_Read(0x16);
 		KT_Bus_Write(0x16,regx|0x8000);				//AM_FM=1
