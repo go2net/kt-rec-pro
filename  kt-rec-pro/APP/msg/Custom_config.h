@@ -81,7 +81,7 @@
 
 #if defined(JK_FT_780_MODULE)
 
-//#define DISP_VER		1
+#define DISP_VER		1
 
 #define ADKEY_PORT_P02
 #define IIC_GPIO_USE_P00_P07
@@ -91,12 +91,13 @@
 #define LCD_GPIO_DRV
 
 //#define NEW_DH_289_LCD_MODULE_SM5858
+#if 1
 #define NEW_FT_LCD_780_MODULE
 #define DISP_PLAY_ICON
 #define DISP_PAUSE_ICON
 #define DISP_SW2_ICON
 //#define DISP_PAU_STR
-
+#endif
 #define RADIO_BAND_SWITCH_AD_PORT_P04
 #define FUNCTION_SWITCH_AD_PORT_P05
 
