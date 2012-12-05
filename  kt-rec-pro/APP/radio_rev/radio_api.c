@@ -9,7 +9,7 @@
 /*----------------------------------------------------------------------------*/
 
 
-#include "fm_api.h"
+#include "radio_api.h"
 #include "radio_rev.h"
 #if 0//(FM_MODULE == 1)
 
