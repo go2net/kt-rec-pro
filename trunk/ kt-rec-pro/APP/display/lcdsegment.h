@@ -544,6 +544,9 @@ enum {
 #define FM_P1_MASK		0x0002
 #define F_P1_DEV		(lcd_buff[0])	
 
+#define SW_P2_MASK		0x0000
+#define F_P2_DEV		(lcd_buff[4])	
+
 #define SW_MHZ_MASK	0x0080
 #define F_SW_MHZ_DEV		(lcd_buff[2])	
 
