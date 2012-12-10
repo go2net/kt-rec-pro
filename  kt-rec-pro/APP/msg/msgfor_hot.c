@@ -165,13 +165,17 @@ void ap_handle_hotkey(u8 key)
     case MSG_SDMMC_OUT:
         if((RECODE_WORKING == encode_status)||(RECODE_PAUSE == encode_status))
         {	
-			rec_device_out = 1;
-			api_stop_encode();
-            if(work_mode == FM_RADIO_MODE){
+        
+#ifdef AUTO_PLAY_RADIO_REC_FILE
+		auto_play_radio_rec=0;
+#endif
+		rec_device_out = 1;
+		api_stop_encode();
+            	if(work_mode == FM_RADIO_MODE){
 			main_menu = MENU_FM_MAIN;//
 			disp_port(MENU_FM_MAIN);
             		break;
-	     }
+	     	}
         } 
 		
         set_brightness_all_on();
@@ -341,7 +345,7 @@ void ap_handle_hotkey(u8 key)
         else
         {
 #ifdef AUTO_PLAY_RADIO_REC_FILE
-		auto_play_radio_rec=0;
+		//auto_play_radio_rec=0;
 #endif
             put_msg_lifo(MSG_REC_STOP);
         }

@@ -113,7 +113,11 @@ void disp_device(void)
 	else	 if(encode_status==RECODE_PAUSE)
 	{
 	    lcd_disp_icon(REC_ICON);
+#ifdef DISP_PAU_STR		
+    	    printf_str("PAU",1);
+#else
 	    printf_str("PAUS",0);//my_printf("OFF ");
+#endif	    
            lcd_clr_icon(COL_ICON);
 	}
 
@@ -323,6 +327,20 @@ void disp_fm_main(void)
         printf_num(freq,2,2);
     }
 #endif
+
+#ifdef DISP_ACTIVE_REC_DEVICE_AT_RADIO_MODE
+	if((encode_status==RECODE_WORKING)||(encode_status==RECODE_PAUSE)){
+		
+		if((device_active & (~VIRTUAL_DEVICE)) == DEVICE_SDMMC0)
+		{
+		    	lcd_disp_icon(SD_ICON);
+		}
+		else if((device_active & (~VIRTUAL_DEVICE)) == DEVICE_UDISK)
+		{
+		    lcd_disp_icon(USB_ICON);
+		}
+	}
+#endif	
 }
 
 
@@ -706,6 +724,11 @@ void update_disp_icon()
 	{
 	    lcd_flash_icon(REC_ICON);
 	}
+	else if(encode_status==RECODE_PAUSE){
+
+	    	lcd_clr_flash_icon();
+		lcd_disp_icon(REC_ICON);
+	}	
 #endif
 #if defined(USE_LCD_DRV_HT1621)
 	UpdateLcd_HT1621_Buf();

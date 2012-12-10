@@ -28,6 +28,11 @@ extern u8 device_active;
 extern u8 work_mode;
 extern u8 bright_counter;
 extern bool vol_change_en;
+
+#ifdef AUTO_PLAY_RADIO_REC_FILE
+extern bool auto_play_radio_rec;
+#endif
+
 //extern bool key_voice_en;
 //extern u8 _idata last_work_mode;
 u8 play_mode;							 ///<Ñ­»·Ä£Ê½

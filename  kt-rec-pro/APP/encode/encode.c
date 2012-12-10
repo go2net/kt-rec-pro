@@ -199,9 +199,9 @@ void get_rec_mem_info(void)
 #endif
 void api_stop_encode(void) 
 {
-    lcd_clr_flash_icon();	
     stop_encode();
     encode_status = RECODE_STOP;
+    lcd_clr_flash_icon();		
 }
 /*----------------------------------------------------------------------------*/
 /**@brief   录音状态统一清理函数
