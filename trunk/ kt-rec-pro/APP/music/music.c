@@ -544,6 +544,17 @@ void music_play(void)
     u8 res;
 
     clear_all_event();
+
+#ifdef AUTO_PLAY_RADIO_REC_FILE
+	if(auto_play_radio_rec){
+		
+#ifdef REC_PLAY_KEY_BREAK_POINT
+		rec_pley_bp_flag=0;
+#endif		
+		auto_play_radio_rec=0;
+		put_msg_lifo(MSG_REC_PLAY);
+	}
+#endif
 	
     while (1)
     {

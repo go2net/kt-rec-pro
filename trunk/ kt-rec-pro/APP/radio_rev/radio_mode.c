@@ -43,6 +43,10 @@ extern xd_u8 fast_step_cnt;
 
 bool freq_step_flag=0;
 
+#ifdef AUTO_PLAY_RADIO_REC_FILE
+bool auto_play_radio_rec=0;
+#endif
+
 xd_u8 sw_fm_mod=0,cur_sw_fm_band=0;
 xd_u16 REG_MAX_FREQ=0,REG_MIN_FREQ=0,REG_STEP;
 
@@ -63,6 +67,14 @@ FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 	520,		1630,
 	3200,	17900,
 	17905,	25000,
+};
+#elif defined(SW_TWO_BAND_RANGE_FOR_CUSTOMER_JIN_FENG)
+FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
+{
+	875,		1080,
+	520,		1630,
+	3500,	7800,
+	8000,	20500,
 };
 #elif defined(SW_FULL_BAND_RANGE)
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=

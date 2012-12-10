@@ -20,6 +20,10 @@
 extern void disk_remove_deal_for_music(void);
 extern void rtc_disp_hdlr(void);
 
+#ifdef AUTO_PLAY_RADIO_REC_FILE
+extern bool auto_play_radio_rec;
+#endif
+
 extern u8 work_mode;
 //extern u8 _idata last_work_mode;
 extern bool input_number_en;
@@ -327,9 +331,18 @@ void ap_handle_hotkey(u8 key)
         if(RECODE_PLAY >= encode_status)
         {
             put_msg_lifo(MSG_REC_FIND);
+#ifdef AUTO_PLAY_RADIO_REC_FILE
+	    if(work_mode == FM_RADIO_MODE){
+		auto_play_radio_rec=1;
+	    }
+#endif
+			
         }
         else
         {
+#ifdef AUTO_PLAY_RADIO_REC_FILE
+		auto_play_radio_rec=0;
+#endif
             put_msg_lifo(MSG_REC_STOP);
         }
         break;
@@ -407,8 +420,9 @@ void ap_handle_hotkey(u8 key)
         put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
         break;
     case MSG_REC_START:		//开始录音
-		 rec_device_out = 0;
-		 rec_sys_set(0);  //0:24M   1:48M
+
+	 rec_device_out = 0;
+	 rec_sys_set(0);  //0:24M   1:48M
         init_rec_name();
         device_active |= VIRTUAL_DEVICE;
         encode_device = device_active;	 //设置录音存储设备
