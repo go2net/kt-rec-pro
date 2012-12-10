@@ -523,31 +523,31 @@ enum {
 #define SD_DEV_MASK	0x0002
 #define F_SD_DEV		(lcd_buff[4])	
 
-#define FM_DEV_MASK	0x0000
-#define F_FM_DEV		(lcd_buff[1])	
+#define FM_DEV_MASK	0x0080
+#define F_FM_DEV		(lcd_buff[0])	
 
-#define AM_DEV_MASK	0x0000
-#define F_AM_DEV		(lcd_buff[3])	
+#define AM_DEV_MASK	0x0080
+#define F_AM_DEV		(lcd_buff[1])	
 
-#define SW_DEV_MASK	0x0000
-#define F_SW_DEV		(lcd_buff[4])	
+#define SW_DEV_MASK	0x0080
+#define F_SW_DEV		(lcd_buff[2])	
 
 #define POINTS_MASK		0x0008
 #define F_POINTS		(lcd_buff[0])	
 
-#define FM_MHZ_MASK	0x0080
+#define FM_MHZ_MASK	0x0000
 #define F_MHZ_DEV		(lcd_buff[0])	
 
 #define AM_KHZ_MASK	0x0080
 #define F_KHZ_DEV		(lcd_buff[1])	
 
-#define FM_P1_MASK		0x0002
+#define FM_P1_MASK		0x0000
 #define F_P1_DEV		(lcd_buff[0])	
 
-#define SW_P2_MASK		0x0000
-#define F_P2_DEV		(lcd_buff[4])	
+#define SW_P2_MASK		0x0002
+#define F_P2_DEV		(lcd_buff[0])	
 
-#define SW_MHZ_MASK	0x0080
+#define SW_MHZ_MASK	0x0000
 #define F_SW_MHZ_DEV		(lcd_buff[2])	
 
 
@@ -921,6 +921,7 @@ void seg_lcd_disp_scan(void);
 void lcd_disp_icon(u8 id);
 void lcd_clr_icon(u8 id);
 void lcd_flash_icon(u8 id);
+void lcd_clr_flash_icon();
 void lcd_backlight_ctrl(bool on);
 
 //void seg_lcd_set_brightness(u8 br);

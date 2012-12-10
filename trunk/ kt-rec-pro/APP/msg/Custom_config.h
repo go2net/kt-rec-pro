@@ -35,7 +35,11 @@
 //#define K129_MODULE
 //#define JK299_MODULE
 
+
+
 #if defined(JK_JF_933_MODULE)
+
+#define DISP_VER		2
 
 #define ADKEY_PORT_P02
 #define IIC_GPIO_USE_P00_P07
@@ -79,6 +83,8 @@
 
 
 #define AUTO_PLAY_RADIO_REC_FILE
+#define DISP_REC_ICON_WHEN_RECORDING
+#define DISP_ACTIVE_REC_DEVICE_AT_RADIO_MODE
 #endif
 
 
@@ -171,6 +177,8 @@
 
 #if defined(JK_HT_998_MODULE)
 
+#define DISP_VER		2
+
 #define NEW_DH_228_LCD_MODULE_SM5901
 
 #define DISP_PAU_STR
@@ -202,9 +210,15 @@
 #define PLAY_MODE_IN_USE
 #define REPEAT_MODE_USE_ONE_ALL
 #define DISP_PLAY_MODE_STR
+
+#define AUTO_PLAY_RADIO_REC_FILE
+#define DISP_REC_ICON_WHEN_RECORDING
+#define DISP_ACTIVE_REC_DEVICE_AT_RADIO_MODE
 #endif
 
 #if defined(JK_JF_689_MODULE)
+
+#define DISP_VER		2
 
 //#define JF_168_LCD_MODULE
 #define JK_JF_689_LCD_MODULE
@@ -240,6 +254,8 @@
 #define DISP_PLAY_MODE_STR
 
 #define AUTO_PLAY_RADIO_REC_FILE
+#define DISP_REC_ICON_WHEN_RECORDING
+#define DISP_ACTIVE_REC_DEVICE_AT_RADIO_MODE
 
 #endif
 

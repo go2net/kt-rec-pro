@@ -95,6 +95,7 @@ const u8 _code adkey1_msg_music_table[4][10] =				//Music模式下的遥控转换表
     /*长按抬起*/	{ADKEY1_MUSIC_LONG_UP},
 };
 
+#if 0
 //
 #define ADKEY1_FM_SHORT			\
 								/*00*/    FM_ADKEY_SHORT_00,\
@@ -152,6 +153,7 @@ const u8 _code adkey1_msg_fm_table[4][10] =				//Music模式下的遥控转换表
     /*连按*/		{ADKEY1_FM_HOLD},
     /*长按抬起*/	{ADKEY1_FM_LONG_UP},
 };
+#endif
 #endif
 
 
