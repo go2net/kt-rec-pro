@@ -549,7 +549,7 @@ void align_lcd_disp_buff(u8 offset,u8 letter_data)
 	       lcd_buff[1] |= (((letter_data & DIG_D)>>3)|((letter_data & DIG_E)>>3))<<digit_idx; 
 	}	   
 }
-#elif defined(NEW_DH_228_LCD_MODULE_SM5901)
+#elif defined(NEW_DH_228_LCD_MODULE_SM5901)||defined(JK_HT_998_LCD_MODULE)
 u8 _code lcd_disbuf_offset[4] ={0,1,3,5};
 void align_lcd_disp_buff(u8 offset,u8 letter_data)
 {
