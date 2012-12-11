@@ -179,7 +179,8 @@
 
 #define DISP_VER		2
 
-#define NEW_DH_228_LCD_MODULE_SM5901
+#define JK_HT_998_LCD_MODULE
+//#define NEW_DH_228_LCD_MODULE_SM5901
 
 #define DISP_PAU_STR
 
