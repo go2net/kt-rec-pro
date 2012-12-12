@@ -1,3 +1,4 @@
+#include "Custom_config.h"
 
 #ifndef _KT_RADIO_DRV_H_
 #define _KT_RADIO_DRV_H_
@@ -9,7 +10,7 @@
 #define KTAMr_address 		0x6B
 
 //#define LONG_ANTENNA				// Turn on only if the length of antenna exceeds 2m
-//#define SEEK_WITH_SNR				// Turn on only if SNR double check is required in SEEK process
+#define SEEK_WITH_SNR				// Turn on only if SNR double check is required in SEEK process
 //#define DISABLE_FAST_GAIN_UP
 //#define LOWFM_MODE
 //#define MANUAL_SEPARATION				 
@@ -42,12 +43,23 @@
 	#define C32P768K
 #endif
 
+#define FM_50KHz_STEP			5
 #define FM_100KHz_STEP			10
 #define FM_1MHz_STEP			100
 #define AM_1KHz_STEP			1
 #define AM_2KHz_STEP			2
+#define AM_4KHz_STEP			4
 #define AM_9KHz_STEP			9
+#define AM_10KHz_STEP			10
 #define AM_100KHz_STEP			100
+
+
+#define SM_1KHz_STEP			1
+#define SM_2KHz_STEP			2
+#define SM_3KHz_STEP			3
+#define SM_4KHz_STEP			4
+#define SM_5KHz_STEP			5
+#define SM_6KHz_STEP			6
 
 #define FM_SEEK_UP_LIMIT			10800
 #define FM_SEEK_DOWN_LIMIT		8600
@@ -116,13 +128,15 @@
 #define FM_AFCTH_NEXT 0			//Range from 0 to 127
 
 #define MW_AFCTH_PREV 6			//Range from 128 to 127
-#define MW_AFCTH 4				//Range from 128 to 127
+#define MW_AFCTH 6				//Range from 128 to 127
 #define MW_AFCTH_NEXT 6			//Range from 128 to 127
 
-#define SW_AFCTH_PREV 12		//Range from 128 to 127
-#define SW_AFCTH 6				//Range from 128 to 127
-#define SW_AFCTH_NEXT 12		//Range from 128 to 127
+#define SW_AFCTH_PREV 6		//Range from 128 to 127
+#define SW_AFCTH 16				//Range from 128 to 127
+#define SW_AFCTH_NEXT 6		//Range from 128 to 127
 
+
+#define SW_RSSI_TH		6
 
 #define BAND_NUM	17
 
@@ -150,11 +164,9 @@ typedef enum {
 typedef struct 
 {
 	u8 		Band;						// 频段
-#if 0	
-	u16			Band_Top;					//	tune台频段上门限
-	u16			Band_Bottom;				//	tune台频段下门限
-	u16			Seek_Up_Limit;				//	seek频段上门限
-	u16			Seek_Down_Limit;			//	seek频段下门限
+	
+#ifdef USE_VALIDSTATION_CHECK
+	u8			Tune_Step;					//
 	u8			Min_Step;					//
 	u8			Max_Step;					//
 	u8			Seek_Step;					// SeekFromCurrentCh 函数用的频率步进
@@ -162,6 +174,7 @@ typedef struct
 	u8			AFCTH_Prev;					//
 	u8			AFCTH;						//
 	u8			AFCTH_Next;					// 
+	u8			RSSI_TH;					// 
 #endif	
 }Str_Band;
   
