@@ -219,7 +219,13 @@
 
 #if defined(JK_JF_689_MODULE)
 
-#define DISP_VER		2
+#if 1
+#define SEMI_AUTO_SCAN_FUNC
+#define USE_VALIDSTATION_CHECK
+#endif
+
+
+#define DISP_VER		3
 
 //#define JF_168_LCD_MODULE
 #define JK_JF_689_LCD_MODULE

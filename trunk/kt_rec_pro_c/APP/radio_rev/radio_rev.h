@@ -41,4 +41,10 @@ void radio_hdlr(void);
 //void scan_chan(u8 dir);
 #endif
 
+typedef enum {
+
+	SEARCH_UP =0,
+	SEARCH_DN,
+	
+}AUTO_DIR;
 #endif

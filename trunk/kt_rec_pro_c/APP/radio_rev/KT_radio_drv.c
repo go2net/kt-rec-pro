@@ -57,18 +57,23 @@
 //#include <interface.h>
 //#include <math.h>
 #include "uart.h"
+#include "gpio_if.h"
 
 //-----------------------------------------------------------------------------
 // Global CONSTANTS
 //-----------------------------------------------------------------------------
-//char mem_afc[3];			  //Rememberred afc values for previous, current and next stations
-//xd_u16 mem_freq[3];			  //Rememberred channel frequencies for previous, current and next stations
+#ifdef USE_VALIDSTATION_CHECK
+Str_Band  Current_Band;
+char mem_afc[3];			  //Rememberred afc values for previous, current and next stations
+xd_u16 mem_freq[3];			  //Rememberred channel frequencies for previous, current and next stations
+#endif
+
 //xd_u8 mem_vol;				  //Rememberred volume before mute
 #ifdef SEEK_WITH_SNR
 xd_u8 mem_snr[3];			  //Rememberred SNR values for previous, current and next stations
 #endif
 
-//Str_Band  Current_Band;
+
 extern xd_u8 cur_sw_fm_band;
 extern xd_u16 REG_MAX_FREQ,REG_MIN_FREQ,REG_STEP;
 
@@ -1094,7 +1099,141 @@ xd_u16 KT_AMGetFreq(void)
 }
 #endif
 
-#if 0
+#ifdef USE_VALIDSTATION_CHECK
+extern bool get_band_info_config();
+void load_band_info(u8 cur_band)
+{
+#ifdef DEBUG_SW    	
+	printf(" ----->load_band_info  %d  \r\n ",(u16)cur_band);
+#endif
+
+    if(cur_band==0){
+		
+		Current_Band.Band=FM_MODE;
+		Current_Band.Tune_Step=FM_50KHz_STEP;
+		Current_Band.Seek_Step = FM_50KHz_STEP;	
+		Current_Band.ValidStation_Step =FM_50KHz_STEP ;			
+    }
+    else if(cur_band==1){
+		
+		Current_Band.Band=MW_MODE;
+
+#ifdef GPIO_SEL_BAND_INFO_CONFIG
+		if(get_band_info_config()){
+			Current_Band.Seek_Step = AM_10KHz_STEP;		
+		}
+		else
+#endif			
+		{
+			Current_Band.Seek_Step = AM_1KHz_STEP;		
+		}
+		Current_Band.ValidStation_Step =AM_2KHz_STEP;			
+		Current_Band.AFCTH_Prev =MW_AFCTH_PREV;
+		Current_Band.AFCTH_Next =MW_AFCTH_NEXT;
+		Current_Band.AFCTH =MW_AFCTH;
+
+    }
+    else if(cur_band==2){
+		
+		Current_Band.Band=SW_MODE; 
+		Current_Band.Seek_Step=	SM_5KHz_STEP;
+		Current_Band.ValidStation_Step =SM_2KHz_STEP;					
+		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-2;
+		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-2;
+		Current_Band.AFCTH =SW_AFCTH+2;
+		Current_Band.RSSI_TH=SW_RSSI_TH;
+
+    }	
+    else if(cur_band==3){
+		
+		Current_Band.Band=SW_MODE; 
+		Current_Band.Seek_Step=	SM_5KHz_STEP;
+		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
+		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-2;
+		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-2;
+		Current_Band.AFCTH =SW_AFCTH+2;
+		Current_Band.RSSI_TH=SW_RSSI_TH;
+    }		
+    else if(cur_band==4){
+		
+		Current_Band.Band=SW_MODE; 
+		Current_Band.Seek_Step=	SM_5KHz_STEP;
+		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
+		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-2;
+		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-2;
+		Current_Band.AFCTH =SW_AFCTH+4;
+		Current_Band.RSSI_TH=SW_RSSI_TH;
+		
+    }
+    else if(cur_band==5){
+		
+		Current_Band.Band=SW_MODE; 
+		Current_Band.Seek_Step=	SM_5KHz_STEP;
+		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
+		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
+		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
+		Current_Band.AFCTH =SW_AFCTH+8;
+		Current_Band.RSSI_TH=SW_RSSI_TH;
+		
+    }	
+    else if(cur_band==6){
+		
+		Current_Band.Band=SW_MODE; 
+		Current_Band.Seek_Step=	SM_5KHz_STEP;
+		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
+		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
+		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
+		Current_Band.AFCTH =SW_AFCTH+10;
+		Current_Band.RSSI_TH=SW_RSSI_TH;
+		
+    }		
+    else if(cur_band==7){
+		
+		Current_Band.Band=SW_MODE; 
+		Current_Band.Seek_Step=	SM_5KHz_STEP;
+		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
+		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
+		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
+		Current_Band.AFCTH =SW_AFCTH+10;
+		Current_Band.RSSI_TH=SW_RSSI_TH;
+		
+    }	
+    else if(cur_band==8){
+		
+		Current_Band.Band=SW_MODE; 
+		Current_Band.Seek_Step=	SM_5KHz_STEP;
+		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
+		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
+		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
+		Current_Band.AFCTH =SW_AFCTH+12;
+		Current_Band.RSSI_TH=SW_RSSI_TH-3;
+		
+    }		
+    else if(cur_band==9){
+		
+		Current_Band.Band=SW_MODE; 
+		Current_Band.Seek_Step=	SM_5KHz_STEP;
+		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
+		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
+		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
+		Current_Band.AFCTH =SW_AFCTH+14;
+		Current_Band.RSSI_TH=SW_RSSI_TH-4;
+		
+    }		
+    else{
+		
+		Current_Band.Band=SW_MODE; 
+		Current_Band.Seek_Step=	SM_5KHz_STEP;
+		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
+		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
+		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
+		Current_Band.AFCTH =SW_AFCTH+16;
+		Current_Band.RSSI_TH=SW_RSSI_TH-4;
+		
+    }	
+}
+
+#if 1
 /*****************************************************************************/
 /*函 数 名：KT_FMGetST													 	 */
 /*功能描述：FM 判断单声道OR立体声程序										 */
@@ -1151,6 +1290,11 @@ xd_u8 KT_AMReadRSSI(char *RSSI) //range from -90 to -6, unit is dbm
 	xd_u16 regx;
 	regx = KT_Bus_Read(0x24);
 	*RSSI = -(90 - (((regx >> 8) & 0x001F) * 3));
+	
+#ifdef DEBUG_SW    	
+	printf(" ------------------>KT_AMReadRSSI [ **** ]  %d dB \r\n ",(u16)*RSSI);
+#endif
+	
 	return(1);
 }
 
@@ -1174,6 +1318,972 @@ xd_u8 KT_FMGetSNR(void)
 //	regx = regx <<1;
 	return( (regx & 0x1FC0) >> 5);								// 1)SNR>>6 2)SNR<<1
 }
+/*****************************************************************************/
+/*函 数 名：KT_FMGetAFC														 */
+/*功能描述：FM 读取AFC（自动频率控制）程序									 */
+/*函数说明：Frequency=-127(KHz) to 127(KHz)									 */
+/*调用函数：KT_Bus_Read()						 							 */
+/*全局变量：无																 */
+/*输    入：xd_u16 Frequency													 */
+/*返    回：char afc_delta													 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+char KT_FMGetAFC(xd_u16 Frequency) // returned value's range is from -127 to 127, unit is KHz
+{
+	char afc_delta;
+	xd_u16 regx;
+	regx = KT_Bus_Read(0x3C);								// read AFC_DELTAF
+	afc_delta = regx & 0x00FF;
+
+
+	if((Frequency == 9440) || (Frequency == 10670))
+	{
+		if(afc_delta > 0)
+			return (afc_delta - 8);	
+		else if(afc_delta < 0)
+			return (afc_delta + 8);	
+	}
+	else
+		return (afc_delta);	
+}
+
+/*****************************************************************************/
+/*函 数 名：KT_AMGetAFC														 */
+/*功能描述：AM 读取AFC（自动频率控制）程序									 */
+/*函数说明：Frequency=-127(KHz) to 127(KHz)									 */
+/*调用函数：KT_Bus_Read()						 							 */
+/*全局变量：无																 */
+/*输    入：无																 */
+/*返    回：char afc_delta													 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+char KT_AMGetAFC(void) // returned value's range is from -127 to 127, unit is KHz
+{
+	char afc_delta;
+	xd_u16 regx;
+	
+	regx = KT_Bus_Read(0x25);								// read AFC_DELTAF
+	afc_delta =(char) (regx & 0x00FF);
+	return (afc_delta);	
+}
+
+xd_u16 KT_AMGetFreq(void)
+{
+	char rssi_reg,afc_reg;
+	xd_u16 regx;
+	regx = KT_Bus_Read(0x13);
+#ifdef DEBUG_SW    	
+	printf(" ------------------>KT_AMGetFreq  %u  \r\n ",regx);
+#endif
+	KT_AMReadRSSI(&rssi_reg);	
+	afc_reg =KT_AMGetAFC();	
+#ifdef DEBUG_SW    	
+	printf(" ------------------>KT_AMGetAFC[ ***** ]  %d  \r\n ",(u16)afc_reg);
+#endif
+
+	return( regx );
+}
+#endif
+
+#if 0
+
+/*****************************************************************************/
+/*函 数 名：KT_AMFMSeekFromCurrentCh									 	 */
+/*功能描述：AMFM从指定频率搜台程序											 */
+/*函数说明：																 */
+/*调用函数：																 */
+/*全局变量：FM_MODE、SEEKUP、Current_Band.Seek_Down_Limit、							*/
+/*			Current_Band.Seek_Up_Limit、Current_Band.Seek_Step、					*/
+/*			mem_afc、mem_freq														*/
+/*输    入：xd_u16 seekDir, xd_u16 *Frequency									 */
+/*返    回：正确：1					错误：0									 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+xd_u8 KT_AMFMSeekFromCurrentCh(xd_u16 seekDir, xd_u16 *Frequency)   //     seekDir: 0-->seek down 1-->seek up
+{
+	xd_u16 NextFreq;
+	xd_u8 (*pValidStation)(xd_u16);
+
+	mem_afc[0]=0;mem_afc[1]=0;mem_afc[2]=0;
+	mem_freq[0]=0;mem_freq[1]=0;mem_freq[2]=0;
+			
+	if(Current_Band.Band == FM_MODE)
+		*pValidStation = KT_FMValidStation;
+	else
+		*pValidStation = KT_AMValidStation;
+
+	if (seekDir == SEEKUP)
+	{
+		if ((*Frequency) == Current_Band.Seek_Up_Limit)		//if current channel reaches 108MHz, then start seeking from 87.5MHz
+			NextFreq = Current_Band.Seek_Down_Limit;
+		else									//else start from 100KHz after current channel
+			NextFreq = (*Frequency) + Current_Band.Seek_Step;
+		while (1)
+		{
+
+			if ((*pValidStation)(NextFreq))	//if nextfreq is a true channel, then stop seeking and return seek success
+			{
+				*Frequency = NextFreq;
+				return(1);
+			}
+			else
+			{
+				if (NextFreq == Current_Band.Seek_Up_Limit)	//if current channel reach 108MHz, then stop seeking and return seek fail
+				{
+					*Frequency = NextFreq;
+					return(0);
+				}
+				NextFreq = NextFreq + Current_Band.Seek_Step;	//Try next channel
+			}
+		}
+	}
+	else
+	{
+		if ((*Frequency) == Current_Band.Seek_Down_Limit)		//if current channel reaches 87.5MHz, then start seeking from 108MHz
+			NextFreq = Current_Band.Seek_Up_Limit;
+		else									//else start from 100KHz before current channel
+			NextFreq = (*Frequency) - Current_Band.Seek_Step;
+		while (1)
+		{
+			if ((*pValidStation)(NextFreq))	//if nextfreq is a true channel, then stop seeking and return seek success
+			{
+				*Frequency = NextFreq;
+				return(1);
+			}
+			else
+			{
+				if (NextFreq == Current_Band.Seek_Down_Limit)	//if current channel reach 87.5MHz, then stop seeking and return seek fail
+				{
+					*Frequency = NextFreq;
+					return(0);
+				}
+				NextFreq = NextFreq - Current_Band.Seek_Step;	//Try next channel
+			}
+		}
+	}
+}
+#endif
+/*****************************************************************************/
+/*函 数 名：KT_FMValidStation												 */
+/*功能描述：FM 有效态判断程序											 */
+/*函数说明：																 */
+/*调用函数：Display_Channel()、KT_FMSeekTune()、KT_FMGetSNR()、KT_FMGetAFC() */
+/*全局变量：Current_Band.ValidStation_Step									 */
+/*输    入：xd_u16 Frequency													 */
+/*返    回：正确：1					错误：0									 */
+/*设 计 者：Yanpei					时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+xd_u8 KT_FMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station //check AFC_DELTA only
+{
+	xd_u16 nextfreq;
+	char afc[3];							//AFC value for previous, current and next channels
+	xd_u16 freq[3];							//frequency values for previous, current and next channels
+#ifdef SEEK_WITH_SNR
+	xd_u8 snr[3];							//SNR for previous, current and next channels
+#endif
+	char i,j;
+	xd_u8 snr2,snr3;
+
+	afc[0]=0;afc[1]=0;afc[2]=0;				//initialize
+	freq[0]=0;freq[1]=0;freq[2]=0;			//initialize
+#ifdef SEEK_WITH_SNR
+	snr[0]=0;snr[1]=0;snr[2]=0;				//initialize
+#endif
+	nextfreq = Frequency-Current_Band.ValidStation_Step;		
+	//Get AFC values of previous, current and next channels
+	for (i=0;i<3;i++)
+	{
+		//get AFC values for the last station's information
+		for (j=0;j<3;j++)
+			if (mem_freq[j]==nextfreq)
+			{
+				afc[i]=mem_afc[j];
+				freq[i]=mem_freq[j];
+#ifdef SEEK_WITH_SNR
+				snr[i]=mem_snr[j];
+#endif
+			}
+		//get new AFC value if the station information is not investigated in the last run
+		if (!freq[i])
+		{
+		    KT_FMTune(nextfreq);
+		    delay_10ms(6);			
+			afc[i]=KT_FMGetAFC(nextfreq);
+#ifdef SEEK_WITH_SNR
+			snr[i]=KT_FMGetSNR();
+#endif
+			freq[i]=nextfreq;
+		}
+		nextfreq = nextfreq + Current_Band.ValidStation_Step;
+	}
+	//Record AFC values
+	mem_afc[0]=afc[0];mem_afc[1]=afc[1];mem_afc[2]=afc[2];
+	mem_freq[0]=freq[0];mem_freq[1]=freq[1];mem_freq[2]=freq[2];
+
+#ifdef SEEK_WITH_SNR
+	mem_snr[0]=snr[0];mem_snr[1]=snr[1];mem_snr[2]=snr[2];
+#endif
+
+	//Determine the validation of current station
+	if ((afc[0]<afc[1]) && (afc[1]<afc[2]) && (afc[0]<-FM_AFCTH_PREV) && (afc[1]>-FM_AFCTH) && (afc[1]<FM_AFCTH) && (afc[2]>FM_AFCTH_NEXT)) {
+
+#ifdef SEEK_WITH_SNR
+		KT_FMTune(Frequency);
+		delay_10ms(6);
+		snr2=KT_FMGetSNR();
+		if ((snr[1]>=FM_SNR_TH) && (snr2>=FM_SNR_TH)) return(1);
+		if ((snr[1]<FM_SNR_TH) && (snr2<FM_SNR_TH)) return(0);
+		delay_10ms(2);
+		snr3=KT_FMGetSNR();
+		if (snr3>=FM_SNR_TH) return(1);
+		else return(0);
+#else
+		return(1);
+#endif
+
+	}
+	else
+		return(0);
+}
+#if 0
+/*****************************************************************************/
+/*函 数 名：KT_AMSeekFromCurrentCh										 	 */
+/*功能描述：AM从指定频率搜台程序											 */
+/*函数说明：																 */
+/*调用函数：KT_AMValidStation()												 */
+/*全局变量：KT_AMValidStation、Current_Band.Seek_Down_Limit、KT_FMValidStation			 
+/*			Current_Band.Seek_Up_Limit、Current_Band.Seek_Step、SEEKUP		 */
+/*输    入：xd_u16 seekDir, xd_u16 *Frequency									 */
+/*返    回：xd_u16 Frequency													 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+/*
+xd_u8 KT_AMSeekFromCurrentCh(xd_u16 seekDir, xd_u16 *Frequency)   //	seekDir: 0-->seek down 1-->seek up
+{
+	xd_u16 NextFreq;
+	mem_afc[0]=0;mem_afc[1]=0;mem_afc[2]=0;
+	mem_freq[0]=0;mem_freq[1]=0;mem_freq[2]=0;
+
+	if (seekDir == SEEKUP)
+	{
+		if ((*Frequency) == Current_Band.Seek_Up_Limit)			//if current channel reaches 1710KHz, then start seeking from 504KHz
+			NextFreq = Current_Band.Seek_Down_Limit;
+		else											//else start from 9KHz after current channel
+			NextFreq = (*Frequency) + Current_Band.Seek_Step;
+		while (1)
+		{
+			if (KT_AMValidStation(NextFreq))			//if nextfreq is a true channel, then stop seeking and return seek success
+			{
+				*Frequency = NextFreq;
+				return(1);
+			}
+			else
+			{
+				if (NextFreq ==  Current_Band.Seek_Up_Limit)		//if current channel reach 108MHz, then stop seeking and return seek fail
+				{	
+					*Frequency = NextFreq;
+					return(0);
+				}
+				NextFreq = NextFreq + Current_Band.Seek_Step;	//Try next channel
+			}
+		}
+	}
+	else
+	{
+		if ((*Frequency) == Current_Band.Seek_Down_Limit)			//if current channel reaches 504KHz, then start seeking from 1710KHz
+			NextFreq = Current_Band.Seek_Up_Limit;
+		else											//else start from 9kHz before current channel
+			NextFreq = (*Frequency) - Current_Band.Seek_Step;
+		while (1)
+		{
+			if (KT_AMValidStation(NextFreq))			//if nextfreq is a true channel, then stop seeking and return seek success
+			{
+				*Frequency = NextFreq;
+				return(1);
+			}
+			else
+			{
+				if (NextFreq == Current_Band.Seek_Down_Limit)		//if current channel reach 504KHz, then stop seeking and return seek fail
+				{
+ 					*Frequency = NextFreq;
+					return(0);
+				}
+				NextFreq = NextFreq - Current_Band.Seek_Step;	//Try next channel
+			}
+		}
+	}
+}
+*/
+#endif
+/*****************************************************************************/
+/*函 数 名：KT_AMValidStation												 */
+/*功能描述：AM 有效态判断程序											 */
+/*函数说明：																 */
+/*调用函数：Display_Channel_AM()、KT_AMGetAFC() 							 */
+/*全局变量：Current_Band.ValidStation_Step、Current_Band.AFCTH_Prev			 */
+/*输    入：xd_u16 Frequency													 */
+/*返    回：正确：1					错误：0									 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+xd_u8 KT_AMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station //check AFC_DELTA only
+{
+	char AM_afc[3];							//AFC value for previous, current and next channels
+	AM_afc[0] = 0;AM_afc[1] = 0;AM_afc[2] = 0;	//initialize
+
+    //Display_Channel_AM(Frequency);			//display current channel frequency
+
+	KT_AMTune( Frequency - Current_Band.ValidStation_Step );
+	delay_10ms(20);
+	
+	AM_afc[0] = KT_AMGetAFC();
+
+	if( AM_afc[0] < -Current_Band.AFCTH_Prev )
+	{
+
+		KT_AMTune( Frequency );
+		delay_10ms(22);				
+		AM_afc[1] = KT_AMGetAFC();
+
+		if( (AM_afc[1] >= -Current_Band.AFCTH) && (AM_afc[1] <= Current_Band.AFCTH) )
+		{
+			KT_AMTune( Frequency + Current_Band.ValidStation_Step );
+			delay_10ms(22);
+			AM_afc[2] = KT_AMGetAFC();
+
+			if( AM_afc[2] > Current_Band.AFCTH_Next )
+			{
+				if ( (AM_afc[0] < AM_afc[1]) && (AM_afc[1] < AM_afc[2]) ){
+					return(1);
+				}
+				else
+					return(0);
+			}
+			else
+			{
+				return(0);
+			}
+		}
+		else
+		{
+			return(0);
+		}
+	}
+	else
+	{
+		return(0); 
+	}
+}
+
+xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station //check AFC_DELTA only
+{
+	char AM_afc[3],rssi_reg[3];
+	static char last_rssi_reg=0;							//AFC value for previous, current and next channels
+	AM_afc[0] = 0;AM_afc[1] = 0;AM_afc[2] = 0;	//initialize
+	rssi_reg[0] = 0;rssi_reg[1] = 0;rssi_reg[2] = 0;	//initialize
+
+    //Display_Channel_AM(Frequency);			//display current channel frequency
+#ifdef DEBUG_SW    
+	printf(" KT %d    AM  SW  %u  \r\n ",(u16)cur_band,Frequency);
+#endif	
+	
+	KT_AMTune( Frequency - Current_Band.ValidStation_Step );
+	delay_10ms(16);
+	AM_afc[0] = KT_AMGetAFC();
+#ifdef DEBUG_SW    	
+	printf(" ----------------------------->KT  AM_afc  [ 0000 ]  %d  \r\n ",(u16)AM_afc[0]);
+#endif
+	KT_AMReadRSSI(&rssi_reg[0]);	
+
+	if( (AM_afc[0] <= -Current_Band.AFCTH_Prev)/*||((last_rssi_reg-rssi_reg[0])<=-Current_Band.RSSI_TH )*/)
+	{
+
+		KT_AMTune(Frequency);
+		delay_10ms(22);		
+		AM_afc[1] = KT_AMGetAFC();
+#ifdef DEBUG_SW    
+		printf(" ----------------------------------------->KT  AM_afc  [ 1111 ]  %d  \r\n ",(u16)AM_afc[1]);
+#endif
+		KT_AMReadRSSI(&rssi_reg[1]);	
+
+		if( (AM_afc[1] >= -Current_Band.AFCTH) && (AM_afc[1] <= Current_Band.AFCTH) )
+		{
+			KT_AMTune( Frequency + Current_Band.ValidStation_Step );
+			delay_10ms(22);
+
+			
+			AM_afc[2] = KT_AMGetAFC();
+#ifdef DEBUG_SW    
+			printf(" ---------------------------------------------------> KT  AM_afc  [ 2222 ]  %d  \r\n ",(u16)AM_afc[2]);
+#endif
+			KT_AMReadRSSI(&rssi_reg[2]);	
+
+			if(( AM_afc[2] >= Current_Band.AFCTH_Next)||((rssi_reg[0]-rssi_reg[1])<=-Current_Band.RSSI_TH ))
+			{
+#ifdef DEBUG_SW    
+			printf(" ---------------------------------------------------> KT  (rssi_reg[0]-rssi_reg[1])  [ 3333 ]  %d   (?)  -%d \r\n ",(u16)(rssi_reg[0]-rssi_reg[1]),(u16)Current_Band.RSSI_TH);
+#endif
+			
+				//if ( (AM_afc[0] < AM_afc[1]) && (AM_afc[1] < AM_afc[2]) ){
+					return(1);
+				//}
+				//else
+				//	return(0);
+			}
+			else
+			{
+				return(0);
+			}
+		}
+		else
+		{
+			return(0);
+		}
+	}
+	else
+	{
+		last_rssi_reg= rssi_reg[0];
+		return(0); 
+	}
+}
+#if 0
+/*****************************************************************************/
+/*函 数 名：KT_AM_TUNING_LIGHT												 */
+/*功能描述：AM tuning灯指示程序（包含AM带宽控制程序）								*/
+/*函数说明：																 */
+/*调用函数：KT_Bus_Read()、KT_AMGetAFC()、KT_AMSetBW()						 */
+/*全局变量：												 */
+/*输    入：无																 */
+/*返    回：正确：1					错误：0									 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+bit KT_AM_TUNING_LIGHT(void)
+{
+	xd_u16 reg1C;
+	char AM_AFC;
+	reg1C = KT_Bus_Read(0x1C);
+	reg1C = reg1C & 0x3F00;
+	reg1C = reg1C>>8;
+	AM_AFC = KT_AMGetAFC();
+
+#ifdef AM_ABC
+	if( ( reg1C <= AM_TUNING_LIGHT_TH ) && ( AM_AFC > -2 ) && ( AM_AFC < 2 ) )
+		KT_AMSetBW(4);
+	else
+		KT_AMSetBW(2);
+#endif
+
+	if( ( reg1C <= AM_TUNING_LIGHT_TH ) && ( AM_AFC > -MW_AFCTH ) && ( AM_AFC < MW_AFCTH ) )
+		return(1);
+	else
+		return(0);
+}
+
+/*****************************************************************************/
+/*函 数 名：KT_FM_TUNING_LIGHT												 */
+/*功能描述：FM tuning灯指示程序														*/
+/*函数说明：																 */
+/*调用函数：KT_FMGetAFC()													 */
+/*全局变量：FM_SNR_TH														 */
+/*输    入：无																 */
+/*返    回：正确：1					错误：0									 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+bit KT_FM_TUNING_LIGHT(void)
+{
+	char FM_AFC;
+	FM_AFC = KT_FMGetAFC(0);
+	if( ( KT_FMGetSNR() >= FM_SNR_TH ) && ( FM_AFC > -FM_AFCTH ) && ( FM_AFC < FM_AFCTH ) ) 
+		return(1);
+	else
+		return(0);
+}
+
+/*****************************************************************************/
+/*函 数 名：KT_FM_ST_Indicator												 */
+/*功能描述：FM立体声指示程序												 */
+/*函数说明：																 */
+/*调用函数：KT_FMReadRSSI()、KT_Bus_Read()、KT_FMGetST()、CODE_Send()		 */
+/*全局变量：												 */
+/*输    入：无																 */
+/*返    回：立体声：1				单声道：0								 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+bit KT_FM_ST_Indicator(void)
+{
+#ifdef MANUAL_SEPARATION
+	xd_u16 reg5;
+	char xdata rssi_value;
+
+	KT_FMReadRSSI(&rssi_value);
+
+	if(rssi_value >= SEPARATION_POINT)
+	{
+		reg5 = KT_Bus_Read(0x05);					// BLEND DISABLE
+		KT_Bus_Write(0x05, reg5 | 0x0020);
+		if ( KT_FMGetST() )
+	 	{
+			return(1);
+		}
+		else 
+		{
+			CODE_Send(0x98);					// LCD显示"mono"符号
+			return(0);
+		}
+	}
+	if(rssi_value <= BLEND_POINT)
+	{
+		reg5 = KT_Bus_Read(0x05);					// BLEND ENABLE
+		KT_Bus_Write(0x05, reg5 & 0xFFDF);
+		return(0);
+	}
+#else
+	if ( KT_FMGetST() )
+	{
+		return(1);
+	}
+	else 
+	{
+		return(0);
+	}
+#endif
+}
+#endif
+
+void KT_Mute_Ctrl(bool m_f)
+{
+	u16 regx=0;
+
+	regx = KT_Bus_Read(0x0F);       
+	if(m_f){
+		KT_Bus_Write(0x0F, regx & 0xFFE0 );		//Write volume to 0
+	}
+	else{
+		KT_Bus_Write(0x0f, regx & 0xFFE0 | 0x1D); 
+	}
+}
+/*****************************************************************************/
+/*函 数 名：KT_AM_SOFTMUTE												 	 */
+/*功能描述：AM 自动静音程序												  	 */
+/*函数说明：																 */
+/*调用函数：KT_AMValidStation()、KT_Bus_Read()、KT_Bus_Write()、			 */
+/*			KT_AM_SOFTMUTE_SETTING()		 								 */
+/*全局变量：无																 */
+/*输    入：xd_u16 Frequency													 */
+/*返    回：无																 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+#ifdef AM_SOFTMUTE
+void KT_AM_SOFTMUTE(xd_u16 Frequency)
+{
+	xd_u16 reg4;
+
+	reg4 = KT_Bus_Read(0x04);
+
+	if(KT_AMValidStation(Frequency))
+	{
+//		KT_AM_SOFTMUTE_SETTING(2,3,2,5);					// SMUTEA=4,SMUTER=60ms,AM_SMTH=3,VOLUMET=5,SMMD=RSSI mode
+		KT_Bus_Write(0x04,reg4 | 0x4000);					// AM Softmute Disable
+	}
+	else
+	{
+		KT_AM_SOFTMUTE_SETTING(0,3,7,5);					// SMUTEA=16,SMUTER=60ms,AM_SMTH=8,VOLUMET=5,SMMD=RSSI mode
+		KT_Bus_Write(0x04,reg4 & 0xBFFF);					// AM Softmute Enable
+	}
+//	reg4=KT_Bus_Read(0x04);									// AM Softmute Enable
+//	KT_Bus_Write(0x04,reg4 & 0xBFFF);
+}
+
+/*****************************************************************************/
+/*函 数 名：KT_AM_SOFTMUTE_SETTING										 	 */
+/*功能描述：AM 自动静音设置程序											  	 */
+/*函数说明：																 */
+/*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
+/*全局变量：无																 */
+/*输    入：xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 AM_SMTH, xd_u8 VOLUMET		 */
+/*返    回：无																 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+void KT_AM_SOFTMUTE_SETTING(xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 AM_SMTH, xd_u8 VOLUMET)
+{
+	xd_u16 reg2E;
+	reg2E = KT_Bus_Read(0x2E);
+	KT_Bus_Write(0x2E,(reg2E & 0x0007) | (SMUTEA<<14) | (SMUTER<<12) | (AM_SMTH<<9) | (VOLUMET<<4) | 0x0000 );
+//									SMUTEA=4,SMUTER=120ms,AM_SMTH=3,VOLUMET=1,SMMD=RSSI mode
+}
+#endif
+
+/*****************************************************************************/
+/*函 数 名：KT_FM_SOFTMUTE												 	 */
+/*功能描述：FM 自动静音程序												  	 */
+/*函数说明：																 */
+/*调用函数：KT_FMValidStation()、KT_Bus_Read()、KT_Bus_Write()、			 */
+/*			KT_FM_SOFTMUTE_SETTING()		 								 */
+/*全局变量：无																 */
+/*输    入：xd_u16 Frequency													 */
+/*返    回：无																 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+#ifdef FM_SOFTMUTE
+void KT_FM_SOFTMUTE(xd_u16 Frequency)
+{
+	xd_u16 reg4;
+
+	reg4 = KT_Bus_Read(0x04);
+
+	if(KT_FMValidStation(Frequency))
+	{
+//		KT_FM_SOFTMUTE_SETTING(2,3,4,5);					// SMUTEA=4,SMUTER=60ms,SMMD=SNR mode,FM_SMTH=9,VOLUMET=5
+		KT_Bus_Write(0x04,reg4 | 0x8000);					// FM Softmute Disable
+
+	}
+	else
+	{
+		KT_FM_SOFTMUTE_SETTING(0,3,7,5);					// SMUTEA=16,SMUTER=60ms,SMMD=SNR mode,FM_SMTH=12,VOLUMET=5
+		KT_Bus_Write(0x04,reg4 & 0x7FFF);					// FM Softmute Enable
+	}
+//	reg4=KT_Bus_Read(0x04);									// FM Softmute Enable
+//	KT_Bus_Write(0x04,reg4 & 0x7FFF);
+}
+
+/*****************************************************************************/
+/*函 数 名：KT_FM_SOFTMUTE_SETTING										 	 */
+/*功能描述：FM 自动静音设置程序											  	 */
+/*函数说明：																 */
+/*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
+/*全局变量：无																 */
+/*输    入：xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 FM_SMTH, xd_u8 VOLUMET		 */
+/*返    回：无																 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+void KT_FM_SOFTMUTE_SETTING(xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 FM_SMTH, xd_u8 VOLUMET)
+{
+	xd_u16 reg2E;
+	reg2E = KT_Bus_Read(0x2E);
+	KT_Bus_Write(0x2E,(reg2E & 0x0E00) | (SMUTEA<<14) | (SMUTER<<12) | (VOLUMET<<4) | 0x0008 | FM_SMTH );
+//									SMUTEA=4,SMUTER=120ms,VOLUMET=1,SMMD=SNR mode,FM_SMTH=3
+}
+#endif
+
+/*****************************************************************************/
+/*函 数 名：KT_AM_SOFTMUTE_SETTING										 	 */
+/*功能描述：AM 自动静音设置程序											  	 */
+/*函数说明：																 */
+/*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
+/*全局变量：无																 */
+/*输    入：xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 AM_SMTH, xd_u8 VOLUMET		 */
+/*返    回：无																 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+#ifdef AM_SOFTMUTE_AFCMODE
+void KT_AM_SOFTMUTE_SETTING(xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 AM_SMTH, xd_u8 VOLUMET)
+{
+	xd_u16 reg2E;
+	reg2E = KT_Bus_Read(0x2E);
+	KT_Bus_Write(0x2E,(reg2E & 0x0007) | (SMUTEA<<14) | (SMUTER<<12) | (AM_SMTH<<9) | (VOLUMET<<4) | 0x0000 );
+}
+/*****************************************************************************/
+/*函 数 名：KT_AM_SOFTMUTE_AFCMODE										 	 */
+/*功能描述：AM 软件静音AFC（自动频率控制）模式							  	 */
+/*函数说明：																 */
+/*调用函数：KT_Bus_Read()、KT_AMGetAFC()、KT_AMReadRSSI()、KT_Bus_Write()	 */
+/*全局变量：无																 */
+/*输    入：bit Valid														 */
+/*返    回：无																 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+/*
+//-----------AM SOFTMUTE AFC MODE A:-----------// 
+void KT_AM_SOFTMUTE_AFCMODE(bit Valid)
+{
+	char xdata rssi_value;
+	xd_u8 am_afc;
+	xd_u16 reg4,regF;
+
+	reg4=KT_Bus_Read(0x04);
+ 	am_afc = abs(KT_AMGetAFC());
+
+	if(Valid == 1)
+	{
+		KT_AMReadRSSI(&rssi_value);
+		if(rssi_value>-60)
+		{
+			KT_Bus_Write(0x04,reg4 | 0x4000);					// AM Softmute Disable
+			KT_AM_AFC_VolumeSet(am_afc);
+		}
+		if(rssi_value<-66)
+		{
+			if((reg4 & 0x4000) == 0x4000)						// if softmute disable
+			{
+				KT_AM_SOFTMUTE_SETTING(2,2,7,15);				// SMUTEA=4,SMUTER=30ms,AM_SMTH=8,VOLUMET=15,SMMD=RSSI mode
+				KT_Bus_Write(0x04,reg4 & 0xBFFF);				// AM Softmute Enable
+			}
+		}
+		CODE_Send(0x9B);										// 显示B0-B3
+		DATA_Send('V');
+		DATA_Send('C');
+	}
+	else
+	{
+		KT_Bus_Write(0x04,reg4 | 0x4000);						// AM Softmute Disable
+		if(am_afc<13)
+		{
+			KT_AMReadRSSI(&rssi_value);
+			if(rssi_value<-72)
+			{
+				regF=KT_Bus_Read(0x0F); 
+				KT_Bus_Write(0x0F, regF & 0xFFE0 | 0x000F); 
+			}
+			if(rssi_value>-63)
+			{
+				KT_AMFMUnMute();
+			}
+		}
+		else
+		{
+			KT_AM_AFC_VolumeSet(am_afc);
+		}		
+		CODE_Send(0x9B);										// 显示B0-B3
+		DATA_Send(' ');
+		DATA_Send(' ');
+	}
+}
+
+
+void KT_AM_AFC_VolumeSet(xd_u8 afc)			//Input: 0~128
+{
+	xd_u16 regx;
+	char afc_volume;
+
+	regx=KT_Bus_Read(0x0F); 
+
+	if(afc >= 60)					//+-8
+	{
+		KT_AMFMMute();
+	}
+	if( (afc < 60) && (afc >= 52) )	//+-7
+	{
+		afc_volume = mem_vol-28;
+		if(afc_volume<15)
+			afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+	if( (afc < 52) && (afc >= 44) )	//+-6
+	{
+		afc_volume = mem_vol-24;
+		if(afc_volume<15)
+			afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+	if( (afc < 44) && (afc >= 36) )	//+-5
+	{
+		afc_volume = mem_vol-20;
+		if(afc_volume<15)
+			afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+	if( (afc < 36) && (afc >= 28) )	//+-4
+	{
+		afc_volume = mem_vol-16;
+		if(afc_volume<15)
+			afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+	if( (afc < 28) && (afc >= 20) )	//+-3
+	{
+		afc_volume = mem_vol-6;
+		if(afc_volume<15)
+			afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+	if( (afc < 20) && (afc >= 12) )//+-2
+	{
+		afc_volume = mem_vol-5;
+		if(afc_volume<15)
+			afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+	if( (afc < 12) && (afc >= 4) )	//+-1
+	{
+		afc_volume = mem_vol-1;
+
+		if(afc_volume<15)
+			afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+	if(afc < 4)						//+-0
+	{
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | mem_vol);
+	}
+}
+//-----------AM SOFTMUTE AFC MODE A END-----------// 
+*/
+
+/*****************************************************************************/
+/*函 数 名：KT_AM_SOFTMUTE_AFCMODE										 	 */
+/*功能描述：AM 自动静音AFC（自动频率控制）模式							  	 */
+/*函数说明：																 */
+/*调用函数：KT_Bus_Read()、KT_AMGetAFC()、KT_AMReadRSSI()、KT_Bus_Write()、	 */
+/*			KT_AM_TUNING_LIGHT()、KT_AM_SOFTMUTE_SETTING()、CODE_Send()、	 */
+/*			KT_AM_AFC_VolumeSet()、DATA_Send()								 */
+/*全局变量：无																 */
+/*输    入：无																 */
+/*返    回：无																 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+//-----------AM SOFTMUTE AFC MODE B-----------// 
+void KT_AM_SOFTMUTE_AFCMODE(void)
+//void KT_AM_SOFTMUTE_AMTUNINGLIGHTMODE(bit Valid)
+{
+	char xdata rssi_value;
+	xd_u8 am_afc;
+	xd_u16 reg4;
+
+	reg4=KT_Bus_Read(0x04);
+ 	am_afc = abs(KT_AMGetAFC());
+
+	if(KT_AM_TUNING_LIGHT())
+	{
+		KT_AMReadRSSI(&rssi_value);
+		if(rssi_value > -60)
+		{
+			KT_Bus_Write(0x04,reg4 | 0x4000);					// AM Softmute Disable
+		}
+		if(rssi_value < -66)
+		{
+			if((reg4 & 0x4000) == 0x4000)						// if softmute disable
+			{
+				KT_AM_SOFTMUTE_SETTING(2,2,7,15);				// SMUTEA=4,SMUTER=30ms,AM_SMTH=8,VOLUMET=15,SMMD=RSSI mode
+				KT_Bus_Write(0x04,reg4 & 0xBFFF);				// AM Softmute Enable
+			}
+		}
+		CODE_Send(0x9B);										// 显示B0-B3
+		DATA_Send('V');
+		DATA_Send('C');
+	}
+	else
+	{
+		KT_Bus_Write(0x04,reg4 | 0x4000);						// AM Softmute Disable
+		KT_AM_AFC_VolumeSet(am_afc);
+		
+		CODE_Send(0x9B);										// 显示B0-B3
+		DATA_Send(' ');
+		DATA_Send(' ');
+	}
+}
+
+/*****************************************************************************/
+/*函 数 名：KT_AM_AFC_VolumeSet											 	 */
+/*功能描述：AM AFC音量设置程序											  	 */
+/*函数说明：																 */
+/*调用函数：KT_Bus_Read()、KT_AMFMMute()、KT_Bus_Write()					 */
+/*全局变量：无																 */
+/*输    入：xd_u8 afc														 */
+/*返    回：无																 */
+/*设 计 者：Kanghekai				时间：											*/
+/*修 改 者：Kanghekai				时间：2011-04-08								*/
+/*版    本：V4.0																	*/
+/************************************************************************************/
+void KT_AM_AFC_VolumeSet(xd_u8 afc)			//Input: 0~128
+{
+	xd_u16 regx;
+	char afc_volume;
+
+	regx = KT_Bus_Read(0x0F); 
+
+	if(afc >= 60)					//+-8
+	{
+		KT_AMFMMute();
+	}
+	if( (afc < 60) && (afc >= 52) )	//+-7
+	{
+		afc_volume = mem_vol - 28;
+		if(afc_volume < 15)
+			afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+	if( (afc < 52) && (afc >= 44) )	//+-6
+	{
+		afc_volume = mem_vol - 24;
+		if(afc_volume < 15)
+			afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+	if( (afc < 44) && (afc >= 36) )	//+-5
+	{
+		afc_volume = mem_vol - 20;
+		if(afc_volume < 15)
+			afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+	if( (afc < 36) && (afc >= 28) )	//+-4
+	{
+		afc_volume = mem_vol - 16;
+		if(afc_volume < 15)
+			afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+	if( (afc < 28) && (afc >= 20) )	//+-3
+	{
+		afc_volume = mem_vol - 6;
+		if(afc_volume < 15)
+			afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+	if( (afc < 20) && (afc >= 12) )//+-2
+	{
+		afc_volume = mem_vol - 5;
+		if(afc_volume < 15)
+			afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+	if( (afc < 12) && (afc >= 4) )	//+-1
+	{
+		afc_volume = mem_vol - 1;
+
+		if(afc_volume < 15)
+			afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+	if(afc < 4)						//+-0
+	{
+		afc_volume = 15;
+		KT_Bus_Write(0x0F, regx & 0xFFE0 | afc_volume);
+	}
+}
+//-----------AM SOFTMUTE AFC MODE B END-----------// 
+#endif
 
 #endif
 #if 0

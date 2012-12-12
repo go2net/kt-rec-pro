@@ -22,6 +22,7 @@
 #include "dac.h"
 #include "rtc_api.h"
 #include "eq.h"
+#include "KT_radio_drv.h"
 
 
 
@@ -51,6 +52,14 @@ xd_u8 sw_fm_mod=0,cur_sw_fm_band=0;
 xd_u16 REG_MAX_FREQ=0,REG_MIN_FREQ=0,REG_STEP;
 
 xd_u8 am_adj_timer=0;
+#ifdef USE_VALIDSTATION_CHECK
+extern Str_Band  Current_Band;
+extern xd_u8 KT_FMValidStation(xd_u16 Frequency);
+extern xd_u8 KT_AMValidStation(xd_u16 Frequency);
+extern xd_u8 KT_SMValidStation(xd_u16 Frequency);
+extern void KT_Mute_Ctrl(bool m_f);
+void load_band_info(u8 cur_band);
+#endif
 	
 extern void KT_AMFMSetMode(xd_u8 AMFM_MODE);
 extern void KT_FMTune(xd_u16 Frequency);
@@ -238,31 +247,124 @@ void radio_band_hdlr()
     	if (frequency < REG_MIN_FREQ)
         	frequency =REG_MIN_FREQ;
 #endif
+#ifdef USE_VALIDSTATION_CHECK
+	load_band_info(cur_sw_fm_band);
+#endif
 	KT_AMFMSetMode(cur_sw_fm_band);	
 
     	set_radio_freq(FM_CUR_FRE);
 }
-/*----------------------------------------------------------------------------*/
-/**@brief  获取FM任务的信息
-   @param  无
-   @return 无
-   @note   void enter_fm_rev(void)
-*/
-/*----------------------------------------------------------------------------*/
-//void enter_fm_rev(void)
-//{
-   // frequency = read_info(MEM_FRE);
-   // if (frequency > (1085-875))
-   // {
-        //frequency = MIN_FRE;
- //   }
-    //else
-  //  {
-        //frequency += MIN_FRE;
-  //  }
-   // radio_band_hdlr();
-    //set_radio_freq(FM_CUR_FRE);
-//}
+
+#ifdef SEMI_AUTO_SCAN_FUNC
+
+bool radio_get_validstation(u16 freq)
+{
+    if(cur_sw_fm_band==0){
+	return KT_FMValidStation(freq);
+    }
+    else if(cur_sw_fm_band==1){
+	return KT_AMValidStation(freq);
+    }
+    else{
+	return KT_SMValidStation(freq);
+    }
+
+}
+#define SEMI_AUTO_SCAN_KEY_UP		MSG_FM_SCAN_UP
+#define SEMI_AUTO_SCAN_KEY_DOWN	MSG_FM_SCAN_DOWN
+void semi_auto_scan(u8 scan_dir)
+{
+    xd_u16 fre_old=frequency;
+    u8 key=0;
+
+    //Mute_Ext_PA(MUTE);
+
+    flush_low_msg();
+
+    dac_mute_control(1,1);		
+    do   
+    {
+	 key = get_msg();	
+	 
+        if ((key==MSG_FM_NEXT_STEP)||
+		( key==MSG_FM_PREV_STEP)
+	    )
+        {
+            break;
+        }
+		
+	if(( key==MSG_CHANGE_WORK_MODE)){
+		put_msg_fifo(MSG_CHANGE_WORK_MODE);
+            	break;
+	}
+
+	//if(( key==(INFO_POWER | KEY_SHORT_UP))){
+	//	put_msg_fifo(INFO_POWER | KEY_SHORT_UP);
+       //     	break;
+	//}	
+
+#if defined(USE_ADVOLT_FOR_FUNC_SEL_TYPE_FOUR)		
+	if(( key==INFO_BAND_SEL)){
+		put_msg_fifo(INFO_BAND_SEL);
+            	break;
+	}	
+#endif	
+	if(( key==MSG_CHANGE_FM_MODE))
+	{
+		put_msg_fifo(MSG_CHANGE_FM_MODE);
+            	break;
+	}
+	
+	if(scan_dir == SEARCH_UP)
+	{
+		frequency=frequency+ Current_Band.Seek_Step;
+          	if(frequency>REG_MAX_FREQ)frequency = REG_MIN_FREQ;
+	}
+	else
+	{
+		frequency=frequency- Current_Band.Seek_Step;
+          	if(frequency<REG_MIN_FREQ)frequency =REG_MAX_FREQ;
+	}
+
+    	disp_port(MENU_FM_MAIN);			
+	
+ 	if(fre_old ==frequency)
+	{
+		break;
+	}        
+
+#ifdef SW_JUDGE_BAND_INFO
+	 sw_judge_band_range();
+	 if(show_band_idx_timer>0){
+
+		if(( key==INFO_HALF_SECOND)){
+			
+			show_band_idx_timer--;
+			if(show_band_idx_timer==0){
+		                    Disp_Con(DISP_FREQ);
+			}
+		}
+	}
+#endif
+
+	if(radio_get_validstation(frequency))
+        {
+    		disp_port(MENU_FM_MAIN);			
+   	     //dac_mute_control(0,1);		
+	     break;
+        }
+
+    }while(1);
+
+   set_radio_freq(FM_CUR_FRE);
+
+   dac_mute_control(0,1);		
+
+   //Mute_Ext_PA(UNMUTE);
+
+}
+#endif
+
 /*----------------------------------------------------------------------------*/
 /**@brief  FM任务函数
    @param  无
@@ -297,16 +399,26 @@ void radio_rev_hdlr( void )
             //work_mode = MUSIC_MODE;
             break;
             //return;
-        case MSG_MUSIC_FF:
-	 	am_adj_timer=2;			
+#ifdef SEMI_AUTO_SCAN_FUNC
+        case SEMI_AUTO_SCAN_KEY_UP:			
+		semi_auto_scan(SEARCH_UP);
+		break;
+
+        case SEMI_AUTO_SCAN_KEY_DOWN:			
+		semi_auto_scan(SEARCH_DN);
+		break;	
+#endif
+            
+        //case MSG_MUSIC_FF:
+	 //	am_adj_timer=2;			
         case MSG_MUSIC_NEXT_FILE:
 		freq_step_flag=1;
         case MSG_FM_NEXT_STEP:
     		set_radio_freq(FM_FRE_INC);
 		//disp_port(MENU_FM_MAIN);
 		break;
-	 case MSG_MUSIC_FR:
-	 	am_adj_timer=2;
+	 //case MSG_MUSIC_FR:
+	 //	am_adj_timer=2;
 	 case MSG_MUSIC_PREV_FILE:
 		freq_step_flag=1;	 	
         case MSG_FM_PREV_STEP:
