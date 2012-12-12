@@ -1,0 +1,10 @@
+
+//APP LINK FILE 
+//CLASSES (DATA (D:0x18-D:0x7F),IDATA (I:0x80-I:0xFF), XDATA (X:0x400-X:0x307F), PDATA (X:0xc0-X:0xFF), CODE (C:0x6200-C:0x7F7E), CONST (C:0x6200-C:0x7F7E))
+CLASSES (DATA (D:0x18-D:0x7F),IDATA (I:0x80-I:0xFF), XDATA (X:0x400-X:0x307F), PDATA (X:0xc0-X:0xFF), CODE (C:0x5600-C:0x7F7E), CONST (C:0x5600-C:0x7F7E))
+//overlay(* ! (lcd_dma_isr, rtcisr, timer3isr, timer0isr))
+overlay(* ! ( rtcisr, timer3isr, timer0isr))
+//SEGMENTS(?PR?BACKUP_MUSIC_POINT?MUSIC(C:0x7000))
+
+DISABLEWARNING(30)
+REMOVEUNUSED	 
