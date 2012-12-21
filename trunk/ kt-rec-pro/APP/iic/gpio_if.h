@@ -196,6 +196,10 @@
 #define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(3));P0PU|= (BIT(3))
 #define LCD_BACKLIGHT_ON()		P03 =0;
 #define LCD_BACKLIGHT_OFF()		P03=1;
+#elif defined(LCD_BACK_LIGHT_DUMMY)
+#define  LCD_BACKLIGHT_INIT()	  
+#define LCD_BACKLIGHT_ON()		
+#define LCD_BACKLIGHT_OFF()		
 #else
 #define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(4));P0PU|= (BIT(4))
 #define LCD_BACKLIGHT_ON()		P04 =0;

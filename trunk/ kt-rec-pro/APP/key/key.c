@@ -156,17 +156,20 @@ xd_u8  JogBuf;
 #ifdef FAST_STICK_TUNE_FUNC
 xd_u8 fast_step_cnt=0,reset_cnt=0,last_reg=0;
 #endif
+void Jog_stick_gpio_init()
+{
+    P2DIR &= ~(BIT(5)|(BIT(4)));    //P11, P12
+    P2 |=(BIT(5)|(BIT(4)));
+    P2PU	|= (BIT(5)|(BIT(4)));
+    P2DIR |= (BIT(5)|(BIT(4)));    //P11, P12
+   // _nop_();
+}
 void JogDetect(void)
 {
 	u8 port_val=0;
 	
 #if 1//defined(K1081_WK_1081_REC_V001)
     //P2IE |=(BIT(5)|(BIT(4)));
-    P2DIR &= ~(BIT(5)|(BIT(4)));    //P11, P12
-    P2 |=(BIT(5)|(BIT(4)));
-    P2PU	|= (BIT(5)|(BIT(4)));
-    P2DIR |= (BIT(5)|(BIT(4)));    //P11, P12
-    _nop_();
     touchkeyval =((P2&(BIT(4)|(BIT(5))))>>4);
     //port_val =(P2&(BIT(4)|(BIT(5))));
     //touchkeyval = ((port_val & (BIT(4)))>>4)|((port_val & (BIT(5)))>>4);
@@ -341,6 +344,8 @@ void key_init(void)
 #endif	
     ADCCON = ADC_VDD_12;
 //	ADCCON = 0xff;					//select P07 for ADC key
+
+   Jog_stick_gpio_init();
 
 }
 /*----------------------------------------------------------------------------*/
