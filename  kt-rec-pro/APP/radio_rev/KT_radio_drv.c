@@ -484,6 +484,11 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 #endif
 		regx = KT_Bus_Read(0x0E); 
 		KT_Bus_Write(0x0E, regx | 0x7700);	
+
+#ifdef BOOST_SW_BACKGROUD_NOISE
+		regx = KT_Bus_Read(0x22);
+		KT_Bus_Write(0x22, (regx & (~(0x0020))));		//DISABLE AM_GAIN = 12dB
+#endif	
 		
    		regx = KT_Bus_Read(0x0a);
 		KT_Bus_Write(0x0a, (regx&(~0x6000)));  		
@@ -521,7 +526,11 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		delay_10ms(12);
 #endif		
 		KT_Bus_Write(0x18,0x8000);					//Disable cap
-		
+
+#ifdef BOOST_SW_BACKGROUD_NOISE
+		regx = KT_Bus_Read(0x22);
+		KT_Bus_Write(0x22, (regx & 0xFFCF) | 0x0020);	// AM_GAIN = 12dB
+#endif	
    		regx = KT_Bus_Read(0x0a);
 		KT_Bus_Write(0x0a, (regx|0x6000));  		
 	}
@@ -662,8 +671,8 @@ void KT_FMTune(xd_u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and T
 	xd_u16 regx;
 
 	//KT_AMFMMute();
-	regx = KT_Bus_Read(0x0F);       
-	KT_Bus_Write(0x0F, regx & 0xFFE0 );		//Write volume to 0
+	//regx = KT_Bus_Read(0x0F);       
+	//KT_Bus_Write(0x0F, regx & 0xFFE0 );		//Write volume to 0
 	
 	KT_Bus_Write(0x1E, 0x0001);								//DIVIDERP<9:0>=1
 	KT_Bus_Write(0x1F, 0x029C);								//DIVIDERN<9:0>=668
@@ -708,7 +717,7 @@ void KT_FMTune(xd_u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and T
 	regx=KT_Bus_Read(0x03);
 	KT_Bus_Write(0x03, (regx & 0xF000) | 0x8000 | (Frequency / 5));	   		//set tune bit to 1
 
-	delay_10ms(1);
+	delay_10ms(2);
 
 	regx = KT_Bus_Read(0x0F);       
 	KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1D));		//Write volume to 0
@@ -811,8 +820,8 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 {
 	xd_u16 regx;
 	//KT_AMFMMute();
-	regx = KT_Bus_Read(0x0F);       
-	KT_Bus_Write(0x0F, regx & 0xFFE0);		//Write volume to 0
+	//regx = KT_Bus_Read(0x0F);       
+	//KT_Bus_Write(0x0F, regx & 0xFFE0);		//Write volume to 0
 
 	if(cur_sw_fm_band >= MW_MODE){
 		
@@ -852,7 +861,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 			KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #endif
 	}
-	delay_10ms(1);
+	delay_10ms(2);
 
 #ifdef DISABLE_FAST_GAIN_UP
 	regx = KT_Bus_Read(0x23);
@@ -862,7 +871,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	regx = KT_Bus_Read(0x0F);       
 
 #ifdef KT0915
-		if(cur_sw_fm_band >= MW_MODE)
+	if(cur_sw_fm_band >= MW_MODE)
 #endif
 	{
 		KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1D));		//Write volume to 0

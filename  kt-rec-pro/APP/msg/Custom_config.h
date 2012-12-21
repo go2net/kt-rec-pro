@@ -27,7 +27,7 @@
 //#define JK_FP_211_MODULE
 //#define JK_HT_998_MODULE
 //#define JK_SZ_S900_MODULE
-//#define JK_JF_933_MODULE
+#define JK_JF_933_MODULE
 //#define JK_JF_689_MODULE
 //#define JK_JF_168_MODULE
 //#define JK_DH_105_104_MODULE
@@ -248,6 +248,7 @@
 #define DC_CHARGER_DET_SHARE_IIC_P01
 #define USE_GPIO_MEASURE_VOLT_AT_P03
 #define PLAY_STATUS_LED_FUNC
+#define LCD_BACK_LIGHT_DUMMY
 
 
 #define PLAY_MODE_IN_USE
