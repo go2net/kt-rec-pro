@@ -582,7 +582,10 @@ void ap_handle_hotkey(u8 key)
             {	
                 //put_msg_lifo(MSG_NEXT_WORKMODE);
                 	if(disp_scenario == DISP_NORMAL){
-				
+
+#ifdef PLAY_STATUS_LED_FUNC
+			    	set_play_status_led_spark(PLED_ON);
+#endif	
 				disp_scenario = DISP_RTC_SCEN;
 				rtc_disp_hdlr();
 			}
