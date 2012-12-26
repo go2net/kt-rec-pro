@@ -27,7 +27,7 @@
 //#define JK_FP_211_MODULE
 //#define JK_HT_998_MODULE
 //#define JK_SZ_S900_MODULE
-#define JK_JF_933_MODULE
+//#define JK_JF_933_MODULE
 //#define JK_JF_689_MODULE
 //#define JK_JF_168_MODULE
 //#define JK_DH_105_104_MODULE

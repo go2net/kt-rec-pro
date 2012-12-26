@@ -151,17 +151,16 @@ void set_brightness(u8 br)
    @note   void set_brightness_fade_out(void)
 */
 /*----------------------------------------------------------------------------*/
+#ifndef LCD_BACK_LIGHT_DUMMY
 xd_u8 backlight_timer=0;
 void set_brightness_fade_out(void)
 {
-#ifndef LCD_BACK_LIGHT_DUMMY
     if (backlight_timer >0)
     {
             backlight_timer--;
 	 return;
     }
     LCD_BACKLIGHT_OFF();
-#endif	
 }
 
 /*----------------------------------------------------------------------------*/
@@ -173,13 +172,12 @@ void set_brightness_fade_out(void)
 /*----------------------------------------------------------------------------*/
 void set_brightness_all_on(void)
 {
-#ifndef LCD_BACK_LIGHT_DUMMY
     backlight_timer = 120;
     LCD_BACKLIGHT_ON();
     //set_brightness(16);
     //bright_counter = 0;
-#endif    
 }
+#endif    
 
 /*----------------------------------------------------------------------------*/
 /**@brief  œ‘ æ≥ı ºªØ

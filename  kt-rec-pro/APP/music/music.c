@@ -928,8 +928,9 @@ void music_play(void)
 #if defined(USE_BAT_MANAGEMENT)
 		bmt_hdlr();
 #endif
+#ifndef LCD_BACK_LIGHT_DUMMY
 		set_brightness_fade_out();
-		
+#endif		
 /////////////////////////////////////////////////////////////
 //短歌曲或损坏的歌曲在这里跳到下一首
 		if (play_status == MAD_STOP_WAIT)				//等待一段时间再自动选择下一首
