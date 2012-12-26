@@ -387,7 +387,9 @@ void main(void)
     sys_info_init();
     clear_all_event();
     flush_all_msg();
+#ifndef LCD_BACK_LIGHT_DUMMY					
     set_brightness_all_on();
+#endif
 #if (DISP_VER!=0)
     if(ADKEY_PORT==0){
 
