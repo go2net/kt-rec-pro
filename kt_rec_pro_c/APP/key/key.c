@@ -727,7 +727,9 @@ void ad_mod_sel_hdlr()
 		if(work_mode !=cur_work_mod){
 
 			if(work_mode!=REC_MIC_MODE){
+#ifndef LCD_BACK_LIGHT_DUMMY				
 				set_brightness_all_on();
+#endif
 				work_mode = cur_work_mod;
 				put_msg_fifo(MSG_CHANGE_WORK_MODE);				
 			}
@@ -789,7 +791,9 @@ void ad_mod_sel_hdlr()
 		    deg_str("---->MSG_CHANGE_FM_MODE \n");
 #endif		
 			if(work_mode!=REC_MIC_MODE){
+#ifndef LCD_BACK_LIGHT_DUMMY								
 				set_brightness_all_on();
+#endif
 				put_msg_fifo(MSG_CHANGE_FM_MODE);
 			}
 		}
@@ -872,9 +876,9 @@ void keyScan(void)
     if ((NO_KEY != last_key) && (key_style != NO_KEY))
     {
         //u8 key, i;
-
+#ifndef LCD_BACK_LIGHT_DUMMY				
         set_brightness_all_on();
-
+#endif
         if (key_mode == 0)
         {
         	//if(key_sel_table)

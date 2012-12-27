@@ -144,8 +144,9 @@ u16 read_radio_freq(u8 ch)
 void set_radio_freq(u8 mode)
 {
    xd_u8 freq_step =0;
-   
+#ifndef LCD_BACK_LIGHT_DUMMY				   
     set_brightness_all_on();
+#endif
 #if defined(FAST_STICK_TUNE_FUNC)
 
 	  // EA =0;
@@ -441,7 +442,9 @@ void radio_rev_hdlr( void )
 		     }
 	     }
 #endif		 
+#ifndef LCD_BACK_LIGHT_DUMMY
 	     set_brightness_fade_out();
+#endif
             if (main_menu_conter < (SUB_MENU_TIME - 3))
             {
                 	main_menu_conter++;
