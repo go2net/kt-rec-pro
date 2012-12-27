@@ -286,7 +286,9 @@ void rec_mic_main(void)
 	   disp_port(main_menu);
 	}
 
+#ifndef LCD_BACK_LIGHT_DUMMY
             set_brightness_fade_out();
+#endif 
 #endif 
            if (main_menu_conter < SUB_MENU_TIME)
             {

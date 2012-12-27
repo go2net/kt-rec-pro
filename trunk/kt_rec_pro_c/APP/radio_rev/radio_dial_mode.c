@@ -165,7 +165,9 @@ void radio_rev_hdlr( void )
 		//deg_str("MSG_HALF_SECOND \n");
 #endif
 
+#ifndef LCD_BACK_LIGHT_DUMMY
 	     set_brightness_fade_out();
+#endif
             if (main_menu_conter < (SUB_MENU_TIME - 3))
             {
                 	main_menu_conter++;

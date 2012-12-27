@@ -177,8 +177,9 @@ void ap_handle_hotkey(u8 key)
             		break;
 	     	}
         } 
-		
+#ifndef LCD_BACK_LIGHT_DUMMY						
         set_brightness_all_on();
+#endif
         if((!device_check()) && (REC_MIC_MODE == work_mode))
         {
              put_msg_lifo(MSG_MUSIC_NEW_DEVICE_IN);
@@ -206,7 +207,9 @@ void ap_handle_hotkey(u8 key)
 #endif
 
     case MSG_SDMMC_IN :
+#ifndef LCD_BACK_LIGHT_DUMMY						
         set_brightness_all_on();
+#endif
 	 device_check();
         if((RECODE_WORKING == encode_status)||(RECODE_PAUSE == encode_status))
         {	
@@ -234,7 +237,9 @@ void ap_handle_hotkey(u8 key)
         break;
 
     case MSG_USB_DISK_IN  :
+#ifndef LCD_BACK_LIGHT_DUMMY						
         set_brightness_all_on();
+#endif
 		device_check();
         if((RECODE_WORKING == encode_status)||(RECODE_PAUSE == encode_status))
         {
@@ -583,6 +588,9 @@ void ap_handle_hotkey(u8 key)
                 //put_msg_lifo(MSG_NEXT_WORKMODE);
                 	if(disp_scenario == DISP_NORMAL){
 				
+#ifdef PLAY_STATUS_LED_FUNC
+			    	set_play_status_led_spark(PLED_ON);
+#endif	
 				disp_scenario = DISP_RTC_SCEN;
 				rtc_disp_hdlr();
 			}
