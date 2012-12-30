@@ -177,7 +177,7 @@
 
 #if defined(JK_HT_998_MODULE)
 
-#define DISP_VER		2
+#define DISP_VER		3
 
 #define JK_HT_998_LCD_MODULE
 //#define NEW_DH_228_LCD_MODULE_SM5901
