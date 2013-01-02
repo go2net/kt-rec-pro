@@ -23,7 +23,9 @@
 #include "disp.h"
 #include "rtc_mode.h"
 #include "lcdsegment.h"
-
+#if defined(BLUE_TOOTH_UART_FUNC)
+#include "blue_tooth.h"
+#endif
 extern u8 _idata clock_in;
 extern u8 given_device;
 extern u16 given_file_number;
@@ -334,6 +336,9 @@ void sys_init(void)
     //interrupt_init(15, rtcisr);
     interrupt_init(3, timer3isr);
     interrupt_init(0, timer0isr);
+#if defined(BLUE_TOOTH_UART_FUNC)
+    interrupt_init(7, uart_isr);
+#endif
     enable_interrupt();
    /// flashled(3);
 }

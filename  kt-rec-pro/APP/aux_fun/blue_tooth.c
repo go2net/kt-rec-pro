@@ -31,7 +31,7 @@ xd_u8 bt_play_status=BT_STA_STOP;
 
 xd_u8 spark_timer=0;
 
-
+#if 0
 #define  MSG_BLUETOOTH_PP
 #define  MSG_BLUETOOTH_STOP
 #define  MSG_BLUETOOTH_NEXT
@@ -39,6 +39,7 @@ xd_u8 spark_timer=0;
 #define  MSG_BLUETOOTH_VOL_UP
 #define  MSG_BLUETOOTH_VOL_DOWN
 #define  MSG_BLUETOOTH_PAIR
+#endif
 /*----------------------------------------------------------------------------*/
 /**@brief  AUX消息处理
    @param  无
