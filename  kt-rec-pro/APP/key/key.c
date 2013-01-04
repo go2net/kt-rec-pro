@@ -345,8 +345,9 @@ void key_init(void)
     ADCCON = ADC_VDD_12;
 //	ADCCON = 0xff;					//select P07 for ADC key
 
+#ifdef JOG_STICK_FUNC
    Jog_stick_gpio_init();
-
+#endif
 }
 /*----------------------------------------------------------------------------*/
 /**@brief  按键功能表选择

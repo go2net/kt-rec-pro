@@ -70,6 +70,7 @@ enum
 #endif
 
     AUX_MODE,
+    BLUE_TOOTH_MODE,
 #if RTC_ENABLE
     RTC_MODE,
 #endif

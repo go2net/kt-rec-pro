@@ -116,7 +116,7 @@ u8 bluetooth_cmd_parse(void)
 	
 	UTCON = 0x01;
 #if 0
-	sys_printf("   ");
+	printf("   ");
 	for(j=0;j<7;j++)
 		printf("bluetooth_cmd_parse    cmd_key %x \r\n",(u16)rev_cmd[j]);
 #endif
