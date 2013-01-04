@@ -422,6 +422,12 @@ void main(void)
             radio_hdlr();
             break;
 #endif
+
+#ifdef USE_BLUE_TOOTH_FUNC
+	case BLUE_TOOTH_MODE:
+		Blue_tooth_main();
+		break;
+#endif
         //case AUX_MODE:
             //aux_fun();
           //  break;
