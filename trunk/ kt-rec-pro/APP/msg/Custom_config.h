@@ -31,7 +31,7 @@
 //#define JK_JF_689_MODULE
 //#define JK_JF_168_MODULE
 //#define JK_DH_105_104_MODULE
-//#define JK_DH_289_MODULE
+#define JK_DH_289_MODULE
 //#define K129_MODULE
 //#define JK299_MODULE
 
@@ -448,6 +448,7 @@
 
 #define IIC_GPIO_USE_P00_P01
 
+#define AM_SHARE_SW_FM_LONG_ANT
 
 #define REPEAT_MODE_USE_ONE_ALL
 
