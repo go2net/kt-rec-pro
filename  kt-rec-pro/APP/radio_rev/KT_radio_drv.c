@@ -474,7 +474,12 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		regx = KT_Bus_Read(0x16);
 		KT_Bus_Write(0x16,regx|0x8000);				//AM_FM=1
 
+#ifdef AM_SHARE_SW_FM_LONG_ANT
+		KT_Bus_Write(0x18,0x8000);
+#else
 		KT_Bus_Write(0x18,0x0000);						//Enable cap
+#endif
+
 #ifndef RADIO_VAR_VOL_TUNE
 
 		KT_AMTune(900);
