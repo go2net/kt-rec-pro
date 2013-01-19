@@ -354,6 +354,9 @@ xd_u8 KT_AMFMInit(void)                            //0->Fail 1->Success
 	KT_Bus_Write(0x09, (regx & 0xFCFF));			//
 #endif
 
+	regx = KT_Bus_Read(0x05);
+//	KT_Bus_Write(0x05, regx & 0xF7FF);				// De-emphasis = 75us
+	KT_Bus_Write(0x05, regx | 0x0800);				// De-emphasis = 50us
 	regx = KT_Bus_Read(0x0E); 
 	KT_Bus_Write(0x0E, regx | 0x7700);	
 
@@ -435,12 +438,11 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 
 #ifdef RADIO_VAR_VOL_TUNE
 
+		regx = KT_Bus_Read(0x02);
 		if(REG_STEP==10){
-			regx = KT_Bus_Read(0x02);
 			KT_Bus_Write(0x02,regx & 0xFFF3 | 0x0004);				//FM_SPACE=100K
 		}
 		else{
-			regx = KT_Bus_Read(0x02);
 			KT_Bus_Write(0x02,regx & 0xFFF3 | 0x0008);				//FM_SPACE=50K
 		}
 
@@ -458,12 +460,11 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		//NSS = 0;
 #ifdef RADIO_VAR_VOL_TUNE
 
+		regx = KT_Bus_Read(0x33);
 		if(REG_STEP==9){
-			regx = KT_Bus_Read(0x33);
 			KT_Bus_Write(0x33,regx & 0x3FFF | 0x4000);				//AM_SPACE=9K
 		}
 		else{
-			regx = KT_Bus_Read(0x33);
 			KT_Bus_Write(0x33,regx & 0x3FFF | 0x8000);				//AM_SPACE=10K
 		}
 		KT_Bus_Write(0x2F, REG_MIN_FREQ);																//user_start_chan
@@ -503,12 +504,11 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		//Current_Band.Band =SW_MODE;
 #ifdef RADIO_VAR_VOL_TUNE
 
+		regx = KT_Bus_Read(0x33);
 		if(REG_STEP==1){
-			regx = KT_Bus_Read(0x33);
 			KT_Bus_Write(0x33,regx & 0x3FFF);				//AM_SPACE=1K
 		}
 		else{
-			regx = KT_Bus_Read(0x33);
 			KT_Bus_Write(0x33,regx & 0x3FFF | 0x8000);				//AM_SPACE=10K
 		}
 		
