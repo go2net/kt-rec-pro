@@ -58,6 +58,7 @@ extern void KT_AMTune(xd_u16 Frequency);
 extern xd_u8 KT_AMFMWakeUp(void); //0->Fail 1->Success
 extern void KT_AMFMStandby(void);					//0->Fail 1->Success
 extern void KT_AMFMMute(void);
+extern void sw_auto_gain_hdlr(void);
 
 
 #if defined(SW_TWO_BAND_RANGE)
@@ -330,6 +331,9 @@ void radio_rev_hdlr( void )
 		     }
 	     }
 #endif		 
+#if 1
+		sw_auto_gain_hdlr();
+#endif
 #ifndef LCD_BACK_LIGHT_DUMMY
 	     set_brightness_fade_out();
 #endif

@@ -71,6 +71,7 @@ xd_u8 mem_snr[3];			  //Rememberred SNR values for previous, current and next st
 //Str_Band  Current_Band;
 extern xd_u8 cur_sw_fm_band;
 extern xd_u16 REG_MAX_FREQ,REG_MIN_FREQ,REG_STEP;
+char rssi_value;
 
 #define I2C
 #ifdef I2C
@@ -435,6 +436,10 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 	KT_AMFMInit();
 	if (AMFM_MODE == FM_MODE)
 	{
+		regx = KT_Bus_Read(0x0a);
+		KT_Bus_Write(0x0a, regx & 0x9FFF);        //LOUPEG=min
+		regx = KT_Bus_Read(0x1C);
+		KT_Bus_Write(0x1C,regx & 0xFFF8 | 0x0005);
 
 #ifdef RADIO_VAR_VOL_TUNE
 
@@ -458,6 +463,11 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 	{
 		//Current_Band.Band =MW_MODE;
 		//NSS = 0;
+		regx = KT_Bus_Read(0x0a);
+		KT_Bus_Write(0x0a, regx & 0x9FFF);        //LOUPEG=min
+		regx = KT_Bus_Read(0x1C);
+		KT_Bus_Write(0x1C,regx & 0xFFF8 | 0x0005);   //IFPGA = 3.5dB
+		
 #ifdef RADIO_VAR_VOL_TUNE
 
 		regx = KT_Bus_Read(0x33);
@@ -496,12 +506,17 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		KT_Bus_Write(0x22, (regx & (~(0x0020))));		//DISABLE AM_GAIN = 12dB
 #endif	
 		
-   		regx = KT_Bus_Read(0x0a);
-		KT_Bus_Write(0x0a, (regx&(~0x6000)));  		
 	}
 	else
 	{
 		//Current_Band.Band =SW_MODE;
+
+		regx = KT_Bus_Read(0x0a);
+		KT_Bus_Write(0x0a, regx & 0x9FFF | 0x6000);        //LOUPEG=max
+		regx = KT_Bus_Read(0x1C);
+		KT_Bus_Write(0x1C,regx & 0xFFF8);                 //IFPGA = 11.8dB(max)
+		//  KT_Bus_Write(0x1C,regx & 0xFFF8 | 0x0003);      //IFPGA = 7.7dB
+		
 #ifdef RADIO_VAR_VOL_TUNE
 
 		regx = KT_Bus_Read(0x33);
@@ -536,8 +551,6 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		regx = KT_Bus_Read(0x22);
 		KT_Bus_Write(0x22, (regx & 0xFFCF) | 0x0020);	// AM_GAIN = 12dB
 #endif	
-   		regx = KT_Bus_Read(0x0a);
-		KT_Bus_Write(0x0a, (regx|0x6000));  		
 	}
 	//return(1);
 }
@@ -886,6 +899,38 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	}
 
 	//return(1);
+}
+
+void KT_AMReadRSSI(char *RSSI) //range from -90 to -6, unit is dbm
+{
+	xd_u16 regx;
+	regx = KT_Bus_Read(0x24);
+	*RSSI = -(90 - (((regx >> 8) & 0x001F) * 3));
+}
+void sw_auto_gain_hdlr(void)
+{
+	xd_u16 regx;
+
+	if(cur_sw_fm_band >= MW_MODE){
+		
+		KT_AMReadRSSI(&rssi_value);
+		
+		if(rssi_value>-30)               //RSSI门限值可以根据实际测试情况作相应调整。
+		{
+		         regx = KT_Bus_Read(0x1c);
+		         KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0005));   //信号强时，将IFPGA增益设为3.5dB（缺省值） 
+		 //        KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0006));   //信号强时，将IFPGA增益设为-5.3dB（最小增益）
+
+		}else if(rssi_value<-50)        //RSSI门限值可以根据实际测试情况作相应调整。
+		{
+		         regx = KT_Bus_Read(0x1c);
+		         KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0001));   //信号弱时，将IFPGA增益设为10.6dB
+		//        KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0002));   //信号弱时，将IFPGA增益设为9.3dB
+		//        KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0003));   //信号弱时，将IFPGA增益设为7.7dB
+		//        KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0004));   //信号弱时，将IFPGA增益设为5.9dB
+		 }
+
+	}
 }
 #endif
 
