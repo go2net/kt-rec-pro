@@ -148,6 +148,32 @@ void set_key_tone(void)
     fun_send_kv();
 }
 #endif
+#ifdef MCU_ADC_VOL_TUNER
+
+#define GPIO_ADC_VOL_TUNER_INIT()	P0PD &= ~(BIT(3));P0DIR |= BIT(3); ADCCON = ADC_KEY_IO3; P0IE = ~(BIT(3))
+
+#define ADC_VOL_TAB_FILTER		6
+
+u8 adc_tuner_volt=0,tab_idx=0;
+u8 adc_tab[ADC_VOL_TAB_FILTER]={0};
+void adc_avrg_filter(u8 volt)
+{
+	u16 avrg_reg=0;
+	if(tab_idx>=(ADC_VOL_TAB_FILTER-1)){
+		
+		for(tab_idx=0;tab_idx<ADC_VOL_TAB_FILTER;tab_idx++){
+			avrg_reg += adc_tab[tab_idx];
+		}
+
+		adc_tuner_volt =(u8)(avrg_reg/ADC_VOL_TAB_FILTER);
+	     	//printf_u16(adc_tuner_volt,'V');
+		
+		tab_idx =0;		
+	}
+	
+	adc_tab[tab_idx++]=volt;
+}
+#endif
 
 #ifdef JOG_STICK_FUNC
 xd_u8 touchkeyval;
@@ -555,14 +581,20 @@ void adc_scan(void)
         adc_vdd12 = ADCDATH;//
         //adc_vdd12l = ADCDATL;
 #ifdef USE_GPIO_MEASURE_VOLT
-	GPIO_MEASURE_VOLT_INIT();		
+	GPIO_MEASURE_VOLT_INIT();	
+#elif defined(MCU_ADC_VOL_TUNER)
+	GPIO_ADC_VOL_TUNER_INIT();
 #else
         ADCCON = ADC_LDOIN;
 #endif
     }
     else if (cnt == 1)
     {
+#if defined(MCU_ADC_VOL_TUNER)
+	adc_avrg_filter(ADCDATH);
+#else
         adc_vddio = ADCDATH;//
+#endif
         //adc_vddiol = ADCDATL;//
 #if defined(ADKEY_PORT_P06)
         ADCCON = ADC_KEY_IO6; //

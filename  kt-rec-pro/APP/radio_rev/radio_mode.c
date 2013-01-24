@@ -69,6 +69,25 @@ FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 	3200,	17900,
 	17905,	25000,
 };
+#elif defined(MCU_ADC_VOL_TUNER)
+FREQ_RAGE _code radio_freq_tab[]=
+{
+	875,		1080,	1,
+	522,		1620,	9,
+	3200,	4450,	5,
+	4450,	5700,	5,
+	5700,	6950,	5,
+	6950,	8200,	5,
+	8200,	9450,	5,
+	9450,	10700,	5,
+	10700,	11950,	5,
+	11950,	13200,	5,
+	13200,	14450,	5,
+	14450,	15700,	5,
+	15700,	16950,	5,
+	16950,	18200,	5,
+	20700,	21950,	5,
+};
 #elif defined(SW_TWO_BAND_RANGE_FOR_CUSTOMER_JIN_FENG)
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
@@ -233,6 +252,9 @@ void radio_band_hdlr()
 {
 	REG_MAX_FREQ = radio_freq_tab[cur_sw_fm_band].MAX_FREQ;
 	REG_MIN_FREQ = radio_freq_tab[cur_sw_fm_band].MIN_FREQ;
+#ifdef MCU_ADC_VOL_TUNER
+	REG_STEP = radio_freq_tab[cur_sw_fm_band].FREQ_STEP;
+#endif	
 #ifdef SAVE_BAND_FREQ_INFO	
 	frequency = read_radio_freq(cur_sw_fm_band);
 	if (frequency > REG_MAX_FREQ)
@@ -244,6 +266,32 @@ void radio_band_hdlr()
 
     	set_radio_freq(FM_CUR_FRE);
 }
+#ifdef MCU_ADC_VOL_TUNER
+u16 freq_last=0;
+extern u8 adc_tuner_volt;
+void mcu_vol_tuner_hdlr()
+{
+	freq_last = (adc_tuner_volt*REG_STEP)+REG_MIN_FREQ;
+
+	if(freq_last > REG_MAX_FREQ){
+
+		freq_last = REG_MAX_FREQ;
+	}
+
+//     	printf_u16(adc_tuner_volt,'V');
+
+	if(freq_last != frequency){
+		
+
+#if 0
+	     	printf_u16(freq_last,'L');
+	     	printf_u16(frequency,'F');
+#endif			
+		frequency = freq_last;
+    		set_radio_freq(FM_CUR_FRE);
+	}
+}
+#endif
 /*----------------------------------------------------------------------------*/
 /**@brief  获取FM任务的信息
    @param  无
@@ -290,6 +338,13 @@ void radio_rev_hdlr( void )
 
         switch (key)
         {
+        case MSG_200MS:
+
+#ifdef MCU_ADC_VOL_TUNER
+		mcu_vol_tuner_hdlr();
+#endif			
+		break;
+        
         case MSG_CHANGE_FM_MODE:
 	     radio_band_hdlr();
 	     break;
