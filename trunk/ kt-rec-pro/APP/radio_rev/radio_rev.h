@@ -7,6 +7,7 @@
    @note
 */
 /*----------------------------------------------------------------------------*/
+#include "Custom_config.h"
 
 #ifndef _RADIO_REV_
 #define _RADIO_REV_

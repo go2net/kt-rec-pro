@@ -152,7 +152,7 @@ void radio_rev_hdlr( void )
 			
 	     freq_regx=get_radio_freq();
 #ifdef UART_ENABLE
-			printf_u16(freq_regx,'F');
+			//printf_u16(freq_regx,'F');
 #endif
 
 	     if(freq_regx!=frequency){
