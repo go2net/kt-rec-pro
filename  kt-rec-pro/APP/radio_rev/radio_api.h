@@ -41,6 +41,11 @@ typedef struct{
 #endif	
 }FREQ_RAGE;
 
+enum {
+
+	BAND_NEXT,
+	BAND_PREV,
+};
 #define FM_CUR_FRE          0
 #define FM_FRE_DEC          1
 #define FM_FRE_INC			2

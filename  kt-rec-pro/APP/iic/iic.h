@@ -86,9 +86,10 @@ void  eeprom_page_write_stop(void);
 
 
 #define MEM_FM_CHANNL            0
-#define MEM_FRE            0
+#define MEM_FRE           		 0
 #define MEM_CHAN		   1
 #define MEM_CHANNL         2
+#define MEM_VOL_BAND         6
 #define MEM_FM_LEN         26//28
 
 #define MEM_ACTIVE_DEV     29

@@ -1100,7 +1100,7 @@ xd_u8 KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip an
 #endif
 
 	KT_Bus_Write(0x17, 0x8000 | Frequency);	   					//set tune bit to 1
-#ifdef	KT0915
+#ifdef KT0915
 	if(cur_sw_fm_band >= MW_MODE)
 		KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #endif
