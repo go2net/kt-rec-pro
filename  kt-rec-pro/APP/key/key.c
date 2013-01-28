@@ -159,7 +159,7 @@ u8 adc_tab[ADC_VOL_TAB_FILTER]={0};
 void adc_avrg_filter(u8 volt)
 {
 	u16 avrg_reg=0;
-	if(tab_idx>=(ADC_VOL_TAB_FILTER-1)){
+	if(tab_idx>=(ADC_VOL_TAB_FILTER)){
 		
 		for(tab_idx=0;tab_idx<ADC_VOL_TAB_FILTER;tab_idx++){
 			avrg_reg += adc_tab[tab_idx];

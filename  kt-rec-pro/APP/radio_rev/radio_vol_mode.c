@@ -142,7 +142,7 @@ void band_select_hdlr(u8 key)
 	if(key==BAND_NEXT){
 
 		sw_band_div++;
-		if(sw_band_div>(((sizeof(radio_freq_tab))/6)-2)){
+		if(sw_band_div>(((sizeof(radio_freq_tab))/6)-1)){
 			sw_band_div = 2;
 		}
      		//printf_u16((((sizeof(radio_freq_tab))/6)-2),'A');
@@ -155,10 +155,10 @@ void band_select_hdlr(u8 key)
 			sw_band_div--;
 		}
 		else{
-			sw_band_div = (u8)(((sizeof(radio_freq_tab))/6)-2);
+			sw_band_div = (u8)(((sizeof(radio_freq_tab))/6)-1);
 		}
      		//printf_u16((((sizeof(radio_freq_tab))/6)-2),'M');
-		  //printf_u16(sw_band_div,'M');
+		// printf_u16(sw_band_div,'M');
 
 	}
 
@@ -168,14 +168,29 @@ void band_select_hdlr(u8 key)
 }
 void mcu_vol_tuner_hdlr()
 {
-	freq_last = (adc_tuner_volt*REG_STEP)+REG_MIN_FREQ;
+	u8 tune_step=0;
+	
+	if(cur_sw_fm_band == 0){
+
+		if(adc_tuner_volt>20){
+			tune_step = adc_tuner_volt-20;
+		}
+	}
+	else if(cur_sw_fm_band == 1){
+		tune_step = adc_tuner_volt/2;
+	}
+	else{
+		tune_step = adc_tuner_volt;
+	}
+
+	freq_last = (tune_step*REG_STEP)+REG_MIN_FREQ;
 
 	if(freq_last > REG_MAX_FREQ){
 
 		freq_last = REG_MAX_FREQ;
 	}
 
-//     	printf_u16(adc_tuner_volt,'V');
+     //	printf_u16(adc_tuner_volt,'V');
 
 	if(freq_last != frequency){
 #if 0
@@ -192,7 +207,17 @@ void radio_band_hdlr()
 	if(cur_sw_fm_band ==SW_MODE){
 		
 		band_select_en = 1;
+			
+		if(sw_band_div>(((sizeof(radio_freq_tab))/6)-1)){
+			sw_band_div = 2;
+		}		
+
+		if(sw_band_div<2){
+			sw_band_div = 2;
+		}		
+
     		save_radio_freq(sw_band_div,MEM_VOL_BAND);
+		//printf_u16(sw_band_div,'B');			
 	}
 	else{
 
