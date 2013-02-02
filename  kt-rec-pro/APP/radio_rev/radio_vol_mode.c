@@ -204,6 +204,7 @@ void mcu_vol_tuner_hdlr()
 
 void radio_band_hdlr()
 {
+	u8 band_reg=0;
 	if(cur_sw_fm_band ==SW_MODE){
 		
 		band_select_en = 1;
@@ -216,20 +217,21 @@ void radio_band_hdlr()
 			sw_band_div = 2;
 		}		
 
+		band_reg = sw_band_div;
     		save_radio_freq(sw_band_div,MEM_VOL_BAND);
 		//printf_u16(sw_band_div,'B');			
 	}
 	else{
 
 		band_select_en = 0;	
-		sw_band_div = cur_sw_fm_band;
+		band_reg = cur_sw_fm_band;
 	}
 
 	//printf_u16(cur_sw_fm_band,'B');
 
-	REG_STEP = radio_freq_tab[sw_band_div].FREQ_STEP;
-	REG_MAX_FREQ = radio_freq_tab[sw_band_div].MAX_FREQ;
-	REG_MIN_FREQ = radio_freq_tab[sw_band_div].MIN_FREQ;
+	REG_STEP = radio_freq_tab[band_reg].FREQ_STEP;
+	REG_MAX_FREQ = radio_freq_tab[band_reg].MAX_FREQ;
+	REG_MIN_FREQ = radio_freq_tab[band_reg].MIN_FREQ;
 	
 #if 0//def SAVE_BAND_FREQ_INFO	
 	frequency = read_radio_freq(sw_band_div);

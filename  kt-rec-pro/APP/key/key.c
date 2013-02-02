@@ -150,7 +150,11 @@ void set_key_tone(void)
 #endif
 #ifdef MCU_ADC_VOL_TUNER
 
+#ifdef MCU_ADC_VOL_TUNER_SAMP_VOLT_AT_P06
+#define GPIO_ADC_VOL_TUNER_INIT()	P0PD &= ~(BIT(6));P0DIR |= BIT(6); ADCCON = ADC_KEY_IO6; P0IE = ~(BIT(6))
+#else
 #define GPIO_ADC_VOL_TUNER_INIT()	P0PD &= ~(BIT(3));P0DIR |= BIT(3); ADCCON = ADC_KEY_IO3; P0IE = ~(BIT(3))
+#endif
 
 #define ADC_VOL_TAB_FILTER		6
 
