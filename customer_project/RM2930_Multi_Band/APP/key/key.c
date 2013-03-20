@@ -35,7 +35,7 @@ u8 _code lifo_msg_tab[] = 						//高优先级消息，需要后进先出
 #endif
 #if 1
 #include "my_IR_key.h"
-extern _code MY_IR_KEY_STRUCT My_IRTab[];       /*user code is 0xFF*/
+extern _code u8 My_IRTab[];       /*user code is 0xFF*/
 //extern u8 get_my_IR_key_MAX();
 //static u8 _xdata MAX_IR_KEY = 0;
 #endif
@@ -146,6 +146,36 @@ void set_key_tone(void)
         return ;
     }
     fun_send_kv();
+}
+#endif
+#ifdef MCU_ADC_VOL_TUNER
+
+#ifdef MCU_ADC_VOL_TUNER_SAMP_VOLT_AT_P06
+#define GPIO_ADC_VOL_TUNER_INIT()	P0PD &= ~(BIT(6));P0DIR |= BIT(6); ADCCON = ADC_KEY_IO6; P0IE = ~(BIT(6))
+#else
+#define GPIO_ADC_VOL_TUNER_INIT()	P0PD &= ~(BIT(3));P0DIR |= BIT(3); ADCCON = ADC_KEY_IO3; P0IE = ~(BIT(3))
+#endif
+
+#define ADC_VOL_TAB_FILTER		6
+
+u8 adc_tuner_volt=0,tab_idx=0;
+u8 adc_tab[ADC_VOL_TAB_FILTER]={0};
+void adc_avrg_filter(u8 volt)
+{
+	u16 avrg_reg=0;
+	if(tab_idx>=(ADC_VOL_TAB_FILTER)){
+		
+		for(tab_idx=0;tab_idx<ADC_VOL_TAB_FILTER;tab_idx++){
+			avrg_reg += adc_tab[tab_idx];
+		}
+
+		adc_tuner_volt =(u8)(avrg_reg/ADC_VOL_TAB_FILTER);
+	     	//printf_u16(adc_tuner_volt,'V');
+		
+		tab_idx =0;		
+	}
+	
+	adc_tab[tab_idx++]=volt;
 }
 #endif
 
@@ -345,8 +375,9 @@ void key_init(void)
     ADCCON = ADC_VDD_12;
 //	ADCCON = 0xff;					//select P07 for ADC key
 
+#ifdef JOG_STICK_FUNC
    Jog_stick_gpio_init();
-
+#endif
 }
 /*----------------------------------------------------------------------------*/
 /**@brief  按键功能表选择
@@ -554,14 +585,20 @@ void adc_scan(void)
         adc_vdd12 = ADCDATH;//
         //adc_vdd12l = ADCDATL;
 #ifdef USE_GPIO_MEASURE_VOLT
-	GPIO_MEASURE_VOLT_INIT();		
+	GPIO_MEASURE_VOLT_INIT();	
+#elif defined(MCU_ADC_VOL_TUNER)
+	GPIO_ADC_VOL_TUNER_INIT();
 #else
         ADCCON = ADC_LDOIN;
 #endif
     }
     else if (cnt == 1)
     {
+#if defined(MCU_ADC_VOL_TUNER)
+	adc_avrg_filter(ADCDATH);
+#else
         adc_vddio = ADCDATH;//
+#endif
         //adc_vddiol = ADCDATL;//
 #if defined(ADKEY_PORT_P06)
         ADCCON = ADC_KEY_IO6; //
@@ -632,16 +669,16 @@ void adc_scan(void)
 /*----------------------------------------------------------------------------*/
 u8 keyDetect(void)
 {
-    u8 keyTemp=0;
-    u8 key_index=0;
+    //u8 keyTemp=0;
+    u8 key_index=NO_KEY;
 
-    keyTemp = NO_KEY;
+    //keyTemp = NO_KEY;
     if (irda_state == 32)
     {
         if (((irda_data & 0xff) + ((irda_data >> 8) & 0xff)) != 0xff)
         {
             irda_state = 0;
-            return keyTemp;
+            return NO_KEY;
         }
 
         if (IR_FF00 == user_code)
@@ -650,9 +687,9 @@ u8 keyDetect(void)
             	keyTemp = IRTabff00[(u8)irda_data];
        #else
 		for(key_index = 0;key_index <My_IR_KEY_TATOL;key_index++){
-	            if((My_IRTab[key_index].IR_Key_Value)==(irda_data & 0xff)){
-				keyTemp = (My_IRTab[key_index].APP_Key);
-			        //printf_u16(keyTemp,'R');
+	            if((My_IRTab[key_index])==(irda_data & 0xff)){
+				//key_index = (My_IRTab[key_index].APP_Key);
+			       //printf_u16(keyTemp,'R');
 				break;
 		     }
 		}     
@@ -665,7 +702,7 @@ u8 keyDetect(void)
 
     }
 
-    return keyTemp;
+    return key_index;
 }
 
 

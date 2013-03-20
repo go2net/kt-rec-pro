@@ -76,6 +76,7 @@ xd_u8 mem_snr[3];			  //Rememberred SNR values for previous, current and next st
 
 extern xd_u8 cur_sw_fm_band;
 extern xd_u16 REG_MAX_FREQ,REG_MIN_FREQ,REG_STEP;
+char rssi_value;
 
 #define I2C
 #ifdef I2C
@@ -359,6 +360,9 @@ xd_u8 KT_AMFMInit(void)                            //0->Fail 1->Success
 	KT_Bus_Write(0x09, (regx & 0xFCFF));			//
 #endif
 
+	regx = KT_Bus_Read(0x05);
+//	KT_Bus_Write(0x05, regx & 0xF7FF);				// De-emphasis = 75us
+	KT_Bus_Write(0x05, regx | 0x0800);				// De-emphasis = 50us
 	regx = KT_Bus_Read(0x0E); 
 	KT_Bus_Write(0x0E, regx | 0x7700);	
 
@@ -437,15 +441,18 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 	KT_AMFMInit();
 	if (AMFM_MODE == FM_MODE)
 	{
+		regx = KT_Bus_Read(0x0a);
+		KT_Bus_Write(0x0a, regx & 0x9FFF);        //LOUPEG=min
+		regx = KT_Bus_Read(0x1C);
+		KT_Bus_Write(0x1C,regx & 0xFFF8 | 0x0005);
 
 #ifdef RADIO_VAR_VOL_TUNE
 
+		regx = KT_Bus_Read(0x02);
 		if(REG_STEP==10){
-			regx = KT_Bus_Read(0x02);
 			KT_Bus_Write(0x02,regx & 0xFFF3 | 0x0004);				//FM_SPACE=100K
 		}
 		else{
-			regx = KT_Bus_Read(0x02);
 			KT_Bus_Write(0x02,regx & 0xFFF3 | 0x0008);				//FM_SPACE=50K
 		}
 
@@ -461,14 +468,18 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 	{
 		//Current_Band.Band =MW_MODE;
 		//NSS = 0;
+		regx = KT_Bus_Read(0x0a);
+		KT_Bus_Write(0x0a, regx & 0x9FFF);        //LOUPEG=min
+		regx = KT_Bus_Read(0x1C);
+		KT_Bus_Write(0x1C,regx & 0xFFF8 | 0x0005);   //IFPGA = 3.5dB
+		
 #ifdef RADIO_VAR_VOL_TUNE
 
+		regx = KT_Bus_Read(0x33);
 		if(REG_STEP==9){
-			regx = KT_Bus_Read(0x33);
 			KT_Bus_Write(0x33,regx & 0x3FFF | 0x4000);				//AM_SPACE=9K
 		}
 		else{
-			regx = KT_Bus_Read(0x33);
 			KT_Bus_Write(0x33,regx & 0x3FFF | 0x8000);				//AM_SPACE=10K
 		}
 		KT_Bus_Write(0x2F, REG_MIN_FREQ);																//user_start_chan
@@ -479,7 +490,12 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		regx = KT_Bus_Read(0x16);
 		KT_Bus_Write(0x16,regx|0x8000);				//AM_FM=1
 
+#ifdef AM_SHARE_SW_FM_LONG_ANT
+		KT_Bus_Write(0x18,0x8000);
+#else
 		KT_Bus_Write(0x18,0x0000);						//Enable cap
+#endif
+
 #ifndef RADIO_VAR_VOL_TUNE
 
 		KT_AMTune(900);
@@ -489,25 +505,30 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 #endif
 		regx = KT_Bus_Read(0x0E); 
 		KT_Bus_Write(0x0E, regx | 0x7700);	
+
 #ifdef BOOST_SW_BACKGROUD_NOISE
 		regx = KT_Bus_Read(0x22);
 		KT_Bus_Write(0x22, (regx & (~(0x0020))));		//DISABLE AM_GAIN = 12dB
 #endif	
 		
-   		regx = KT_Bus_Read(0x0a);
-		KT_Bus_Write(0x0a, (regx&(~0x6000)));  		
 	}
 	else
 	{
 		//Current_Band.Band =SW_MODE;
+
+		regx = KT_Bus_Read(0x0a);
+		KT_Bus_Write(0x0a, regx & 0x9FFF | 0x6000);        //LOUPEG=max
+		regx = KT_Bus_Read(0x1C);
+		KT_Bus_Write(0x1C,regx & 0xFFF8);                 //IFPGA = 11.8dB(max)
+		//  KT_Bus_Write(0x1C,regx & 0xFFF8 | 0x0003);      //IFPGA = 7.7dB
+		
 #ifdef RADIO_VAR_VOL_TUNE
 
+		regx = KT_Bus_Read(0x33);
 		if(REG_STEP==1){
-			regx = KT_Bus_Read(0x33);
 			KT_Bus_Write(0x33,regx & 0x3FFF);				//AM_SPACE=1K
 		}
 		else{
-			regx = KT_Bus_Read(0x33);
 			KT_Bus_Write(0x33,regx & 0x3FFF | 0x8000);				//AM_SPACE=10K
 		}
 		
@@ -530,13 +551,11 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		delay_10ms(12);
 #endif		
 		KT_Bus_Write(0x18,0x8000);					//Disable cap
-		
+
 #ifdef BOOST_SW_BACKGROUD_NOISE
 		regx = KT_Bus_Read(0x22);
 		KT_Bus_Write(0x22, (regx & 0xFFCF) | 0x0020);	// AM_GAIN = 12dB
 #endif	
-   		regx = KT_Bus_Read(0x0a);
-		KT_Bus_Write(0x0a, (regx|0x6000));  		
 	}
 	//return(1);
 }
@@ -875,7 +894,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	regx = KT_Bus_Read(0x0F);       
 
 #ifdef KT0915
-		if(cur_sw_fm_band >= MW_MODE)
+	if(cur_sw_fm_band >= MW_MODE)
 #endif
 	{
 		KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1D));		//Write volume to 0
@@ -885,6 +904,38 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	}
 
 	//return(1);
+}
+
+void KT_AMReadRSSI(char *RSSI) //range from -90 to -6, unit is dbm
+{
+	xd_u16 regx;
+	regx = KT_Bus_Read(0x24);
+	*RSSI = -(90 - (((regx >> 8) & 0x001F) * 3));
+}
+void sw_auto_gain_hdlr(void)
+{
+	xd_u16 regx;
+
+	if(cur_sw_fm_band >= MW_MODE){
+		
+		KT_AMReadRSSI(&rssi_value);
+		
+		if(rssi_value>-30)               //RSSI门限值可以根据实际测试情况作相应调整。
+		{
+		         regx = KT_Bus_Read(0x1c);
+		         KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0005));   //信号强时，将IFPGA增益设为3.5dB（缺省值） 
+		 //        KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0006));   //信号强时，将IFPGA增益设为-5.3dB（最小增益）
+
+		}else if(rssi_value<-50)        //RSSI门限值可以根据实际测试情况作相应调整。
+		{
+		         regx = KT_Bus_Read(0x1c);
+		         KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0001));   //信号弱时，将IFPGA增益设为10.6dB
+		//        KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0002));   //信号弱时，将IFPGA增益设为9.3dB
+		//        KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0003));   //信号弱时，将IFPGA增益设为7.7dB
+		//        KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0004));   //信号弱时，将IFPGA增益设为5.9dB
+		 }
+
+	}
 }
 #endif
 
@@ -1054,7 +1105,7 @@ xd_u8 KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip an
 #endif
 
 	KT_Bus_Write(0x17, 0x8000 | Frequency);	   					//set tune bit to 1
-#ifdef	KT0915
+#ifdef KT0915
 	if(cur_sw_fm_band >= MW_MODE)
 		KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #endif
@@ -1298,11 +1349,6 @@ xd_u8 KT_AMReadRSSI(char *RSSI) //range from -90 to -6, unit is dbm
 	xd_u16 regx;
 	regx = KT_Bus_Read(0x24);
 	*RSSI = -(90 - (((regx >> 8) & 0x001F) * 3));
-	
-#ifdef DEBUG_SW    	
-	printf(" ------------------>KT_AMReadRSSI [ **** ]  %d dB \r\n ",(u16)*RSSI);
-#endif
-	
 	return(1);
 }
 
