@@ -216,6 +216,11 @@
 //
 //#define SRC_HDMI_2_EN()		P3&=~(BIT(4))
 
+#define BT_GPIO_CTRL_INIT()			P0DIR &= ~(BIT(3));P0PU |=BIT(3);
+#define BT_PWR_GPIO_ON()			P03=1
+#define BT_PWR_GPIO_OFF()			P03=0
+
+
 #if defined(ADKEY_PORT_P06)
 #define ADKEY_PORT		P06
 #elif defined(ADKEY_PORT_P02)
