@@ -1,0 +1,139 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+E:\HB002\trunk\SDK\APP\app.uvproj
+Project File Date:  05/18/2011
+
+<h2>Output:</h2>
+Build target 'Target 1'
+Target has no object modules
+Target not created
+Build target 'Target 1'
+assembling entry.A51...
+assembling STARTUP.A51...
+linking...
+*** WARNING L9: EMPTY SEGMENTS ENCOUNTERED
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  CLOCK_INIT
+    MODULE:  STARTUP.obj (?C_STARTUP)
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  ?C_START
+    MODULE:  STARTUP.obj (?C_STARTUP)
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  CLOCK_INIT
+    MODULE:  STARTUP.obj (?C_STARTUP)
+    ADDRESS: 1000091H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ?C_START
+    MODULE:  STARTUP.obj (?C_STARTUP)
+    ADDRESS: 10000BAH
+Program Size: data=8.0 xdata=0 const=0 code=567
+Target not created
+Build target 'Target 1'
+assembling entry.A51...
+assembling STARTUP.A51...
+lib\STARTUP.A51(25): error A315: unknown #directive 'waring'
+Target not created
+Build target 'Target 1'
+assembling STARTUP.A51...
+lib\STARTUP.A51(25): error A315: unknown #directive 'warning'
+Target not created
+Build target 'Target 1'
+assembling STARTUP.A51...
+lib\STARTUP.A51(25): error A320: ("should config LVDCON!")
+Target not created
+Build target 'Target 1'
+assembling STARTUP.A51...
+lib\STARTUP.A51(25): error A320: should config LVDCON!
+Target not created
+Build target 'Target 1'
+assembling STARTUP.A51...
+lib\STARTUP.A51(25): error A315: unknown #directive 'warnings'
+Target not created
+Build target 'Target 1'
+assembling STARTUP.A51...
+lib\STARTUP.A51(25): error A315: unknown #directive 'warning'
+Target not created
+Build target 'Target 1'
+assembling STARTUP.A51...
+linking...
+*** WARNING L9: EMPTY SEGMENTS ENCOUNTERED
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  CLOCK_INIT
+    MODULE:  STARTUP.obj (?C_STARTUP)
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  ?C_START
+    MODULE:  STARTUP.obj (?C_STARTUP)
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  CLOCK_INIT
+    MODULE:  STARTUP.obj (?C_STARTUP)
+    ADDRESS: 1000004H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ?C_START
+    MODULE:  STARTUP.obj (?C_STARTUP)
+    ADDRESS: 100002DH
+Program Size: data=8.0 xdata=0 const=0 code=567
+Target not created
+Build target 'Target 1'
+assembling entry.A51...
+assembling STARTUP.A51...
+linking...
+*** WARNING L9: EMPTY SEGMENTS ENCOUNTERED
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  CLOCK_INIT
+    MODULE:  .\output\STARTUP.obj (?C_STARTUP)
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  ?C_START
+    MODULE:  .\output\STARTUP.obj (?C_STARTUP)
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  CLOCK_INIT
+    MODULE:  .\output\STARTUP.obj (?C_STARTUP)
+    ADDRESS: 1000004H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ?C_START
+    MODULE:  .\output\STARTUP.obj (?C_STARTUP)
+    ADDRESS: 100002DH
+Program Size: data=8.0 xdata=0 const=0 code=567
+Target not created
+Build target 'Target 1'
+linking...
+*** WARNING L9: EMPTY SEGMENTS ENCOUNTERED
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  CLOCK_INIT
+    MODULE:  .\output\STARTUP.obj (?C_STARTUP)
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  ?C_START
+    MODULE:  .\output\STARTUP.obj (?C_STARTUP)
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  CLOCK_INIT
+    MODULE:  .\output\STARTUP.obj (?C_STARTUP)
+    ADDRESS: 1000004H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ?C_START
+    MODULE:  .\output\STARTUP.obj (?C_STARTUP)
+    ADDRESS: 100002DH
+Program Size: data=8.0 xdata=0 const=0 code=567
+Target not created
+Build target 'Target 1'
+assembling entry.A51...
+assembling STARTUP.A51...
+linking...
+*** WARNING L9: EMPTY SEGMENTS ENCOUNTERED
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  CLOCK_INIT
+    MODULE:  .\output\STARTUP.obj (?C_STARTUP)
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  ?C_START
+    MODULE:  .\output\STARTUP.obj (?C_STARTUP)
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  CLOCK_INIT
+    MODULE:  .\output\STARTUP.obj (?C_STARTUP)
+    ADDRESS: 1000004H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  ?C_START
+    MODULE:  .\output\STARTUP.obj (?C_STARTUP)
+    ADDRESS: 100002DH
+Program Size: data=8.0 xdata=0 const=0 code=567
+Target not created
