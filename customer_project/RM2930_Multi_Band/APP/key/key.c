@@ -39,13 +39,16 @@ extern _code u8 My_IRTab[];       /*user code is 0xFF*/
 //extern u8 get_my_IR_key_MAX();
 //static u8 _xdata MAX_IR_KEY = 0;
 #endif
-bool key_mode;			  ///<按键消息的类型
+u8 key_mode;			  ///<按键消息的类型
 u16 _idata user_code;     ///<红外遥控提取的用户码
 u8 _idata irda_state;     ///<IR当前状态
 u16 _idata irda_data;     ///<IR读取读取出的数据
 u16 _idata adkey_value1;  ///<adkey 采样值
 extern bool sys_pwr_flag;
 
+#ifdef USE_TWO_ADKEY
+u16 _idata adkey_value2;  ///<adkey 采样值
+#endif
 u8 _xdata adc_vdd12;	  ///<参考电压VDD1.25v的采样值
 u8 _xdata adc_vddio;	  ///<VDDI0的采样值
 
@@ -54,7 +57,7 @@ extern xd_u8 sw_fm_mod,cur_sw_fm_band;
 extern u8 cur_menu;
 
 //bool key_voice_en;		  ///<按键音使能位
-//bool key_sel_table=0;
+bool key_sel_table=0;
 
 //u8  (_code * adkey1_table)[10];	   ///<ADKEY 策略表
 //u8  (_code * remote_table)[21];	   ///<遥控策略表
@@ -372,6 +375,17 @@ void key_init(void)
     P0IE = ~(BIT(7));
     P0DIR |= BIT(7);
 #endif	
+
+#ifdef USE_TWO_ADKEY
+
+#if defined(TWO_ADKEY_PORT_P03)
+    P0PD &= ~(BIT(3));
+    P0IE = ~(BIT(3));
+    P0DIR |= BIT(3);
+#endif
+
+#endif
+
     ADCCON = ADC_VDD_12;
 //	ADCCON = 0xff;					//select P07 for ADC key
 
@@ -386,9 +400,9 @@ void key_init(void)
    @note   void key_table_sel(u8 sel)
 */
 /*----------------------------------------------------------------------------*/
-#if 0
+#if 1
 #pragma disable
-void key_table_sel(u8 sel)
+void key_table_sel(bool sel)
 {
     if (sel == 0)
     { 
@@ -616,7 +630,15 @@ void adc_scan(void)
     
         ((u8 *)(&adkey_value1))[0] = ADCDATH;
         ((u8 *)(&adkey_value1))[1] = ADCDATL;
-		
+
+#ifdef USE_TWO_ADKEY
+
+#if defined(TWO_ADKEY_PORT_P03)
+        ADCCON = ADC_KEY_IO3; //
+        P0IE = ~(BIT(3));	 
+#endif
+
+#else		
 #if defined(RADIO_BAND_SWITCH_AD_PORT_P04)
         ADCCON = ADC_KEY_IO4; 
         P0IE = ~(BIT(4));	 
@@ -627,8 +649,17 @@ void adc_scan(void)
         ADCCON = ADC_KEY_IO6; 
         P0IE = ~(BIT(6));	 		
 #endif
+#endif
 
     }
+#ifdef USE_TWO_ADKEY
+    else if (cnt == 3)
+    {
+        ((u8 *)(&adkey_value2))[0] = ADCDATH;
+        ((u8 *)(&adkey_value2))[1] = ADCDATL;
+        ADCCON = ADC_VDD_12;
+    }	
+#else	
     else if (cnt == 3)
     {
         fm_sw_volt = ADCDATH;
@@ -648,6 +679,7 @@ void adc_scan(void)
         sys_mod_volt = ADCDATH;
         ADCCON = ADC_VDD_12;
     }		
+#endif	
     else
     {
         cnt = 0;
@@ -726,7 +758,7 @@ u8 keyDetect(void)
 */
 /*----------------------------------------------------------------------------*/
 
-u8 adkey1(u16 key_value)
+u8 adkey(u16 key_value)
 {
     u8 i=0;
 
@@ -737,12 +769,13 @@ u8 adkey1(u16 key_value)
     else
     {
         for (i = 0; i < 9; i++)
-            if (key_value > adkey1_check_table[i])
+            if (key_value > adkey_check_table[i])
                 break;
     }
 
     return i;
 }
+#if 0
 void ad_mod_sel_hdlr()
 {
      
@@ -837,6 +870,7 @@ void ad_mod_sel_hdlr()
 #endif		
 	}
 }
+#endif
 
 /*----------------------------------------------------------------------------*/
 /**@brief  处理扫描到的按键，长按、短按、HOLD按键状态等在这里进行 ；按键音也在这里处理
@@ -861,19 +895,31 @@ void keyScan(void)
 
     xd_u8 keyTemp=0,key=0;
     xd_u8 key_style = NO_KEY;
-    keyTemp = adkey1(adkey_value1);
-
+	
+    keyTemp = adkey(adkey_value1);
+	
     if (keyTemp == NO_KEY)
     {
-        keyTemp = keyDetect();
-        if (keyTemp != NO_KEY)
+	 keyTemp = adkey(adkey_value2);
+	 
+        if (keyTemp == NO_KEY)
         {
-            key_mode = 1;														//按键为遥控按键
+		keyTemp = keyDetect();
+        	if(keyTemp == NO_KEY){
+		}
+		else{
+	            	key_mode = IR_REM_CH;														//按键为遥控按键
+        	}        
         }
+        else{			
+		key_mode = ADKEY_2_CH;
+	}	 
     }
     else{
-        key_mode = 0;															//按键为AD按键
+        key_mode = ADKEY_1_CH;															//按键为AD按键
     }
+
+
     if ( (NO_KEY == keyTemp) /*|| (keyTemp != last_key)*/ )
     {
         if (key_counter >= KEY_LONG_CNT)			 //长按抬起
@@ -916,19 +962,30 @@ void keyScan(void)
 #ifndef LCD_BACK_LIGHT_DUMMY				
         set_brightness_all_on();
 #endif
-        if (key_mode == 0)
+
+        if (key_mode == ADKEY_1_CH)
         {
-        	//if(key_sel_table)
+        	if(key_sel_table){
 	            key = adkey1_msg_music_table[key_style][last_key];
-		//else
-	            //y = adkey1_msg_fm_table[key_style][last_key];
+        	}
+		else
+	            key = adkey1_msg_fm_table[key_style][last_key];
         }
-        else if (key_mode == 1)									//遥控
+ 	 else if (key_mode == ADKEY_2_CH){
+
+        	if(key_sel_table){
+	            key = adkey2_msg_music_table[key_style][last_key];
+        	}
+		else
+	            key = adkey2_msg_fm_table[key_style][last_key];
+
+	 }				
+        else if (key_mode == IR_REM_CH)									//遥控
         {
-        	//if(key_sel_table)        
+        	if(key_sel_table)        
 	            key = irff00_msg_music_table[key_style][last_key];
-		//else
-	       //     key = irff00_msg_fm_table[key_style][last_key];
+		else
+	            key = irff00_msg_fm_table[key_style][last_key];
         }
 
         if (key == NO_MSG)										//无效

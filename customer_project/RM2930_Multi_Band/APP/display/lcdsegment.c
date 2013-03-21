@@ -78,7 +78,7 @@ void lcd_disp_icon(u8 id)
 	case REC_ICON:
 		F_REC_DEV |=REC_ICON_MASK;
 		break;	
-#if 0		
+#if 1
 	case AUX_ICON:
 		F_AUX_DEV |=AUX_DEV_MASK;
 		break;
@@ -184,7 +184,7 @@ void lcd_clr_icon(u8 id)
 	case REC_ICON:
 		F_REC_DEV &=~REC_ICON_MASK;
 		break;		
-#if 0		
+#if 1		
 	case AUX_ICON:
 		F_AUX_DEV &=~AUX_DEV_MASK;
 		break;
@@ -585,6 +585,24 @@ void align_lcd_disp_buff(u8 offset,u8 letter_data)
 	       lcd_buff[1] |= (((letter_data & DIG_D)>>2)|((letter_data & DIG_E)>>4))<<digit_idx;   	 
 	}
 }
+#elif defined(NEW_RM_LCD_2930_MODULE)
+u8 _code lcd_disbuf_offset[4] ={0,2,4,6};
+void align_lcd_disp_buff(u8 offset,u8 letter_data)
+{
+	u8 digit_idx=offset;
+	
+	digit_idx= lcd_disbuf_offset[offset];
+
+	lcd_buff[2] &= ~(0x0003<<digit_idx);
+	lcd_buff[1] &= ~(0x0003<<digit_idx);
+	lcd_buff[0] &= ~(0x0003<<digit_idx);
+	lcd_buff[4] &= ~(0x0002<<digit_idx);
+
+       lcd_buff[2] |= (((letter_data & DIG_A)<<1)|((letter_data & DIG_F)>>5))<<digit_idx;
+       lcd_buff[1] |= (((letter_data & DIG_B))|((letter_data & DIG_G)>>6))<<digit_idx;
+       lcd_buff[0] |= (((letter_data & DIG_C)>>1)|((letter_data & DIG_E)>>4))<<digit_idx;
+       lcd_buff[4] |= (((letter_data & DIG_D)>>2))<<digit_idx;   	 	 
+}
 #else
 u8 _code lcd_disbuf_offset[4] ={7,5,3,1};
 void align_lcd_disp_buff(u8 offset,u8 letter_data)
@@ -696,7 +714,7 @@ void seg_lcd_disp_scan(void)
 #if defined(USE_BAT_MANAGEMENT)
     Bat_icon_chk();
 #endif
-    TRADEMARK_ICON |=TRADEMARK_MASK;
+    //TRADEMARK_ICON |=TRADEMARK_MASK;
 
     update_disp_icon();
 

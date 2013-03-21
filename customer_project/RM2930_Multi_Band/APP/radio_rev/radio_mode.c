@@ -32,24 +32,24 @@ extern u16 input_number;
 extern u8 work_mode;
 extern u8 _idata last_work_mode;
 
-u16 frequency;                          ///<当前频点
+RADIO_MODE_VAR _data radio_band;
 
 extern  bool vol_change_en;
-extern u8 eq_mode;
+extern xd_u8 P2IE_REG;
+
 extern u8 _xdata decode_buffer[];
-#ifdef FAST_STICK_TUNE_FUNC
+
 extern xd_u8 fast_step_cnt;
-#endif
 
+u8 scan_mode=RADIO_SCAN_STOP;
 
+#if defined(FAST_STICK_TUNE_FUNC)
 bool freq_step_flag=0;
+#endif
 
 #ifdef AUTO_PLAY_RADIO_REC_FILE
 bool auto_play_radio_rec=0;
 #endif
-
-xd_u8 sw_fm_mod=0,cur_sw_fm_band=0;
-xd_u16 REG_MAX_FREQ=0,REG_MIN_FREQ=0,REG_STEP;
 
 xd_u8 am_adj_timer=0;
 #ifdef USE_VALIDSTATION_CHECK
@@ -73,47 +73,47 @@ extern void sw_auto_gain_hdlr(void);
 #if defined(SW_TWO_BAND_RANGE)
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
-	875,		1080,
-	520,		1630,
-	3200,	17900,
-	17905,	25000,
+	8750,	10800, 10,
+	520,		1630,   10,
+	3200,	17900,  5,
+	17905,	25000,  5,
 };
 #elif defined(SW_TWO_BAND_RANGE_FOR_CUSTOMER_JIN_FENG)
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
-	875,		1080,
-	520,		1630,
-	3500,	7800,
-	8000,	20500,
+	8750,	10800,10,
+	520,		1630,  10,
+	3500,	7800,   5,
+	8000,	20500, 5,
 };
 #elif defined(SW_FULL_BAND_RANGE)
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
-	875,		1080,
-	520,		1630,
-	3200,	25000,
+	8750,	10800, 10,
+	520,		1630,   10,
+	3200,	25000,  5,
 };
 #elif defined(SW_FULL_BAND_RANGE_END_AT_23MHZ)
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
-	875,		1080,
-	520,		1630,
-	3200,	23000,
+	8750,	10800, 10,
+	520,		1630,   10,
+	3200,	23000,  5,
 };
 #else
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
-	875,		1080,
-	520,		1630,
-	3200,	5200,
-	5210,	7300,
-	7310,	9400,
-	9410,	11500,
-	11510,	13800,
-	13810,	15800,
-	15810,	17900,
-	17910,	22000,
-	22010,	23000,
+	8750,	10800,   10,
+	520,		1630,     10,
+	3200,	5200,     5,
+	5210,	7300,     5,
+	7310,	9400,     5,
+	9410,	11500,    5,
+	11510,	13800,    5,
+	13810,	15800,    5,
+	15810,	17900,    5,
+	17910,	22000,    5,
+	22010,	23000,    5,
 	//23010,	25000,
 };
 #endif
@@ -144,22 +144,19 @@ u16 read_radio_freq(u8 ch)
 #endif
 void set_radio_freq(u8 mode)
 {
-   xd_u8 freq_step =0;
-#ifndef LCD_BACK_LIGHT_DUMMY				   
-    set_brightness_all_on();
-#endif
 #if defined(FAST_STICK_TUNE_FUNC)
+   	   xd_u8 freq_step =0;
 
 	  // EA =0;
 	    if(fast_step_cnt==0){
 			fast_step_cnt=1;
 	    }
 		
-	    if(cur_sw_fm_band==0){
+	    if(radio_band.bCurBand==0){
 			
 			freq_step =1*fast_step_cnt; 
 	    }
-	    else if(cur_sw_fm_band==1){
+	    else if(radio_band.bCurBand==1){
 
 			if(freq_step_flag){
 				freq_step = 10;
@@ -187,72 +184,94 @@ void set_radio_freq(u8 mode)
 #endif
 	//EA =1;		
 #else
-    if(cur_sw_fm_band==0){
+
+    if(radio_band.bCurBand==0){
 		
-		freq_step =1; 
     }
-    else if(cur_sw_fm_band==1){
+    else if(radio_band.bCurBand==1){
+
+#if 0		
 		if(freq_step_flag){
-			freq_step_flag=0;			
-			freq_step = 10;
+			freq_step_flag=0;
+			// speed up
 		}
 		else{
-			freq_step = 1;
 		}
+#endif		
     }
     else{
-	
-		freq_step = 5;
+		
     }	
+#endif
+
+
+#ifndef LCD_BACK_LIGHT_DUMMY				   
+    set_brightness_all_on();
 #endif
 	
     if (mode == FM_FRE_INC)
     {
-        frequency=frequency+freq_step;
+        radio_band.wFreq=radio_band.wFreq+radio_band.bTuneStep;
     }
     else if (mode == FM_FRE_DEC)
     {
-        frequency=frequency-freq_step;
+        radio_band.wFreq=radio_band.wFreq-radio_band.bTuneStep;
     }
 	
-    if (frequency > REG_MAX_FREQ)
-        frequency = REG_MAX_FREQ;
+    if (radio_band.wFreq > radio_band.wFreqUpLimit)
+        radio_band.wFreq = radio_band.wFreqUpLimit;
 	
-    if (frequency < REG_MIN_FREQ)
-        frequency =REG_MIN_FREQ;
+    if (radio_band.wFreq < radio_band.wFreqDownLimit)
+        radio_band.wFreq =radio_band.wFreqDownLimit;
 
-    if(cur_sw_fm_band==0){
+    if(radio_band.bCurBand==0){
 
-		KT_FMTune(frequency*10);
+#ifdef FM_SOFTMUTE
+		KT_FM_SOFTMUTE(radio_band.wFreq);
+#else
+		KT_FMTune(radio_band.wFreq);
+#endif
     }
     else{
 
+#ifdef AM_SOFTMUTE
+		KT_AM_SOFTMUTE(radio_band.wFreq);
+#else
 		if(am_adj_timer<2)	
-			KT_AMTune(frequency);
-		//else
-		//	KT_AMFMMute();
+			KT_AMTune(radio_band.wFreq);
+#endif
+
     }
     disp_port(MENU_FM_MAIN);			
 
 #ifdef SAVE_BAND_FREQ_INFO	
-    save_radio_freq(frequency,cur_sw_fm_band);
+    save_radio_freq(radio_band.wFreq,radio_band.bCurBand);
 #endif
 }
 void radio_band_hdlr()
 {
-	REG_MAX_FREQ = radio_freq_tab[cur_sw_fm_band].MAX_FREQ;
-	REG_MIN_FREQ = radio_freq_tab[cur_sw_fm_band].MIN_FREQ;
+
+	if(radio_band.bCurBand>SW9_MODE)
+		radio_band.bCurBand = FM_MODE;
+	
+	radio_band.wFreqUpLimit = radio_freq_tab[radio_band.bCurBand].MAX_FREQ;
+	radio_band.wFreqDownLimit = radio_freq_tab[radio_band.bCurBand].MIN_FREQ;
+	radio_band.bTuneStep  = radio_freq_tab[radio_band.bCurBand].FREQ_STEP;
+	
 #ifdef SAVE_BAND_FREQ_INFO	
-	frequency = read_radio_freq(cur_sw_fm_band);
-	if (frequency > REG_MAX_FREQ)
-        	frequency = REG_MIN_FREQ;
-    	if (frequency < REG_MIN_FREQ)
-        	frequency =REG_MIN_FREQ;
+	radio_band.wFreq = read_radio_freq(radio_band.bCurBand);
+
+	if (radio_band.wFreq > radio_band.wFreqUpLimit)
+        	radio_band.wFreq = radio_band.wFreqDownLimit;
+	
+    	if (radio_band.wFreq < radio_band.wFreqDownLimit)
+        	radio_band.wFreq =radio_band.wFreqDownLimit;
 #endif
+
 #ifdef USE_VALIDSTATION_CHECK
-	load_band_info(cur_sw_fm_band);
+	load_band_info(radio_band.bCurBand);
 #endif
-	KT_AMFMSetMode(cur_sw_fm_band);	
+	KT_AMFMSetMode(radio_band.bCurBand);	
 
     	set_radio_freq(FM_CUR_FRE);
 }
@@ -261,10 +280,10 @@ void radio_band_hdlr()
 
 bool radio_get_validstation(u16 freq)
 {
-    if(cur_sw_fm_band==0){
+    if(radio_band.bCurBand==0){
 	return KT_FMValidStation(freq);
     }
-    else if(cur_sw_fm_band==1){
+    else if(radio_band.bCurBand==1){
 	return KT_AMValidStation(freq);
     }
     else{
@@ -272,98 +291,40 @@ bool radio_get_validstation(u16 freq)
     }
 
 }
-#define SEMI_AUTO_SCAN_KEY_UP		MSG_FM_SCAN_UP
-#define SEMI_AUTO_SCAN_KEY_DOWN	MSG_FM_SCAN_DOWN
-void semi_auto_scan(u8 scan_dir)
+#define SEMI_AUTO_SCAN_KEY_UP		MSG_RADIO_SCAN_ALL_UP
+#define SEMI_AUTO_SCAN_KEY_DOWN	MSG_RADIO_SCAN_ALL_DOWN
+bool radio_band_scan(u8 mode)
 {
-    xd_u16 fre_old=frequency;
-    u8 key=0;
-
-    //Mute_Ext_PA(MUTE);
-
-    flush_low_msg();
-
-    dac_mute_control(1,1);		
-    do   
+    bool res;
+	
+    if(mode == RADIO_SCAN_NEXT)
     {
-	 key = get_msg();	
-	 
-        if ((key==MSG_FM_NEXT_STEP)||
-		( key==MSG_FM_PREV_STEP)
-	    )
-        {
-            break;
-        }
+        radio_band.wFreq=radio_band.wFreq+radio_band.bTuneStep;
 		
-	if(( key==MSG_CHANGE_WORK_MODE)){
-		put_msg_fifo(MSG_CHANGE_WORK_MODE);
-            	break;
-	}
+	 if (radio_band.wFreq > radio_band.wFreqUpLimit)
+	     radio_band.wFreq = radio_band.wFreqDownLimit;		
+    }
+    else if (mode == RADIO_SCAN_PREV)
+    {
+        radio_band.wFreq=radio_band.wFreq-radio_band.bTuneStep;
+		
+	 if (radio_band.wFreq < radio_band.wFreqDownLimit)
+	      radio_band.wFreq =radio_band.wFreqUpLimit;		
+    }
+		
+    res = radio_get_validstation(radio_band.wFreq);
 
-	//if(( key==(INFO_POWER | KEY_SHORT_UP))){
-	//	put_msg_fifo(INFO_POWER | KEY_SHORT_UP);
-       //     	break;
-	//}	
+    disp_port(MENU_FM_MAIN);			
 
-#if defined(USE_ADVOLT_FOR_FUNC_SEL_TYPE_FOUR)		
-	if(( key==INFO_BAND_SEL)){
-		put_msg_fifo(INFO_BAND_SEL);
-            	break;
-	}	
-#endif	
-	if(( key==MSG_CHANGE_FM_MODE))
-	{
-		put_msg_fifo(MSG_CHANGE_FM_MODE);
-            	break;
-	}
+    if (res)						//找到一个台
+    {
+       // fm_module_mute(0);
+    	  	//save_radio_freq(radio_band.wFreq, (cur_sw_fm_band*2));
+		//UI_menu(MENU_RADIO_FIND_STATION);
+		return true;            		
+    }
 	
-	if(scan_dir == SEARCH_UP)
-	{
-		frequency=frequency+ Current_Band.Seek_Step;
-          	if(frequency>REG_MAX_FREQ)frequency = REG_MIN_FREQ;
-	}
-	else
-	{
-		frequency=frequency- Current_Band.Seek_Step;
-          	if(frequency<REG_MIN_FREQ)frequency =REG_MAX_FREQ;
-	}
-
-    	disp_port(MENU_FM_MAIN);			
-	
- 	if(fre_old ==frequency)
-	{
-		break;
-	}        
-
-#ifdef SW_JUDGE_BAND_INFO
-	 sw_judge_band_range();
-	 if(show_band_idx_timer>0){
-
-		if(( key==INFO_HALF_SECOND)){
-			
-			show_band_idx_timer--;
-			if(show_band_idx_timer==0){
-		                    Disp_Con(DISP_FREQ);
-			}
-		}
-	}
-#endif
-
-	if(radio_get_validstation(frequency))
-        {
-    		disp_port(MENU_FM_MAIN);			
-   	     //dac_mute_control(0,1);		
-	     break;
-        }
-
-    }while(1);
-
-   set_radio_freq(FM_CUR_FRE);
-
-   dac_mute_control(0,1);		
-
-   //Mute_Ext_PA(UNMUTE);
-
+    return false;
 }
 #endif
 
@@ -378,111 +339,131 @@ void radio_rev_hdlr( void )
 {
     u8 key;
 
-    set_radio_freq(FM_CUR_FRE);
-
-    while (1)
-    {
+    	set_radio_freq(FM_CUR_FRE);
+		
+#ifdef FORCE_AUX_GPIO_TO_GROUND_IMPROVE_CROSSTALK
 
 #if defined(EXCHANGE_AUX_CHANNEL)
-        dac_out_select(DAC_AMUX1, 0);
+
+	P2IE_REG &=~((BIT(6)|BIT(7)));
+	P2IE_REG |= ((BIT(4)|BIT(5)));
+	P2PD &= ~((BIT(6)|BIT(7)));
+	P2PD |= ((BIT(4)|BIT(5)));
+	P2 &=~((BIT(4)|BIT(5)));
+	P2IE_reg_OverWrite();	
+#else 
+	P2IE_REG &=~((BIT(4)|BIT(5)));
+	P2IE_REG |= ((BIT(6)|BIT(7)));
+	
+	P2PD &= ~((BIT(4)|BIT(5)));
+	P2PD |= ((BIT(6)|BIT(7)));
+	P2 &=~((BIT(6)|BIT(7)));
+#endif	
+	P2IE_reg_OverWrite();	
+#endif	
+    	while (1)
+    	{
+
+#if defined(EXCHANGE_AUX_CHANNEL)
+        	dac_out_select(DAC_AMUX1, 0);
 #else
-        dac_out_select(DAC_AMUX0, 0);
+        	dac_out_select(DAC_AMUX0, 0);
 #endif
-        key = app_get_msg();
+        	key = app_get_msg();
 
-        switch (key)
-        {
-        case MSG_CHANGE_FM_MODE:
-	     radio_band_hdlr();
-	     break;
-        case MSG_CHANGE_WORK_MODE:
-            return;
-        case MSG_MUSIC_NEW_DEVICE_IN:							//有新设备接入
-            //work_mode = MUSIC_MODE;
-            break;
-            //return;
+	        switch (key)
+	        {
+	        case MSG_CHANGE_RADIO_MODE:
+		     radio_band.bCurBand++;
+		     radio_band_hdlr();
+		     break;
+	        case MSG_CHANGE_WORK_MODE:
+	            return;
+	        case MSG_MUSIC_NEW_DEVICE_IN:							//有新设备接入
+	            //work_mode = MUSIC_MODE;
+	            break;
 #ifdef SEMI_AUTO_SCAN_FUNC
-        case SEMI_AUTO_SCAN_KEY_UP:			
-		semi_auto_scan(SEARCH_UP);
-		break;
-
-        case SEMI_AUTO_SCAN_KEY_DOWN:			
-		semi_auto_scan(SEARCH_DN);
-		break;	
+               case MSG_RADIO_SCAN_ALL:
+			   	
+		      if (radio_band_scan(scan_mode))
+	             {
+	                    scan_mode = RADIO_SCAN_STOP;
+	                    break;
+	              }
+            	       put_msg_fifo(MSG_RADIO_SCAN_ALL);
+			break;	
+			
+	        case SEMI_AUTO_SCAN_KEY_UP:			
+            		scan_mode = RADIO_SCAN_PREV;		
+            		put_msg_lifo(MSG_RADIO_SCAN_ALL);
+			break;
+	        case SEMI_AUTO_SCAN_KEY_DOWN:			
+            		scan_mode = RADIO_SCAN_NEXT;		
+            		put_msg_lifo(MSG_RADIO_SCAN_ALL);
+			break;	
 #endif
-            
-        //case MSG_MUSIC_FF:
-	 //	am_adj_timer=2;			
-        case MSG_MUSIC_NEXT_FILE:
-		freq_step_flag=1;
-        case MSG_FM_NEXT_STEP:
-    		set_radio_freq(FM_FRE_INC);
-		//disp_port(MENU_FM_MAIN);
-		break;
-	 //case MSG_MUSIC_FR:
-	 //	am_adj_timer=2;
-	 case MSG_MUSIC_PREV_FILE:
-		freq_step_flag=1;	 	
-        case MSG_FM_PREV_STEP:
-    	     set_radio_freq(FM_FRE_DEC);
-	    //disp_port(MENU_FM_MAIN);			
-	     break;		 
-        case MSG_HALF_SECOND:
+	        case MSG_RADIO_NEXT_STEP:
+	    		set_radio_freq(FM_FRE_INC);
+			break;
+	        case MSG_RADIO_PREV_STEP:
+	    	     set_radio_freq(FM_FRE_DEC);
+		     break;		 
+	        case MSG_HALF_SECOND:
 #if defined(USE_BAT_MANAGEMENT)			
-	     bmt_hdlr();
+		     bmt_hdlr();
 #endif
 
 #if 1
-    	 if(cur_sw_fm_band>0){
+	    	 if(radio_band.bCurBand>0){
 
-		     if(am_adj_timer>0){
-				am_adj_timer--;
-				if(am_adj_timer==0){
-			    		set_radio_freq(FM_CUR_FRE);
-				}
+			     if(am_adj_timer>0){
+					am_adj_timer--;
+					if(am_adj_timer==0){
+				    		set_radio_freq(FM_CUR_FRE);
+					}
+			     }
 		     }
-	     }
 #endif		 
 #if 1
-		sw_auto_gain_hdlr();
+			sw_auto_gain_hdlr();
 #endif
 #ifndef LCD_BACK_LIGHT_DUMMY
-	     set_brightness_fade_out();
+		     set_brightness_fade_out();
 #endif
-            if (main_menu_conter < (SUB_MENU_TIME - 3))
-            {
-                	main_menu_conter++;
-            }
+	            if (main_menu_conter < (SUB_MENU_TIME - 3))
+	            {
+	                	main_menu_conter++;
+	            }
 #ifdef FM_FREQ_NUM_KEY_INPUT			
-            else if (cur_menu == MENU_INPUT_NUMBER)			//数字输入模式
-            {
-            		if(cur_sw_fm_band>1){
-				input_number = input_number*10;
-			}
-            	 	if ((input_number <= REG_MAX_FREQ) && (input_number >=REG_MIN_FREQ)){
+	            else if (cur_menu == MENU_INPUT_NUMBER)			//数字输入模式
+	            {
+	            		if(radio_band.bCurBand>1){
+					input_number = input_number*10;
+				}
+	            	 	if ((input_number <= radio_band.wFreqUpLimit) && (input_number >=radio_band.wFreqDownLimit)){
 
-		        	frequency =input_number;
-			    	set_radio_freq(FM_CUR_FRE);
-			}
-			else{
-	     			disp_port(MENU_REC_ERR);
-			}
-            }	
+			        	radio_band.wFreq =input_number;
+				    	set_radio_freq(FM_CUR_FRE);
+				}
+				else{
+		     			disp_port(MENU_REC_ERR);
+				}
+	            }	
 #endif			
-            else if (cur_menu != main_menu)
-            {
-    			disp_port(MENU_FM_MAIN);
-	     }
-	     if(RECODE_WORKING == encode_status)
-            {
-     			disp_port(MENU_FM_MAIN);
-		   //disp_port(MENU_RECWORKING); 
-            }				
-            break;
-        default :
-            ap_handle_hotkey(key);
-            break;
-        }
+	            else if (cur_menu != main_menu)
+	            {
+	    			disp_port(MENU_FM_MAIN);
+		     }
+		     if(RECODE_WORKING == encode_status)
+	            {
+	     			disp_port(MENU_FM_MAIN);
+			   //disp_port(MENU_RECWORKING); 
+	            }				
+	            break;
+	        default :
+	            ap_handle_hotkey(key);
+	            break;
+	   }
     }
 }
 
@@ -514,9 +495,11 @@ void radio_hdlr(void)
 	   return;
 #endif
     }
-
+	
+    key_table_sel(SYS_RADIO_KEY_TABLE);
     input_number_en = 1;
     vol_change_en=1;
+	
     main_menu = MENU_FM_MAIN;
     radio_band_hdlr();
    // disp_port(MENU_FM_MAIN);

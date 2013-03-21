@@ -18,7 +18,7 @@
 #include "msgfor_hot.h"
 
 #ifdef __C51__
-void aux_fun(void);
+void aux_main(void);
 
 #endif
 

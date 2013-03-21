@@ -735,9 +735,9 @@ void music_play(void)
             if (play_status == MAD_PAUSE)
                 break;
             eq_mode++;
-            if (eq_mode > CLASSIC)
+            if (eq_mode > EQ_MODE_END)
             {
-                eq_mode = NORMAL;
+                eq_mode = EQ_MODE_INIT;
             }
             set_eq(eq_mode);
             disp_port(MENU_SET_EQ);
@@ -1011,11 +1011,15 @@ void music_play(void)
             put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
 
             break;
-#if 0
-        case MSG_DEVICE_MODE:		    //设备切换
+#ifdef HOT_KEY_SELECT_DEVICE
+        case MSG_ALTERNATIVE_DEVICE:		    //设备切换
             set_brightness_all_on();
-            device_check();
-    		backup_music_point();
+			
+            if(device_check()==0){
+			break;
+            }
+            write_file_info(0xff);
+    	     //backup_music_point();
             given_device = DEVICE_AUTO_NEXT; //0x81;//自动获取下一个设备。
             given_file_method = PLAY_BREAK_POINT;
             put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
@@ -1079,7 +1083,7 @@ void music_decode(void)
     fat_ptr1.buf = win_buffer;
     SYSTEM_CLK_DIV1();
 
-    //key_table_sel(0);
+    key_table_sel(SYS_DEFUALT_KEY_TABLE);
     flush_all_msg();
     music_info_init();
     set_max_vol(MAX_ANOLOG_VOL,MAX_DIGITAL_VOL);///设置最大音量

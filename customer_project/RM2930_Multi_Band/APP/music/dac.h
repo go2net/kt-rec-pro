@@ -13,8 +13,8 @@
 #include "config.h"
 
 #ifdef __C51__
-#define AMUX0_IE		0xCF
-#define AMUX1_IE        0x3F
+#define AMUX0_IE				0xCF
+#define AMUX1_IE        			0x3F
 #define AMUX_P2IE_SET(x)		P2IE = x			//设置 AMUX通道
 /*----------------------------------------------------------------------------*/
 /**@brief    获取数字音量或主音量

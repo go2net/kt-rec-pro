@@ -42,10 +42,25 @@ void radio_hdlr(void);
 //void scan_chan(u8 dir);
 #endif
 
+typedef struct _RADIO_MODE_VAR
+{
+    u16 wFreq;          ///<µ±Ç°Æµµã
+    u16 wFreqUpLimit;          
+    u16 wFreqDownLimit;          
+    u8  bCurBand; 	
+    u8  bTuneStep; 	
+    u8  bCurChannel; 	
+    u8  bTotalChannel;  
+}RADIO_MODE_VAR;
+
 typedef enum {
 
-	SEARCH_UP =0,
-	SEARCH_DN,
+	 RADIO_SCAN_STOP,
+	 RADIO_SCAN_PREV,
+	 RADIO_SCAN_NEXT,
+	 RADIO_SCAN_ALL,
 	
-}AUTO_DIR;
+}RADIO_SCAN_MODE;
+
+
 #endif

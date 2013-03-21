@@ -179,7 +179,7 @@
 #define ADC_KEY_IO2    0xFA
 #define ADC_VDD_12     0xF8
 #define ADC_LDOIN        0xF9
-#define ADC_MAX_USED   (0x03+2)
+#define ADC_MAX_USED   (0x03+1)
 
 #if defined(USE_LCD_DRV_HT1621)
 #define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(4));P0PU|= (BIT(4))
@@ -190,20 +190,24 @@
 
 #ifdef LCD_BACK_LIGHT_USE_P06
 #define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(6));P0PU|= (BIT(6))
-#define LCD_BACKLIGHT_ON()		P06 =0;
-#define LCD_BACKLIGHT_OFF()		P06=1;
+#define LCD_BACKLIGHT_ON()		P06 =0
+#define LCD_BACKLIGHT_OFF()		P06=1
 #elif defined(LCD_BACK_LIGHT_USE_P03)
 #define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(3));P0PU|= (BIT(3))
-#define LCD_BACKLIGHT_ON()		P03 =0;
-#define LCD_BACKLIGHT_OFF()		P03=1;
+#define LCD_BACKLIGHT_ON()		P03 =0
+#define LCD_BACKLIGHT_OFF()		P03=1
+#elif defined(LCD_BACK_LIGHT_USE_P05)
+#define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(5));P0PU|= (BIT(5))
+#define LCD_BACKLIGHT_ON()		  P05 =0
+#define LCD_BACKLIGHT_OFF()		  P05=1
 #elif defined(LCD_BACK_LIGHT_DUMMY)
 #define  LCD_BACKLIGHT_INIT()	  
 #define LCD_BACKLIGHT_ON()		
 #define LCD_BACKLIGHT_OFF()		
 #else
 #define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(4));P0PU|= (BIT(4))
-#define LCD_BACKLIGHT_ON()		P04 =0;
-#define LCD_BACKLIGHT_OFF()		P04 =1;
+#define LCD_BACKLIGHT_ON()		P04 =0
+#define LCD_BACKLIGHT_OFF()		P04 =1
 #endif
 
 
@@ -216,10 +220,12 @@
 //
 //#define SRC_HDMI_2_EN()		P3&=~(BIT(4))
 
-#define BT_GPIO_CTRL_INIT()			P0DIR &= ~(BIT(3));P0PU |=BIT(3);
-#define BT_PWR_GPIO_ON()			P03=1
-#define BT_PWR_GPIO_OFF()			P03=0
+#define KT_RF_AP_POWER_INIT()			P0DIR &= ~(BIT(6));P0PU |=BIT(6);
+#define KT_RF_AP_POWER_ON()			P06=1
+#define KT_RF_AP_POWER_OFF()			P06=0
 
+#define SYS_POWER_ON()			P0DIR &= ~(BIT(4));P0PU |=BIT(4);P04=1
+#define SYS_POWER_OFF()			P0DIR &= ~(BIT(4));P0PU |=BIT(4);P04=0
 
 #if defined(ADKEY_PORT_P06)
 #define ADKEY_PORT		P06

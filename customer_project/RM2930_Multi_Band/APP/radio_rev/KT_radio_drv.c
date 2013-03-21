@@ -73,9 +73,6 @@ xd_u16 mem_freq[3];			  //Rememberred channel frequencies for previous, current 
 xd_u8 mem_snr[3];			  //Rememberred SNR values for previous, current and next stations
 #endif
 
-
-extern xd_u8 cur_sw_fm_band;
-extern xd_u16 REG_MAX_FREQ,REG_MIN_FREQ,REG_STEP;
 char rssi_value;
 
 #define I2C
@@ -278,7 +275,8 @@ xd_u8 KT_pre_init(void)
 
 #if 1
 	regx = KT_Bus_Read(0x01);           			//Read Manufactory ID 
-	//printf_u16(regx,'D');
+	printf_u16(regx,'D');
+	
 	if (regx != 0x4B54) return 0;
 	
 	//regx=KT_Bus_Read(0x12);						//Read power-up indicator
@@ -438,9 +436,15 @@ xd_u8 KT_AMSetBW(xd_u8 AMBW)				//AM Channel Bandwidth=2 for 2KHz; 4 for 4KHz; 6
 void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 {
 	xd_u16 regx;
+	
 	KT_AMFMInit();
+	
+	KT_RF_AP_POWER_INIT();
+		
 	if (AMFM_MODE == FM_MODE)
 	{
+	       KT_RF_AP_POWER_OFF();
+	       
 		regx = KT_Bus_Read(0x0a);
 		KT_Bus_Write(0x0a, regx & 0x9FFF);        //LOUPEG=min
 		regx = KT_Bus_Read(0x1C);
@@ -467,7 +471,8 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 	else if (AMFM_MODE == MW_MODE)
 	{
 		//Current_Band.Band =MW_MODE;
-		//NSS = 0;
+	       KT_RF_AP_POWER_OFF();
+		
 		regx = KT_Bus_Read(0x0a);
 		KT_Bus_Write(0x0a, regx & 0x9FFF);        //LOUPEG=min
 		regx = KT_Bus_Read(0x1C);
@@ -515,6 +520,7 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 	else
 	{
 		//Current_Band.Band =SW_MODE;
+	       KT_RF_AP_POWER_ON();
 
 		regx = KT_Bus_Read(0x0a);
 		KT_Bus_Write(0x0a, regx & 0x9FFF | 0x6000);        //LOUPEG=max
@@ -740,7 +746,7 @@ void KT_FMTune(xd_u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and T
 	regx=KT_Bus_Read(0x03);
 	KT_Bus_Write(0x03, (regx & 0xF000) | 0x8000 | (Frequency / 5));	   		//set tune bit to 1
 
-	delay_10ms(2);
+	delay_10ms(3);
 
 	regx = KT_Bus_Read(0x0F);       
 	KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1D));		//Write volume to 0
@@ -846,7 +852,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	//regx = KT_Bus_Read(0x0F);       
 	//KT_Bus_Write(0x0F, regx & 0xFFE0);		//Write volume to 0
 
-	if(cur_sw_fm_band >= MW_MODE){
+	if(Current_Band.Band >= MW_MODE){
 		
 		KT_Bus_Write(0x18,0x0000);						//Enable cap
 	}
@@ -880,11 +886,11 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 		KT_Bus_Write(0x16, 	regx & 0xD0FF);       				//reference clock=32.768K;
 		KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #ifdef KT0915
-		if(cur_sw_fm_band >= MW_MODE)
+		if(Current_Band.Band >= MW_MODE)
 			KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #endif
 	}
-	delay_10ms(2);
+	delay_10ms(3);
 
 #ifdef DISABLE_FAST_GAIN_UP
 	regx = KT_Bus_Read(0x23);
@@ -894,7 +900,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	regx = KT_Bus_Read(0x0F);       
 
 #ifdef KT0915
-	if(cur_sw_fm_band >= MW_MODE)
+	if(Current_Band.Band >= MW_MODE)
 #endif
 	{
 		KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1D));		//Write volume to 0
@@ -906,27 +912,24 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	//return(1);
 }
 
-void KT_AMReadRSSI(char *RSSI) //range from -90 to -6, unit is dbm
-{
-	xd_u16 regx;
-	regx = KT_Bus_Read(0x24);
-	*RSSI = -(90 - (((regx >> 8) & 0x001F) * 3));
-}
 void sw_auto_gain_hdlr(void)
 {
 	xd_u16 regx;
+       char am_rssi;
+	   
+	if(Current_Band.Band >= MW_MODE){
 
-	if(cur_sw_fm_band >= MW_MODE){
+		regx = KT_Bus_Read(0x24);
+		am_rssi = -(90 - (((regx >> 8) & 0x001F) * 3));		
+		//KT_AMReadRSSI(&rssi_value);
 		
-		KT_AMReadRSSI(&rssi_value);
-		
-		if(rssi_value>-30)               //RSSI门限值可以根据实际测试情况作相应调整。
+		if(am_rssi>-30)               //RSSI门限值可以根据实际测试情况作相应调整。
 		{
 		         regx = KT_Bus_Read(0x1c);
 		         KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0005));   //信号强时，将IFPGA增益设为3.5dB（缺省值） 
 		 //        KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0006));   //信号强时，将IFPGA增益设为-5.3dB（最小增益）
 
-		}else if(rssi_value<-50)        //RSSI门限值可以根据实际测试情况作相应调整。
+		}else if(am_rssi<-50)        //RSSI门限值可以根据实际测试情况作相应调整。
 		{
 		         regx = KT_Bus_Read(0x1c);
 		         KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0001));   //信号弱时，将IFPGA增益设为10.6dB
@@ -1106,7 +1109,7 @@ xd_u8 KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip an
 
 	KT_Bus_Write(0x17, 0x8000 | Frequency);	   					//set tune bit to 1
 #ifdef KT0915
-	if(cur_sw_fm_band >= MW_MODE)
+	if(Current_Band.Band >= MW_MODE)
 		KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #endif
 	//delay_10ms(100);
@@ -1169,24 +1172,14 @@ void load_band_info(u8 cur_band)
     if(cur_band==0){
 		
 		Current_Band.Band=FM_MODE;
-		Current_Band.Tune_Step=FM_50KHz_STEP;
-		Current_Band.Seek_Step = FM_50KHz_STEP;	
 		Current_Band.ValidStation_Step =FM_50KHz_STEP ;			
     }
     else if(cur_band==1){
 		
 		Current_Band.Band=MW_MODE;
 
-#ifdef GPIO_SEL_BAND_INFO_CONFIG
-		if(get_band_info_config()){
-			Current_Band.Seek_Step = AM_10KHz_STEP;		
-		}
-		else
-#endif			
-		{
-			Current_Band.Seek_Step = AM_1KHz_STEP;		
-		}
-		Current_Band.ValidStation_Step =AM_2KHz_STEP;			
+		Current_Band.ValidStation_Step =AM_2KHz_STEP;	
+		
 		Current_Band.AFCTH_Prev =MW_AFCTH_PREV;
 		Current_Band.AFCTH_Next =MW_AFCTH_NEXT;
 		Current_Band.AFCTH =MW_AFCTH;
@@ -1195,8 +1188,9 @@ void load_band_info(u8 cur_band)
     else if(cur_band==2){
 		
 		Current_Band.Band=SW_MODE; 
-		Current_Band.Seek_Step=	SM_5KHz_STEP;
-		Current_Band.ValidStation_Step =SM_2KHz_STEP;					
+
+		Current_Band.ValidStation_Step =SM_2KHz_STEP;	
+		
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-2;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-2;
 		Current_Band.AFCTH =SW_AFCTH+2;
@@ -1206,7 +1200,7 @@ void load_band_info(u8 cur_band)
     else if(cur_band==3){
 		
 		Current_Band.Band=SW_MODE; 
-		Current_Band.Seek_Step=	SM_5KHz_STEP;
+
 		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-2;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-2;
@@ -1216,7 +1210,7 @@ void load_band_info(u8 cur_band)
     else if(cur_band==4){
 		
 		Current_Band.Band=SW_MODE; 
-		Current_Band.Seek_Step=	SM_5KHz_STEP;
+
 		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-2;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-2;
@@ -1227,7 +1221,7 @@ void load_band_info(u8 cur_band)
     else if(cur_band==5){
 		
 		Current_Band.Band=SW_MODE; 
-		Current_Band.Seek_Step=	SM_5KHz_STEP;
+
 		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
@@ -1238,7 +1232,7 @@ void load_band_info(u8 cur_band)
     else if(cur_band==6){
 		
 		Current_Band.Band=SW_MODE; 
-		Current_Band.Seek_Step=	SM_5KHz_STEP;
+
 		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
@@ -1249,7 +1243,7 @@ void load_band_info(u8 cur_band)
     else if(cur_band==7){
 		
 		Current_Band.Band=SW_MODE; 
-		Current_Band.Seek_Step=	SM_5KHz_STEP;
+
 		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
@@ -1260,7 +1254,7 @@ void load_band_info(u8 cur_band)
     else if(cur_band==8){
 		
 		Current_Band.Band=SW_MODE; 
-		Current_Band.Seek_Step=	SM_5KHz_STEP;
+
 		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
@@ -1271,7 +1265,7 @@ void load_band_info(u8 cur_band)
     else if(cur_band==9){
 		
 		Current_Band.Band=SW_MODE; 
-		Current_Band.Seek_Step=	SM_5KHz_STEP;
+
 		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
@@ -1282,7 +1276,7 @@ void load_band_info(u8 cur_band)
     else{
 		
 		Current_Band.Band=SW_MODE; 
-		Current_Band.Seek_Step=	SM_5KHz_STEP;
+
 		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
@@ -2002,22 +1996,32 @@ void KT_AM_SOFTMUTE_SETTING(xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 AM_SMTH, xd_u8 VOL
 /*版    本：V4.0																	*/
 /************************************************************************************/
 #ifdef FM_SOFTMUTE
-void KT_FM_SOFTMUTE(xd_u16 Frequency)
+void KT_FM_SOFTMUTE(u16 Frequency)
 {
-	xd_u16 reg4;
-
-	reg4 = KT_Bus_Read(0x04);
-
+	u16 regx;
+	KT_Mute_Ctrl(1);
+	
+	//regx = KT_Bus_Read(0x04);
 	if(KT_FMValidStation(Frequency))
 	{
 //		KT_FM_SOFTMUTE_SETTING(2,3,4,5);					// SMUTEA=4,SMUTER=60ms,SMMD=SNR mode,FM_SMTH=9,VOLUMET=5
-		KT_Bus_Write(0x04,reg4 | 0x8000);					// FM Softmute Disable
+		//KT_Bus_Write(0x04,regx | 0x8000);					// FM Softmute Disable
+		//KT_Mute_Ctrl(0);
+		// printf("------->-soft  un mute     \r\n");
 
+		regx = KT_Bus_Read(0x0F);
+		KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1F));		//Write volume to 0	
 	}
 	else
 	{
-		KT_FM_SOFTMUTE_SETTING(0,3,7,5);					// SMUTEA=16,SMUTER=60ms,SMMD=SNR mode,FM_SMTH=12,VOLUMET=5
-		KT_Bus_Write(0x04,reg4 & 0x7FFF);					// FM Softmute Enable
+		//KT_FM_SOFTMUTE_SETTING(0,3,7,15);					// SMUTEA=16,SMUTER=60ms,SMMD=SNR mode,FM_SMTH=12,VOLUMET=5
+		//KT_Bus_Write(0x04,regx & 0x7FFF);					// FM Softmute Enable
+		//delay_n10ms(30);
+		//KT_Mute_Ctrl(0);
+
+		 //printf("------->-soft   mute     \r\n");
+		regx = KT_Bus_Read(0x0F);
+		KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1A));		//Write volume to 0	
 	}
 //	reg4=KT_Bus_Read(0x04);									// FM Softmute Enable
 //	KT_Bus_Write(0x04,reg4 & 0x7FFF);
@@ -2029,15 +2033,15 @@ void KT_FM_SOFTMUTE(xd_u16 Frequency)
 /*函数说明：																 */
 /*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
 /*全局变量：无																 */
-/*输    入：xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 FM_SMTH, xd_u8 VOLUMET		 */
+/*输    入：u8 SMUTEA, u8 SMUTER, u8 FM_SMTH, u8 VOLUMET		 */
 /*返    回：无																 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-void KT_FM_SOFTMUTE_SETTING(xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 FM_SMTH, xd_u8 VOLUMET)
+void KT_FM_SOFTMUTE_SETTING(u8 SMUTEA, u8 SMUTER, u8 FM_SMTH, u8 VOLUMET)
 {
-	xd_u16 reg2E;
+	u16 reg2E;
 	reg2E = KT_Bus_Read(0x2E);
 	KT_Bus_Write(0x2E,(reg2E & 0x0E00) | (SMUTEA<<14) | (SMUTER<<12) | (VOLUMET<<4) | 0x0008 | FM_SMTH );
 //									SMUTEA=4,SMUTER=120ms,VOLUMET=1,SMMD=SNR mode,FM_SMTH=3

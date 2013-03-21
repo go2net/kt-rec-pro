@@ -13,7 +13,7 @@
 
 //#include "config.h"
 
-#define USE_RTC_RAM       1///< 1:使用RTC内部的64个字节的RAM做记忆，掉电不能记忆；0:使用EEROM做记忆
+#define USE_RTC_RAM       0///< 1:使用RTC内部的64个字节的RAM做记忆，掉电不能记忆；0:使用EEROM做记忆
 
 #ifdef __C51__
 
