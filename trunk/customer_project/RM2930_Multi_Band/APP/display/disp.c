@@ -23,6 +23,7 @@
 #else
 #include "lcdsegment.h"
 #endif
+#include "radio_rev.h"
 
 #include "resource.h"
 #include "my_printf.h"
@@ -35,7 +36,7 @@
 
 extern u8 LCDPAGE,LCDCOLUMN;
 #if FM_MODULE
-extern u16 frequency;
+extern RADIO_MODE_VAR _data radio_band;
 //extern u8 fre_channel, total_channel;
 #endif
 extern u16 input_number;
@@ -67,7 +68,6 @@ extern u8 bright_counter;		///<显示亮度调整延时
 extern u8 play_status;	
 u8 led_flag;
 xd_u8  clock_points=0;
-extern xd_u8 cur_sw_fm_band;
 
 extern void clear_lcd_disp_buf(void);
 
@@ -243,71 +243,28 @@ void disp_del_file(void)
 /**@brief  显示FM主界面
    @param  无
    @return 无
-   @note   void disp_fm_main(void)
+   @note   void disp_radio_main(void)
 */
 /*----------------------------------------------------------------------------*/
 
 
-void disp_fm_main(void)
+void disp_radio_main(void)
 {
 	u16 freq=0;
-#if defined(K129_MODULE0000000000)
-	if(cur_sw_fm_band==0){
-		freq =frequency;
+	
+	if(radio_band.bCurBand==0){
+		freq =radio_band.wFreq/10;
 	 	lcd_disp_icon(FM_ICON);		
 	}
-	else if(cur_sw_fm_band==1){
-		freq =frequency;
-	 	lcd_disp_icon(AM_ICON);
-	}
-	else if(cur_sw_fm_band==2){
-		
-		freq =frequency;
-		lcd_buff[0]|=0x0080;
-		lcd_buff[1]|=0x0001;
-
-	}
-	else if(cur_sw_fm_band==3){
-
-
-		if(frequency<9999){
-			freq =frequency;
-			lcd_buff[0]|=0x0080;
-		}
-		else{
-			freq =frequency/100;
-			lcd_buff[0]|=0x0020;
-		}
-
-	 	lcd_disp_icon(SW_ICON);		
-		
-	}	
-    if(freq > 999)
-    {
-        printf_num(freq,0,4);
-    }	
-    else if(freq > 99)
-    {
-        printf_num(freq,1,3);
-    }
-    else{
-
-        printf_num(freq,2,2);
-    }
-#else	
-	if(cur_sw_fm_band==0){
-		freq =frequency;
-	 	lcd_disp_icon(FM_ICON);		
-	}
-	else if(cur_sw_fm_band==1){
-		freq =frequency;
+	else if(radio_band.bCurBand==1){
+		freq =radio_band.wFreq;
 	 	lcd_disp_icon(AM_ICON);
 	}
 	else{
-		freq =frequency/10;
+		freq =radio_band.wFreq/10;
 
 #if defined(DISP_SW2_ICON)
-		if(cur_sw_fm_band==3){
+		if(radio_band.bCurBand==3){
 	 		lcd_disp_icon(SW2_ICON);		
 		}
 		else
@@ -328,7 +285,6 @@ void disp_fm_main(void)
 
         printf_num(freq,2,2);
     }
-#endif
 
 #ifdef DISP_ACTIVE_REC_DEVICE_AT_RADIO_MODE
 	if((encode_status==RECODE_WORKING)||(encode_status==RECODE_PAUSE)){
@@ -356,7 +312,7 @@ void disp_fm_main(void)
 #if 0//FM_MODULE
 void disp_fm_freq(void)
 {
-    disp_fm_main();
+    disp_radio_main();
 }
 #endif
 /*----------------------------------------------------------------------------*/
@@ -415,6 +371,12 @@ void disp_main_vol(u8 vol)
     led_putchar('U',1);
     printf_num(vol,2,2);
 
+#ifdef AUX_DISP_VOL
+    if(work_mode == AUX_MODE){
+	 lcd_disp_icon(AUX_ICON);	
+    }
+#endif
+
 }
 /*----------------------------------------------------------------------------*/
 /**@brief  显示音频播放时间，总时间
@@ -437,7 +399,7 @@ void disp_music_play_time(void)
     printf_num(min,0,2);
     led_putchar(':',0);
 #endif
-    // disp_play_mode();
+    //disp_play_mode();
 }
 
 /*----------------------------------------------------------------------------*/
@@ -473,8 +435,19 @@ void disp_music_main(void)
 #if defined(DISP_PLAY_ICON)	
 	lcd_disp_icon(PLAY_ICON);
 #endif
-//	lcd_disp_icon(MP3_ICON);
 
+	if(play_mode==REPEAT_ONE){
+		lcd_disp_icon(REP_1_ICON);
+	}
+}
+void disp_aux_main(void)
+{
+#ifdef AUX_DISP_VOL
+       disp_main_vol(get_dac_vol(0));
+#else
+	printf_str(" AUX",0);
+	 lcd_disp_icon(AUX_ICON);	
+#endif
 }
 /*----------------------------------------------------------------------------*/
 /**@brief  显示 EQ
@@ -800,9 +773,12 @@ void disp_port(u8 menu)
             break;
 
         case MENU_FM_MAIN:
-            disp_fm_main();
+            disp_radio_main();
             break;
-        
+
+        case MENU_AUX_MAIN:
+	    disp_aux_main();
+            break;
         case MENU_POWER_OFF:
             disp_power_off();
             break;
@@ -815,7 +791,7 @@ void disp_port(u8 menu)
             break;				
 #endif			
       //  case MENU_FM_DISP_FRE:
-     //       disp_fm_main();
+     //       disp_radio_main();
      //       break;
 
 	case MENU_REC_ERR:

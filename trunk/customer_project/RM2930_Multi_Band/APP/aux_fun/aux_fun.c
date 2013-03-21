@@ -7,7 +7,7 @@
    @note
 */
 /*----------------------------------------------------------------------------*/
-#if 0
+#if 1
 #include "aux_fun.h"
 #include "dac.h"
 #include "clock.h"
@@ -22,6 +22,7 @@ extern u8 _idata last_work_mode;
 extern u8 _xdata decode_buffer[];
 extern u8 eq_mode;
 extern bool vol_change_en;
+extern xd_u8 P2IE_REG;
 
 
 
@@ -32,9 +33,28 @@ extern bool vol_change_en;
    @note    void aux_main(void)
 */
 /*----------------------------------------------------------------------------*/
-void aux_main(void)
+void aux_main_handlr(void)
 {
     u8 key;
+
+#ifdef FORCE_AUX_GPIO_TO_GROUND_IMPROVE_CROSSTALK
+
+#if defined(EXCHANGE_AUX_CHANNEL)	
+	P2IE_REG &=~((BIT(4)|BIT(5)));
+	P2IE_REG |= ((BIT(6)|BIT(7)));
+	P2IE_reg_OverWrite();
+	P2PD &=~((BIT(4)|BIT(5)));
+	P2PD |= ((BIT(6)|BIT(7)));
+	P2 &=~((BIT(6)|BIT(7)));
+#else
+	P2IE_REG &=~((BIT(6)|BIT(7)));
+	P2IE_REG |= ((BIT(4)|BIT(5)));
+	P2IE_reg_OverWrite();
+	P2PD &=~((BIT(6)|BIT(7)));
+	P2PD |= ((BIT(4)|BIT(5)));
+	P2 &=~((BIT(4)|BIT(5)));
+#endif	
+#endif	
 
     while (1)
     {
@@ -95,13 +115,7 @@ void aux_main(void)
 //			   disp_port(MENU_RECWORKING); 
 //            }
             break;
-#if 0//RTC_ENABLE
-        case MSG_ALM_ON:
-            write_next_alm_sec();
-            work_mode = RTC_MODE;
-            put_msg_lifo(MSG_CHANGE_WORK_MODE);
-            break;
-#endif
+
         default:
             ap_handle_hotkey(key);
             break;
@@ -116,24 +130,21 @@ void aux_main(void)
    @note    void aux_fun(void)
 */
 /*----------------------------------------------------------------------------*/
-void aux_fun(void)
+void aux_main(void)
 {
-    flashled(3);
-//	amp_abd(1);
-    //work_mode++;
-    //return ;
+    key_table_sel(SYS_DEFUALT_KEY_TABLE);
     input_number_en = 0;
     vol_change_en=1;
-    main_menu = MENU_AUX;
-    disp_port(MENU_AUX);
+    main_menu = MENU_AUX_MAIN;
+    disp_port(MENU_AUX_MAIN);
     amux_dsp_eq();
     SYSTEM_CLK_DIV4();
     encode_channel = REC_LINEIN;
-	encode_vol = 3;
+    encode_vol = 3;
     key_table_sel(0);
     flush_all_msg();
     set_max_vol(MAX_ANOLOG_VOL,MAX_DIGITAL_VOL);///设置最大音量
-    aux_main();
+    aux_main_handlr();
     main_vol_set(0, CHANGE_VOL_NO_MEM);
 
     break_encode();

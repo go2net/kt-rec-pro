@@ -62,14 +62,9 @@ typedef enum
 enum
 {
     MUSIC_MODE = 0,
-#if USB_DEVICE_ENABLE
-    USB_DEVICE_MODE,
-#endif
-
 #if FM_MODULE 
     FM_RADIO_MODE,
 #endif
-
     AUX_MODE,
     BLUE_TOOTH_MODE,
 #if RTC_ENABLE
@@ -77,6 +72,10 @@ enum
 #endif
     REC_MIC_MODE,
     IDLE_MODE,
+#if USB_DEVICE_ENABLE
+    USB_DEVICE_MODE,
+#endif
+
 };
 
 

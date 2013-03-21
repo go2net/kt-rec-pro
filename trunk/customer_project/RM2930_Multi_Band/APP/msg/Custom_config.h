@@ -6,7 +6,7 @@
 
 
 #if 1
-//#define UART_ENABLE
+#define UART_ENABLE
 #ifdef UART_ENABLE
 #define USE_UART_P24_P25
 #endif
@@ -25,7 +25,7 @@
 
 //#define JK_FT_780_MODULE
 //#define JK_FP_211_MODULE
-#define JK_HT_998_MODULE
+//#define JK_HT_998_MODULE
 //#define JK_SZ_S900_MODULE
 //#define JK_JF_933_MODULE
 //#define JK_JF_689_MODULE
@@ -34,9 +34,58 @@
 //#define JK_DH_289_MODULE
 //#define K129_MODULE
 //#define JK299_MODULE
+#define USC_RM2930_MODULE
+
+#if defined(USC_RM2930_MODULE)
+
+#define NEW_RM_LCD_2930_MODULE
+#define LCD_GPIO_DRV
+
+#define SW_TWO_BAND_RANGE
+#define ADKEY_PORT_P02
+
+#define USE_TWO_ADKEY
+#define TWO_ADKEY_PORT_P03
+
+#define IIC_GPIO_USE_P00_P07
+
+#define LCD_BACK_LIGHT_USE_P05
+
+#define EXCHANGE_AUX_CHANNEL
+
+#define HOT_KEY_SELECT_DEVICE
+
+
+#define REC_PLAY_KEY_BREAK_POINT
+#define FM_FREQ_NUM_KEY_INPUT
 
 
 
+#define REPEAT_MODE_USE_ONE_ALL
+
+#define DEFAULT_VOL		MAX_MAIN_VOL
+#define SAVE_BAND_FREQ_INFO
+
+#define USE_VALIDSTATION_CHECK
+#define SEMI_AUTO_SCAN_FUNC
+#define FORCE_AUX_GPIO_TO_GROUND_IMPROVE_CROSSTALK
+
+#if 0
+#define USE_BAT_MANAGEMENT
+#define CHARGER_DETECT_INDICATOR
+#define DC_CHARGER_DET_SHARE_IIC_P01
+#define USE_GPIO_MEASURE_VOLT_AT_P03
+#endif
+
+#define AUX_DISP_VOL
+
+
+#define PLAY_MODE_IN_USE
+#define REPEAT_MODE_USE_ONE_ALL
+#define DISP_PLAY_MODE_STR
+#endif
+
+#if 0
 #if defined(JK_JF_933_MODULE)
 
 #define DISP_VER		2
@@ -483,5 +532,5 @@
 #endif
 
 
-
+#endif
 #endif

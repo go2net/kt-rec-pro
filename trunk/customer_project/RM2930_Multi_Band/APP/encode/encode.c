@@ -329,7 +329,7 @@ void rec_mic_fun(void)
     SYSTEM_CLK_DIV2();
     encode_channel = REC_MIC;
     encode_vol = 7;
-    //key_table_sel(0);
+    key_table_sel(0);
     flush_all_msg();
     if(RECODE_INIT == encode_status)
     {

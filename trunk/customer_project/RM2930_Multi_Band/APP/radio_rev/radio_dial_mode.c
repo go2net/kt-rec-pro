@@ -31,7 +31,7 @@ extern u8 _idata last_work_mode;
 
 extern u8 fm_addr;
 //extern u8 _code one_table[];
-u16 frequency;                          ///<当前频点
+u16 radio_band.wFreq;                          ///<当前频点
 //u8 total_channel;///<当前频道
 extern  bool vol_change_en;
 
@@ -112,7 +112,7 @@ void radio_band_hdlr()
 	KT_AMFMSetMode(cur_sw_fm_band);	
 
 	delay_10ms(10);
-	frequency=get_radio_freq();
+	radio_band.wFreq=get_radio_freq();
 
 	disp_port(MENU_FM_MAIN);			
 #ifdef UART_ENABLE
@@ -155,9 +155,9 @@ void radio_rev_hdlr( void )
 			//printf_u16(freq_regx,'F');
 #endif
 
-	     if(freq_regx!=frequency){
+	     if(freq_regx!=radio_band.wFreq){
 
-			frequency=freq_regx;
+			radio_band.wFreq=freq_regx;
     			disp_port(MENU_FM_MAIN);			
 	     }
 	     break;		 

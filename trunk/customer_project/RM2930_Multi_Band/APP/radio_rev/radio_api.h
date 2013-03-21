@@ -36,7 +36,7 @@
 typedef struct{
 	u16	MIN_FREQ;
 	u16 	MAX_FREQ;
-#if defined(RADIO_VAR_VOL_TUNE)||defined(MCU_ADC_VOL_TUNER)
+#if 1//defined(RADIO_VAR_VOL_TUNE)||defined(MCU_ADC_VOL_TUNER)
 	u16 	FREQ_STEP;
 #endif	
 }FREQ_RAGE;

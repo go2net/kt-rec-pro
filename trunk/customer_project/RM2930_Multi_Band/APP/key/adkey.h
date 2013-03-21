@@ -11,7 +11,7 @@
 #define _ADKEY_H_
 #include "my_adkey.h"
 /************ADKEY GROUP 1****************/
-#if 1
+#if 0
 #define ADKEY1			(0xf000)
 #define ADKEY1_0		(0xf000)
 #define ADKEY1_1		(0xf000)
@@ -35,7 +35,9 @@
 #define ADKEY1_8		(0x1e40-0x0)/2+0x0
 #endif
 
-u16 _code adkey1_check_table[] = {ADKEY1_0, ADKEY1_1, ADKEY1_2, ADKEY1_3, ADKEY1_4, ADKEY1_5, ADKEY1_6, ADKEY1_7, ADKEY1_8,};
+u16 _code adkey_check_table[] = {ADKEY1_0, ADKEY1_1, ADKEY1_2, ADKEY1_3, ADKEY1_4, ADKEY1_5, ADKEY1_6, ADKEY1_7, ADKEY1_8,};
+
+#if 1
 
 //
 #define ADKEY1_MUSIC_SHORT		\
@@ -95,65 +97,185 @@ const u8 _code adkey1_msg_music_table[4][10] =				//Music模式下的遥控转换表
     /*长按抬起*/	{ADKEY1_MUSIC_LONG_UP},
 };
 
-#if 0
 //
-#define ADKEY1_FM_SHORT			\
-								/*00*/    FM_ADKEY_SHORT_00,\
-							    	/*01*/    FM_ADKEY_SHORT_01,\
-								/*02*/    FM_ADKEY_SHORT_02,\
-								/*03*/    FM_ADKEY_SHORT_03,\
-								/*04*/    FM_ADKEY_SHORT_04,\
-								/*05*/    FM_ADKEY_SHORT_05,\
-								/*06*/    FM_ADKEY_SHORT_06,\
-								/*07*/    FM_ADKEY_SHORT_07,\
-								/*08*/    FM_ADKEY_SHORT_08,\
-								/*09*/    FM_ADKEY_SHORT_09,
+#define ADKEY1_RADIO_SHORT			\
+								/*00*/    RADIO_ADKEY_SHORT_00,\
+							    	/*01*/    RADIO_ADKEY_SHORT_01,\
+								/*02*/    RADIO_ADKEY_SHORT_02,\
+								/*03*/    RADIO_ADKEY_SHORT_03,\
+								/*04*/    RADIO_ADKEY_SHORT_04,\
+								/*05*/    RADIO_ADKEY_SHORT_05,\
+								/*06*/    RADIO_ADKEY_SHORT_06,\
+								/*07*/    RADIO_ADKEY_SHORT_07,\
+								/*08*/    RADIO_ADKEY_SHORT_08,\
+								/*09*/    RADIO_ADKEY_SHORT_09,
 
-#define ADKEY1_FM_LONG			\
-								/*00*/    FM_ADKEY_LONG_00,\
-                               	 			/*01*/    FM_ADKEY_LONG_01,\
-								/*02*/    FM_ADKEY_LONG_02,\
-								/*03*/    FM_ADKEY_LONG_03,\
-								/*04*/    FM_ADKEY_LONG_04,\
-								/*05*/    FM_ADKEY_LONG_05,\
-								/*06*/    FM_ADKEY_LONG_06,\
-								/*07*/    FM_ADKEY_LONG_07,\
-								/*08*/    FM_ADKEY_LONG_08,\
-								/*09*/    FM_ADKEY_LONG_09,
+#define ADKEY1_RADIO_LONG			\
+								/*00*/    RADIO_ADKEY_LONG_00,\
+                               	 			/*01*/    RADIO_ADKEY_LONG_01,\
+								/*02*/    RADIO_ADKEY_LONG_02,\
+								/*03*/    RADIO_ADKEY_LONG_03,\
+								/*04*/    RADIO_ADKEY_LONG_04,\
+								/*05*/    RADIO_ADKEY_LONG_05,\
+								/*06*/    RADIO_ADKEY_LONG_06,\
+								/*07*/    RADIO_ADKEY_LONG_07,\
+								/*08*/    RADIO_ADKEY_LONG_08,\
+								/*09*/    RADIO_ADKEY_LONG_09,
 
-#define ADKEY1_FM_HOLD			\
-								/*00*/    FM_ADKEY_HOLD_00,\
-                                				/*01*/    FM_ADKEY_HOLD_01,\
-								/*02*/    FM_ADKEY_HOLD_02,\
-								/*03*/    FM_ADKEY_HOLD_03,\
-								/*04*/    FM_ADKEY_HOLD_04,\
-								/*05*/    FM_ADKEY_HOLD_05,\
-								/*06*/    FM_ADKEY_HOLD_06,\
-								/*07*/    FM_ADKEY_HOLD_07,\
-								/*08*/    FM_ADKEY_HOLD_08,\
-								/*09*/    FM_ADKEY_HOLD_09,
+#define ADKEY1_RADIO_HOLD			\
+								/*00*/    RADIO_ADKEY_HOLD_00,\
+                                				/*01*/    RADIO_ADKEY_HOLD_01,\
+								/*02*/    RADIO_ADKEY_HOLD_02,\
+								/*03*/    RADIO_ADKEY_HOLD_03,\
+								/*04*/    RADIO_ADKEY_HOLD_04,\
+								/*05*/    RADIO_ADKEY_HOLD_05,\
+								/*06*/    RADIO_ADKEY_HOLD_06,\
+								/*07*/    RADIO_ADKEY_HOLD_07,\
+								/*08*/    RADIO_ADKEY_HOLD_08,\
+								/*09*/    RADIO_ADKEY_HOLD_09,
 
 
-#define ADKEY1_FM_LONG_UP		\
-								/*00*/    FM_ADKEY_L_UP_00,\
-                                				/*01*/    FM_ADKEY_L_UP_01,\
-								/*02*/    FM_ADKEY_L_UP_02,\
-								/*03*/    FM_ADKEY_L_UP_03,\
-								/*04*/    FM_ADKEY_L_UP_04,\
-								/*05*/    FM_ADKEY_L_UP_05,\
-								/*06*/    FM_ADKEY_L_UP_06,\
-								/*07*/    FM_ADKEY_L_UP_07,\
-								/*08*/    FM_ADKEY_L_UP_08,\
-								/*09*/    FM_ADKEY_L_UP_09,
+#define ADKEY1_RADIO_LONG_UP		\
+								/*00*/    RADIO_ADKEY_L_UP_00,\
+                                				/*01*/    RADIO_ADKEY_L_UP_01,\
+								/*02*/    RADIO_ADKEY_L_UP_02,\
+								/*03*/    RADIO_ADKEY_L_UP_03,\
+								/*04*/    RADIO_ADKEY_L_UP_04,\
+								/*05*/    RADIO_ADKEY_L_UP_05,\
+								/*06*/    RADIO_ADKEY_L_UP_06,\
+								/*07*/    RADIO_ADKEY_L_UP_07,\
+								/*08*/    RADIO_ADKEY_L_UP_08,\
+								/*09*/    RADIO_ADKEY_L_UP_09,
 
 const u8 _code adkey1_msg_fm_table[4][10] =				//Music模式下的遥控转换表
 {
-    /*短按*/	    {ADKEY1_FM_SHORT},
-    /*长按*/		{ADKEY1_FM_LONG},
-    /*连按*/		{ADKEY1_FM_HOLD},
-    /*长按抬起*/	{ADKEY1_FM_LONG_UP},
+    /*短按*/	    {ADKEY1_RADIO_SHORT},
+    /*长按*/		{ADKEY1_RADIO_LONG},
+    /*连按*/		{ADKEY1_RADIO_HOLD},
+    /*长按抬起*/	{ADKEY1_RADIO_LONG_UP},
 };
 #endif
+
+
+#ifdef USE_TWO_ADKEY
+
+//
+#define ADKEY2_MUSIC_SHORT		\
+                                				/*00*/    MUSIC_ADKEY2_SHORT_00,\
+							    	/*01*/    MUSIC_ADKEY2_SHORT_01,\
+								/*02*/    MUSIC_ADKEY2_SHORT_02,\
+								/*03*/    MUSIC_ADKEY2_SHORT_03,\
+								/*04*/    MUSIC_ADKEY2_SHORT_04,\
+								/*05*/    MUSIC_ADKEY2_SHORT_05,\
+								/*06*/    MUSIC_ADKEY2_SHORT_06,\
+								/*07*/    MUSIC_ADKEY2_SHORT_07,\
+								/*08*/    MUSIC_ADKEY2_SHORT_08,\
+								/*09*/    MUSIC_ADKEY2_SHORT_09,
+
+#define ADKEY2_MUSIC_LONG		\
+                                				/*00*/    MUSIC_ADKEY2_LONG_00,\
+                                				/*01*/    MUSIC_ADKEY2_LONG_01,\
+								/*02*/    MUSIC_ADKEY2_LONG_02,\
+								/*03*/    MUSIC_ADKEY2_LONG_03,\
+								/*04*/    MUSIC_ADKEY2_LONG_04,\
+								/*05*/    MUSIC_ADKEY2_LONG_05,\
+								/*06*/    MUSIC_ADKEY2_LONG_06,\
+								/*07*/    MUSIC_ADKEY2_LONG_07,\
+								/*08*/    MUSIC_ADKEY2_LONG_08,\
+								/*09*/    MUSIC_ADKEY2_LONG_09,
+
+
+#define ADKEY2_MUSIC_HOLD		\
+                                				/*00*/    MUSIC_ADKEY2_HOLD_00,\
+                                				/*01*/    MUSIC_ADKEY2_HOLD_01,\
+								/*02*/    MUSIC_ADKEY2_HOLD_02,\
+								/*03*/    MUSIC_ADKEY2_HOLD_03,\
+								/*04*/    MUSIC_ADKEY2_HOLD_04,\
+								/*05*/    MUSIC_ADKEY2_HOLD_05,\
+								/*06*/    MUSIC_ADKEY2_HOLD_06,\
+								/*07*/    MUSIC_ADKEY2_HOLD_07,\
+								/*08*/    MUSIC_ADKEY2_HOLD_08,\
+								/*09*/    MUSIC_ADKEY2_HOLD_09,
+
+#define ADKEY2_MUSIC_LONG_UP	\
+                                				/*00*/    MUSIC_ADKEY2_L_UP_00,\
+                                				/*01*/    MUSIC_ADKEY2_L_UP_01,\
+								/*02*/    MUSIC_ADKEY2_L_UP_02,\
+								/*03*/    MUSIC_ADKEY2_L_UP_03,\
+								/*04*/    MUSIC_ADKEY2_L_UP_04,\
+								/*05*/    MUSIC_ADKEY2_L_UP_05,\
+								/*06*/    MUSIC_ADKEY2_L_UP_06,\
+								/*07*/    MUSIC_ADKEY2_L_UP_07,\
+								/*08*/    MUSIC_ADKEY2_L_UP_08,\
+								/*09*/    MUSIC_ADKEY2_L_UP_09,
+
+const u8 _code adkey2_msg_music_table[4][10] =				//Music模式下的遥控转换表
+{
+    /*短按*/	    {ADKEY2_MUSIC_SHORT},
+    /*长按*/		{ADKEY2_MUSIC_LONG},
+    /*连按*/		{ADKEY2_MUSIC_HOLD},
+    /*长按抬起*/	{ADKEY2_MUSIC_LONG_UP},
+};
+
+//
+#define ADKEY2_RADIO_SHORT			\
+								/*00*/    RADIO_ADKEY2_SHORT_00,\
+							    	/*01*/    RADIO_ADKEY2_SHORT_01,\
+								/*02*/    RADIO_ADKEY2_SHORT_02,\
+								/*03*/    RADIO_ADKEY2_SHORT_03,\
+								/*04*/    RADIO_ADKEY2_SHORT_04,\
+								/*05*/    RADIO_ADKEY2_SHORT_05,\
+								/*06*/    RADIO_ADKEY2_SHORT_06,\
+								/*07*/    RADIO_ADKEY2_SHORT_07,\
+								/*08*/    RADIO_ADKEY2_SHORT_08,\
+								/*09*/    RADIO_ADKEY2_SHORT_09,
+
+#define ADKEY2_RADIO_LONG			\
+								/*00*/    RADIO_ADKEY2_LONG_00,\
+                               	 			/*01*/    RADIO_ADKEY2_LONG_01,\
+								/*02*/    RADIO_ADKEY2_LONG_02,\
+								/*03*/    RADIO_ADKEY2_LONG_03,\
+								/*04*/    RADIO_ADKEY2_LONG_04,\
+								/*05*/    RADIO_ADKEY2_LONG_05,\
+								/*06*/    RADIO_ADKEY2_LONG_06,\
+								/*07*/    RADIO_ADKEY2_LONG_07,\
+								/*08*/    RADIO_ADKEY2_LONG_08,\
+								/*09*/    RADIO_ADKEY2_LONG_09,
+
+#define ADKEY2_RADIO_HOLD			\
+								/*00*/    RADIO_ADKEY2_HOLD_00,\
+                                				/*01*/    RADIO_ADKEY2_HOLD_01,\
+								/*02*/    RADIO_ADKEY2_HOLD_02,\
+								/*03*/    RADIO_ADKEY2_HOLD_03,\
+								/*04*/    RADIO_ADKEY2_HOLD_04,\
+								/*05*/    RADIO_ADKEY2_HOLD_05,\
+								/*06*/    RADIO_ADKEY2_HOLD_06,\
+								/*07*/    RADIO_ADKEY2_HOLD_07,\
+								/*08*/    RADIO_ADKEY2_HOLD_08,\
+								/*09*/    RADIO_ADKEY2_HOLD_09,
+
+
+#define ADKEY2_RADIO_LONG_UP		\
+								/*00*/    RADIO_ADKEY2_L_UP_00,\
+                                				/*01*/    RADIO_ADKEY2_L_UP_01,\
+								/*02*/    RADIO_ADKEY2_L_UP_02,\
+								/*03*/    RADIO_ADKEY2_L_UP_03,\
+								/*04*/    RADIO_ADKEY2_L_UP_04,\
+								/*05*/    RADIO_ADKEY2_L_UP_05,\
+								/*06*/    RADIO_ADKEY2_L_UP_06,\
+								/*07*/    RADIO_ADKEY2_L_UP_07,\
+								/*08*/    RADIO_ADKEY2_L_UP_08,\
+								/*09*/    RADIO_ADKEY2_L_UP_09,
+
+const u8 _code adkey2_msg_fm_table[4][10] =				//Music模式下的遥控转换表
+{
+    /*短按*/	    {ADKEY2_RADIO_SHORT},
+    /*长按*/		{ADKEY2_RADIO_LONG},
+    /*连按*/		{ADKEY2_RADIO_HOLD},
+    /*长按抬起*/	{ADKEY2_RADIO_LONG_UP},
+};
+#endif
+
 #endif
 
 

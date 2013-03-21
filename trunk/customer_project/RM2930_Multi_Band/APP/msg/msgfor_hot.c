@@ -68,8 +68,10 @@ void ap_handle_hotkey(u8 key)
     u8 res;
     switch (key)
     {
-    case MSG_POWER_DOWN:
+    	
+    	case MSG_POWER:
 
+#if 0
 		if(sys_pwr_flag==0){
 			sys_pwr_flag =1;
 			sys_mute_flag =1;
@@ -84,9 +86,10 @@ void ap_handle_hotkey(u8 key)
 			sys_pwr_flag =0;
 			//work_mode =  IDLE_MODE;
 		}
-
-
-
+#endif
+		dac_mute_control(1,1);
+		delay_10ms(20);
+	       SYS_POWER_OFF();	
 		break;
 		
     case MSG_MUTE_UNMUTE:
@@ -121,7 +124,14 @@ void ap_handle_hotkey(u8 key)
             	}
 		break;
     case MSG_NEXT_WORKMODE:
-		
+
+#if 1
+		work_mode++;
+		if(work_mode>AUX_MODE)
+			work_mode=MUSIC_MODE;
+
+		put_msg_lifo(MSG_CHANGE_WORK_MODE);
+#else
 		//set_brightness_all_on();
 		if(work_mode==FM_RADIO_MODE)break;
 		
@@ -150,6 +160,7 @@ void ap_handle_hotkey(u8 key)
 			disp_scenario = DISP_NORMAL;
 	              disp_port(MENU_MUSIC_MAIN);
 		}
+#endif		
 		break;    
 		
     case MSG_TIME_SETTING:

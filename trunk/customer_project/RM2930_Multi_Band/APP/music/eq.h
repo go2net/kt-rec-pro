@@ -24,6 +24,10 @@ enum
     ROCK,
     JAZZ,
     CLASSIC,
+    COUNTRY,
+    
+    EQ_MODE_INIT=NORMAL,
+    EQ_MODE_END=COUNTRY,
 };
 
 void set_decode_eq(u8 n);

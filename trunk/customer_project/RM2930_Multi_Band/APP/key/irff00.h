@@ -114,10 +114,10 @@ const u8 _code irff00_msg_music_table[4][21] =				//Music模式下的遥控转换表
     /*连按*/		{IRFF00_MUSIC_HOLD},
     /*长按抬起*/	{IRFF00_MUSIC_LONG_UP},
 };
-#if 0
+#if 1
 
 //
-#define IRFF00_FM_SHORT			\
+#define IRFF00_RADIO_SHORT			\
 								/*00*/    NO_MSG,\
 							       /*01*/    NO_MSG,\
 								/*02*/    NO_MSG,\
@@ -130,17 +130,17 @@ const u8 _code irff00_msg_music_table[4][21] =				//Music模式下的遥控转换表
 								/*09*/    NO_MSG,\
                                 				/*10*/    NO_MSG,\
 								/*11*/    MSG_REC_KEY,\
-								/*12*/    MSG_FM_NEXT_STEP,\
+								/*12*/    MSG_RADIO_NEXT_STEP,\
 								/*13*/    NO_MSG,\
 								/*14*/    MSG_VOL_DOWN,\
 								/*15*/    NO_MSG,\
 								/*16*/    NO_MSG,\
-								/*17*/    MSG_FM_PREV_STEP,\
+								/*17*/    MSG_RADIO_PREV_STEP,\
 								/*18*/    MSG_VOL_UP,\
 								/*19*/    MSG_MUTE_UNMUTE,\
 								/*20*/    MSG_POWER_DOWN
 
-#define IRFF00_FM_LONG			\
+#define IRFF00_RADIO_LONG			\
 								/*00*/    NO_MSG,\
                                 				/*01*/    NO_MSG,\
 								/*02*/    NO_MSG,\
@@ -163,7 +163,7 @@ const u8 _code irff00_msg_music_table[4][21] =				//Music模式下的遥控转换表
 								/*19*/    NO_MSG,\
 								/*20*/    NO_MSG//NO_MSG
 
-#define IRFF00_FM_HOLD			\
+#define IRFF00_RADIO_HOLD			\
 								/*00*/    NO_MSG,\
                                 				/*01*/    NO_MSG,\
 								/*02*/    NO_MSG,\
@@ -187,7 +187,7 @@ const u8 _code irff00_msg_music_table[4][21] =				//Music模式下的遥控转换表
 								/*20*/    NO_MSG
 
 
-#define IRFF00_FM_LONG_UP		\
+#define IRFF00_RADIO_LONG_UP		\
 								/*00*/    NO_MSG,\
                                 /*01*/    NO_MSG,\
 								/*02*/    NO_MSG,\
@@ -212,11 +212,13 @@ const u8 _code irff00_msg_music_table[4][21] =				//Music模式下的遥控转换表
 
 const u8 _code irff00_msg_fm_table[4][21] =				//Music模式下的遥控转换表
 {
-    /*短按*/	    {IRFF00_FM_SHORT},
-    /*长按*/		{IRFF00_FM_LONG},
-    /*连按*/		{IRFF00_FM_HOLD},
-    /*长按抬起*/	{IRFF00_FM_LONG_UP},
+    /*短按*/	    {IRFF00_RADIO_SHORT},
+    /*长按*/		{IRFF00_RADIO_LONG},
+    /*连按*/		{IRFF00_RADIO_HOLD},
+    /*长按抬起*/	{IRFF00_RADIO_LONG_UP},
 };
+
+#if 0
 _code u8 IRTabff00[] = 	   /*user code is 0xFF00*/
 {
     NKEY_00, NKEY_01, NKEY_02, NKEY_03, NKEY_04, NKEY_05, NKEY_06, IR_06, IR_15, IR_08, NKEY_0A, NKEY_0B, IR_12, IR_11, NKEY_0E, NKEY_0F,
@@ -226,6 +228,8 @@ _code u8 IRTabff00[] = 	   /*user code is 0xFF00*/
     IR_04, NKEY_41, IR_18, IR_05, IR_03, IR_00, IR_01, IR_02, NKEY_48, NKEY_49, IR_20, NKEY_4B, NKEY_4C, NKEY_4D, NKEY_4E, NKEY_4F,
     NKEY_50, NKEY_51, NKEY_52, NKEY_53, NKEY_54, NKEY_55, NKEY_56, NKEY_57, NKEY_58, NKEY_59, IR_17, NKEY_5B, NKEY_5C, NKEY_5D, IR_14, NKEY_5F,
 };
+
+#endif
 
 #endif
 /*

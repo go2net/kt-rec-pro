@@ -19,6 +19,7 @@
 
 #ifdef __C51__
 extern  void restore_music_point(void);
+void P2IE_reg_OverWrite(void);
 #endif
 
 #endif

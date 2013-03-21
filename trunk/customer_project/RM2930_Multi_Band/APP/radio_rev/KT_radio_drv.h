@@ -164,12 +164,11 @@ typedef enum {
 typedef struct 
 {
 	u8 		Band;						// 频段
-	
 #ifdef USE_VALIDSTATION_CHECK
-	u8			Tune_Step;					//
-	u8			Min_Step;					//
-	u8			Max_Step;					//
-	u8			Seek_Step;					// SeekFromCurrentCh 函数用的频率步进
+	//u8			Tune_Step;					//
+	//u8			Min_Step;					//
+	//u8			Max_Step;					//
+	//u8			Seek_Step;					// SeekFromCurrentCh 函数用的频率步进
 	u8			ValidStation_Step;			// ValidStation 函数用的频率步进
 	u8			AFCTH_Prev;					//
 	u8			AFCTH;						//

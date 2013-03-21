@@ -164,9 +164,11 @@ void rtcisr(void)
 }
 #endif
 
-
-
-
+xd_u8 P2IE_REG=0xFF;
+void P2IE_reg_OverWrite(void)
+{
+	P2IE = P2IE_REG;
+}
 
 /*----------------------------------------------------------------------------*/
 /**@brief  RTC中断服务程序
@@ -214,7 +216,7 @@ void timer0isr(void)
 //    }
     if ((counter0 % 100) == 0)
     {
-    	 ad_mod_sel_hdlr();
+    	 //ad_mod_sel_hdlr();
         put_msg_fifo(MSG_200MS);
         counter0 = 0;
     }
@@ -391,7 +393,9 @@ void main(void)
     clock_in = T0CNT;									//输入时钟,define in clock.h
     //WDT_EN();
     sys_init();
-    AMUX_P2IE_SET(AMUX1_IE);
+    SYS_POWER_ON();	
+    P2IE_reg_OverWrite();	
+   // AMUX_P2IE_SET(AMUX1_IE);
     sys_info_init();
     clear_all_event();
     flush_all_msg();
@@ -431,9 +435,9 @@ void main(void)
 		Blue_tooth_main();
 		break;
 #endif
-        //case AUX_MODE:
-            //aux_fun();
-          //  break;
+        case AUX_MODE:
+            aux_main();
+            break;
 
 #if RTC_ENABLE
         //case RTC_MODE:
@@ -448,7 +452,6 @@ void main(void)
             idle_mode();	
 	     sys_mute_flag =0;
 	     dac_mute_control(0,1);					//调节音量时，自动UNMUTE
-    	     //set_brightness_all_on();
             break;		
         default:
             work_mode = MUSIC_MODE;

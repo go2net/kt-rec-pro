@@ -14,6 +14,18 @@
 
 #ifdef __C51__
 
+enum
+{
+	SYS_DEFUALT_KEY_TABLE,
+	SYS_RADIO_KEY_TABLE,
+};
+
+enum
+{
+	ADKEY_1_CH,
+	ADKEY_2_CH,
+	IR_REM_CH,
+};
 
 typedef struct _KEY_VOICE
 {
@@ -37,7 +49,7 @@ enum
     MSG_8,
     MSG_9,
     MSG_DEVICE_REMOVED,
-    MSG_CHANGE_FM_MODE,
+    MSG_CHANGE_RADIO_MODE,
     MSG_CHANGE_WORK_MODE,
     MSG_MUSIC_NEW_DEVICE_IN,
     MSG_MUSIC_SELECT_NEW_DEVICE,
@@ -65,25 +77,26 @@ enum
     MSG_NEXT_DEVICE,
     MSG_PREV_DEVICE,
 
-    MSG_FM_NEXT_STEP,
-    MSG_FM_PREV_STEP,
-    MSG_FM_NEXT_STATION,
-    MSG_FM_PREV_STATION,
-    MSG_FM_PP,
-    MSG_FM_SCAN_ALL,
-    MSG_FM_SCAN_ALL_UP,
-    MSG_FM_SCAN_ALL_DOWN,
-    MSG_FM_SCAN_UP,
-    MSG_FM_SCAN_DOWN,
+    MSG_RADIO_NEXT_STEP,
+    MSG_RADIO_PREV_STEP,
+    MSG_RADIO_NEXT_STATION,
+    MSG_RADIO_PREV_STATION,
+    MSG_RADIO_PP,
+    MSG_RADIO_SCAN_ALL,
+    MSG_RADIO_SCAN_ALL_UP,
+    MSG_RADIO_SCAN_ALL_DOWN,
+    MSG_RADIO_SCAN_UP,
+    MSG_RADIO_SCAN_DOWN,
     MSG_CH_SET,
     MSG_CH_SAVE,
     MSG_KEY_CHANGE,
-	MSG_FM_SET_STEP,
+	MSG_RADIO_SET_STEP,
 	MSG_MUSIC_REPEAT,
 
     MSG_MUTE,
     MSG_UNMUTE,
     MSG_MUTE_UNMUTE,
+    MSG_POWER,
     MSG_POWER_ON,
     MSG_POWER_DOWN,
     MSG_100MS,
@@ -109,7 +122,7 @@ enum
     MSG_REC_KEY,
 	MSG_REC_PP,
 	MSG_REPEAT_REC,
-    MSG_DEVICE_MODE,
+    MSG_ALTERNATIVE_DEVICE,
 	MSG_KALAOK,
 	MSG_DEL_ALL_FILE,
     MSG_DEL_CURR_FILE,
@@ -150,7 +163,7 @@ void keyScan(void);
 void adc_scan(void);
 u8 keyDetect(void);
 u8 app_get_msg(void);
-void key_table_sel(u8 sel);
+void key_table_sel(bool sel);
 u8 ldoin_voltage(void);
 void set_key_tone(void);
 void alarm_tone(void);
