@@ -23,6 +23,7 @@
 #else
 #define MAX_BAND    11
 #endif
+
 //#define MAX_FRE    1080
 //#define MIN_FRE	   875
 //#define MAX_CHANNL (MAX_FRE - MIN_FRE + 1)
@@ -62,5 +63,18 @@ typedef enum {
 	
 }RADIO_SCAN_MODE;
 
+typedef enum {
+
+	 RADIO_READ_FREQ,
+	 RADIO_READ_BAND,
+	 RADIO_READ_STATION_SUM,
+	 RADIO_READ_STATION,
+	 
+	 RADIO_SAVE_FREQ,
+	 RADIO_SAVE_BAND,
+	 RADIO_SAVE_STATION_SUM,
+	 RADIO_SAVE_STATION,
+	
+}RADIO_STORE_CMD;
 
 #endif

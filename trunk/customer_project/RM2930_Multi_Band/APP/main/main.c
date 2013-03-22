@@ -44,7 +44,7 @@ bool input_number_en;				///<是否允许数字键输入功能
 //bool change_eq_en;					///<是否允许改变EQ的设置
 u8 work_mode;						///<工作模式变量
 //u8 _idata last_work_mode;			///<RTC 闹钟前的工作模式
-//bool aux_online;					///<AUX在线状态
+bool aux_online;					///<AUX在线状态
 //bool kv_flag;						///<按键音的发送标记
 
 u8  main_menu;						///<记录各种不同模式下的主界面
@@ -67,19 +67,18 @@ extern void lcd_ht1621_init(void);
    @note   void aux_check(void)
 */
 /*----------------------------------------------------------------------------*/
-#if 0
+#ifdef AUX_DETECT_FUNC
 static void aux_check(void)
 {
     static u8 aux_cnt_online;
 
+#ifdef AUX_DETECT_SHARE_IIC_GPIO
     if(iic_busy)return;
+#endif
 
-    P0DIR |= BIT(7); //linein check port
-    P0PU |= BIT(7);
-    //_nop_();
-    //_nop_();
-    //_nop_();
-    if (P07)
+     aux_detect_gpio_init();
+
+    if (AUX_DETECT_GPIO)
     {
         aux_cnt_online = 0;
 
@@ -92,7 +91,7 @@ static void aux_check(void)
     else
     {
         aux_cnt_online++;
-        if (aux_cnt_online > 50)
+        if (aux_cnt_online > 10)
         {
             if (!aux_online)
             {
@@ -101,7 +100,7 @@ static void aux_check(void)
             }
         }
     }
-    //P0DIR &= ~BIT(7); //linein check port
+     aux_detect_in_off();
 
 }
 #endif
@@ -208,6 +207,9 @@ void timer0isr(void)
         //sdmmc_detect();
 //#endif
         keyScan();
+#ifdef AUX_DETECT_FUNC
+	aux_check();
+#endif
     }
 
 //    if ((counter0 % 50) == 0)

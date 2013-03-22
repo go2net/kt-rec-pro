@@ -216,7 +216,16 @@ void ap_handle_hotkey(u8 key)
         set_brightness_all_on();
         break;
 #endif
-
+#ifdef AUX_DETECT_FUNC
+    case MSG_AUX_OUT :
+	break;
+    case MSG_AUX_IN :
+	if(work_mode != AUX_MODE){
+		work_mode = AUX_MODE;
+        	put_msg_lifo(MSG_CHANGE_WORK_MODE);
+	}
+	break;
+#endif
     case MSG_SDMMC_IN :
 #ifndef LCD_BACK_LIGHT_DUMMY						
         set_brightness_all_on();
