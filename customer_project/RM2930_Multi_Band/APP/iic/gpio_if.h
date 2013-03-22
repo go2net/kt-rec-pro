@@ -224,8 +224,29 @@
 #define KT_RF_AP_POWER_ON()			P06=1
 #define KT_RF_AP_POWER_OFF()			P06=0
 
-#define SYS_POWER_ON()			P0DIR &= ~(BIT(4));P0PU |=BIT(4);P04=1
+#define SYS_POWER_ON()			       P0DIR &= ~(BIT(4));P0PU |=BIT(4);P04=1
 #define SYS_POWER_OFF()			P0DIR &= ~(BIT(4));P0PU |=BIT(4);P04=0
+
+
+#if defined(AUX_DETECT_USE_P02)
+#define  aux_detect_gpio_init()      			P0DIR &= ~(BIT(2)); P02=1; P0DIR |= BIT(2);P0PU |= BIT(2);//linein check port
+#define  AUX_DETECT_GPIO  			P02
+#define  aux_detect_in_off()        		P0DIR &= ~(BIT(2));P02=1;  //linein check port
+#elif defined(AUX_DETECT_USE_P04)
+#define  aux_detect_gpio_init()      			P0DIR &= ~(BIT(4)); P04=1; P0DIR |= BIT(4);P0PU |= BIT(4);//linein check port
+#define  AUX_DETECT_GPIO  			P04
+#define  aux_detect_in_off()        		P0DIR &= ~(BIT(4));P04=1;  //linein check port
+#elif defined(AUX_DETECT_USE_P03)
+#define  aux_detect_gpio_init()      			P0DIR &= ~(BIT(3)); P03=1; P0DIR |= BIT(3);P0PU |= BIT(3);//linein check port
+#define  AUX_DETECT_GPIO  			P03
+#define  aux_detect_in_off()        		P0DIR &= ~(BIT(3));P03=1;  //linein check port
+#elif defined(AUX_DETECT_USE_P07)
+#define  aux_detect_gpio_init()      			P0DIR |= BIT(7);P0PU |= BIT(7);//linein check port
+#define  AUX_DETECT_GPIO  			P07
+#define  aux_detect_in_off()        		P0DIR &= ~(BIT(7)); //linein check port
+#endif
+
+
 
 #if defined(ADKEY_PORT_P06)
 #define ADKEY_PORT		P06
