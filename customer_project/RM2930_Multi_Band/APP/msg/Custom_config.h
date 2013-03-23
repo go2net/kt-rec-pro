@@ -6,7 +6,7 @@
 
 
 #if 1
-#define UART_ENABLE
+//#define UART_ENABLE
 #ifdef UART_ENABLE
 #define USE_UART_P24_P25
 #endif
@@ -38,10 +38,12 @@
 
 #if defined(USC_RM2930_MODULE)
 
+//#define DISP_VER		2
+
+
 #define NEW_RM_LCD_2930_MODULE
 #define LCD_GPIO_DRV
 
-#define SW_TWO_BAND_RANGE
 #define ADKEY_PORT_P02
 
 #define USE_TWO_ADKEY

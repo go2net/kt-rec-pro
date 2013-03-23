@@ -12,7 +12,7 @@
 #include "iic.h"
 
 bool iic_busy = 0; ///<iic·±Ã¦±ê¼Ç
-
+#define EPPROM_PAGE2	0x02
 /*----------------------------------------------------------------------------*/
 /**@brief   IICÐ´º¯Êý
    @param   chip_id £ºÄ¿±êICµÄIDºÅ
@@ -76,16 +76,28 @@ void iic_readn(u8 chip_id,u8 iic_addr,u8 *iic_dat,u8 n)
    @note    u8 iic_read(u8 iic_addr)
 */
 /*----------------------------------------------------------------------------*/
-u8 read_eerom(u8 iic_addr)
+u8 read_eerom(u16 iic_addr)
 {
-    u8  byte;
+    u8  byte,addr=0;
 
     iic_busy = 1;
     iic_start();                    //I2CÆô¶¯
-    iic_sendbyte(0xa0);             //Ð´ÃüÁî
+    if(iic_addr >0xFF){
+	addr =iic_addr>>8;
+    	iic_sendbyte(0xa0|EPPROM_PAGE2);             //Ð´ÃüÁî
+    }
+    else{
+    	iic_sendbyte(0xa0);             //Ð´ÃüÁî
+    }
     iic_sendbyte(iic_addr);       //Ð´µØÖ·
     iic_start();                    //Ð´×ªÎª¶ÁÃüÁî£¬ÐèÒªÔÙ´ÎÆô¶¯I2C
-    iic_sendbyte(0xa1);             //¶ÁÃüÁî
+    if(iic_addr >0xFF){
+	addr =iic_addr>>8;
+    	iic_sendbyte(0xa1|EPPROM_PAGE2);             //Ð´ÃüÁî
+    }
+    else{    
+    	iic_sendbyte(0xa1);             //¶ÁÃüÁî
+    }
     byte = iic_revbyte(1);
     iic_stop();                     //I2CÍ£Ö¹
     iic_busy = 0;
@@ -102,9 +114,15 @@ u8 read_eerom(u8 iic_addr)
    @note    void write_info(u8 addr,u8 dat)
 */
 /*----------------------------------------------------------------------------*/
-void write_eerom(u8 addr,u8 dat)
+void write_eerom(u16 addr,u8 dat)
 {
-    iic_write(0xa0,addr,&dat,1);
+    if(addr >0xFF){
+	addr =addr>>8;
+    	iic_write((0xa0|EPPROM_PAGE2),(u8)addr,&dat,1);
+    }
+    else{
+    	iic_write(0xa0,(u16)addr,&dat,1);
+    }
     delay_10ms(2);
 }
 #endif
@@ -115,7 +133,7 @@ void write_eerom(u8 addr,u8 dat)
    @note    u8 read_info(u8 addr)
 */
 /*----------------------------------------------------------------------------*/
-u8 read_info(u8 addr)
+u8 read_info(u16 addr)
 {
 #if USE_RTC_RAM
     return read_rtc_ram(addr);
@@ -132,7 +150,7 @@ u8 read_info(u8 addr)
    @note    void write_info(u8 addr,u8 dat)
 */
 /*----------------------------------------------------------------------------*/
-void write_info(u8 addr,u8 dat)
+void write_info(u16 addr,u8 dat)
 {
 #if USE_RTC_RAM
     //printf("write RAM addr:%u\n",(u16)addr);

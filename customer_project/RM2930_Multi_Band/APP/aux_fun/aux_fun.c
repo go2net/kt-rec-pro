@@ -21,7 +21,7 @@ extern u8 work_mode;
 extern u8 _idata last_work_mode;
 extern u8 _xdata decode_buffer[];
 extern u8 eq_mode;
-extern bool vol_change_en;
+extern bool vol_change_en,aux_online;
 extern xd_u8 P2IE_REG;
 
 
@@ -132,6 +132,13 @@ void aux_main_handlr(void)
 /*----------------------------------------------------------------------------*/
 void aux_main(void)
 {
+#ifdef AUX_DETECT_FUNC
+    if(!aux_online){
+		work_mode = MUSIC_MODE;
+		return ;
+    }
+#endif
+
     key_table_sel(SYS_DEFUALT_KEY_TABLE);
     input_number_en = 0;
     vol_change_en=1;

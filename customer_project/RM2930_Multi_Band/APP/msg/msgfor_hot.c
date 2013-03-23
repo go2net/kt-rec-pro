@@ -25,7 +25,7 @@ extern bool auto_play_radio_rec;
 #endif
 
 extern u8 work_mode;
-//extern u8 _idata last_work_mode;
+xd_u8  last_work_mode;
 extern bool input_number_en;
 extern bool eq_change_en;
 extern bool play_mode_change_en;
@@ -99,7 +99,7 @@ void ap_handle_hotkey(u8 key)
         	dac_mute_control(sys_mute_flag,1);					//调节音量时，自动UNMUTE
 
 		break;		    
-#if 1   
+#if 0
     case MSG_MUSIC_PREV_FILE:												//选择上一个文件进行播放
     case MSG_MUSIC_FR:											//启动快退
 	      	if ((disp_scenario == DISP_RTC_SCEN)&&(rtc_setting_flag!=0))
@@ -123,6 +123,8 @@ void ap_handle_hotkey(u8 key)
                 	disp_port(MENU_RTC);
             	}
 		break;
+#endif
+#if 1
     case MSG_NEXT_WORKMODE:
 
 #if 1
@@ -162,7 +164,7 @@ void ap_handle_hotkey(u8 key)
 		}
 #endif		
 		break;    
-		
+#if 0		
     case MSG_TIME_SETTING:
 	       //set_brightness_all_on();
 		if(disp_scenario == DISP_RTC_SCEN){
@@ -172,6 +174,7 @@ void ap_handle_hotkey(u8 key)
 			rtc_coordinate = 3;
 		}
 	break;
+#endif	
     case MSG_USB_DISK_OUT:
     case MSG_SDMMC_OUT:
         if((RECODE_WORKING == encode_status)||(RECODE_PAUSE == encode_status))
@@ -183,8 +186,8 @@ void ap_handle_hotkey(u8 key)
 		rec_device_out = 1;
 		api_stop_encode();
             	if(work_mode == FM_RADIO_MODE){
-			main_menu = MENU_FM_MAIN;//
-			disp_port(MENU_FM_MAIN);
+			main_menu = MENU_RADIO_MAIN;//
+			disp_port(MENU_RADIO_MAIN);
             		break;
 	     	}
         } 
@@ -218,9 +221,15 @@ void ap_handle_hotkey(u8 key)
 #endif
 #ifdef AUX_DETECT_FUNC
     case MSG_AUX_OUT :
+	if(work_mode == AUX_MODE){
+		work_mode = last_work_mode;
+        	put_msg_lifo(MSG_CHANGE_WORK_MODE);
+	}
 	break;
     case MSG_AUX_IN :
-	if(work_mode != AUX_MODE){
+	if(work_mode != AUX_MODE){\
+
+		last_work_mode = work_mode;
 		work_mode = AUX_MODE;
         	put_msg_lifo(MSG_CHANGE_WORK_MODE);
 	}
@@ -260,7 +269,7 @@ void ap_handle_hotkey(u8 key)
 #ifndef LCD_BACK_LIGHT_DUMMY						
         set_brightness_all_on();
 #endif
-		device_check();
+	 device_check();
         if((RECODE_WORKING == encode_status)||(RECODE_PAUSE == encode_status))
         {
             break;
@@ -269,12 +278,12 @@ void ap_handle_hotkey(u8 key)
 
 	disp_scenario = DISP_NORMAL;
 	   
-		given_device = read_info(MEM_ACTIVE_DEV);
+	given_device = read_info(MEM_ACTIVE_DEV);
 
-		if(given_device != DEVICE_UDISK_REC)
+	if(given_device != DEVICE_UDISK_REC)
 		//	given_device = DEVICE_UDISK_REC;
 		//else
-	    	given_device = DEVICE_UDISK;
+		given_device = DEVICE_UDISK;
 
         given_file_method = PLAY_BREAK_POINT;      
         put_msg_lifo(MSG_MUSIC_NEW_DEVICE_IN);
@@ -314,18 +323,20 @@ void ap_handle_hotkey(u8 key)
     case MSG_VOL_UP:
         if(vol_change_en==0)
             break;
+	 sys_mute_flag=0;		
         dac_mute_control(0,1);					//调节音量时，自动UNMUTE
-        main_vol_set(0, CHANGE_VOL_INC);
-        //write_info(MEM_VOL, main_vol_set(0, CHANGE_VOL_INC));
+        //main_vol_set(0, CHANGE_VOL_INC);
+        write_info(MEM_SYS_VOL, main_vol_set(0, CHANGE_VOL_INC));
         disp_port(MENU_MAIN_VOL);
         break;
 
     case MSG_VOL_DOWN:
         if(vol_change_en==0)
             break;
+	 sys_mute_flag=0;		
         dac_mute_control(0,1);					//调节音量时，自动UNMUTE
-        main_vol_set(0, CHANGE_VOL_DEC);
-        //write_info(MEM_VOL, main_vol_set(0, CHANGE_VOL_DEC));
+        //main_vol_set(0, CHANGE_VOL_DEC);
+        write_info(MEM_SYS_VOL, main_vol_set(0, CHANGE_VOL_DEC));
         disp_port(MENU_MAIN_VOL);
         break;
 #endif
@@ -342,12 +353,17 @@ void ap_handle_hotkey(u8 key)
         if (!input_number_en)
             break;
 		
+	 if((key==0)&&(input_number ==0)){
+		break;
+	 }
+	 
 	 if((input_number)>6553){
 		input_number = 0x0000;			
 	 }
+	 
         if (input_number > 9999)
             input_number = 0;
-
+	    
            input_number = input_number * 10 + key;
         disp_port(MENU_INPUT_NUMBER);
         break;
@@ -520,7 +536,7 @@ void ap_handle_hotkey(u8 key)
 	
 #if FM_MODULE 
 		if(FM_RADIO_MODE == work_mode)
-			disp_port(MENU_FM_MAIN);
+			disp_port(MENU_RADIO_MAIN);
 		else
 #endif
 		{
@@ -535,7 +551,7 @@ void ap_handle_hotkey(u8 key)
 	
 #if FM_MODULE 
 		if(FM_RADIO_MODE == work_mode)
-			disp_port(MENU_FM_MAIN);
+			disp_port(MENU_RADIO_MAIN);
 		else
 #endif
 		{
@@ -605,6 +621,10 @@ void ap_handle_hotkey(u8 key)
             }
             else
             {	
+#if 1
+			work_mode =  FM_RADIO_MODE;
+              	put_msg_lifo(MSG_CHANGE_WORK_MODE);
+#else
                 //put_msg_lifo(MSG_NEXT_WORKMODE);
                 	if(disp_scenario == DISP_NORMAL){
 
@@ -614,6 +634,7 @@ void ap_handle_hotkey(u8 key)
 				disp_scenario = DISP_RTC_SCEN;
 				rtc_disp_hdlr();
 			}
+#endif					
             }
             break;
         }

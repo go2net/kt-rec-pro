@@ -20,7 +20,7 @@ enum
 	 MEM_ACTIVE_DEV,
 	 MEM_EQ_MODE,
 	 MEM_PLAY_MODE,
-	 MEM_VOL,
+	 MEM_SYS_VOL,
 	 MEM_SYSMODE, 
 	 
 	 MEM_SD_PLAYPOINT_ID0,
@@ -110,8 +110,8 @@ enum
 #define iic_delay()      delay(15)
 
 
-extern u8 read_info(u8 addr);
-extern void write_info(u8 addr,u8 dat);
+extern u8 read_info(u16 addr);
+extern void write_info(u16 addr,u8 dat);
 extern u8 read_rtc_ram(u8 addr);
 extern void write_rtc_ram(u8 addr,u8 dat);
 
@@ -129,11 +129,12 @@ void  iic_write(u8 chip_id,u8 iic_addr,u8 *iic_dat,u8 n);
 void iic_readn(u8 chip_id,u8 iic_addr,u8 *iic_dat,u8 n);
 
 
-u8 read_eerom(u8 iic_addr);
-void write_eerom(u8 addr,u8 dat);
+u8 read_eerom(u16 iic_addr);
+void write_eerom(u16 addr,u8 dat);
 void  eeprom_page_write_start(void);
 void  eeprom_page_write_stop(void);
 #endif
+
 
 
 
