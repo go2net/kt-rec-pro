@@ -275,7 +275,7 @@ xd_u8 KT_pre_init(void)
 
 #if 1
 	regx = KT_Bus_Read(0x01);           			//Read Manufactory ID 
-	printf_u16(regx,'D');
+	//printf_u16(regx,'D');
 	
 	if (regx != 0x4B54) return 0;
 	
@@ -890,7 +890,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 			KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #endif
 	}
-	delay_10ms(3);
+	delay_10ms(5);
 
 #ifdef DISABLE_FAST_GAIN_UP
 	regx = KT_Bus_Read(0x23);
@@ -1193,7 +1193,7 @@ void load_band_info(u8 cur_band)
 		
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-2;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-2;
-		Current_Band.AFCTH =SW_AFCTH+2;
+		Current_Band.AFCTH =SW_AFCTH+10;
 		Current_Band.RSSI_TH=SW_RSSI_TH;
 
     }	
@@ -1202,10 +1202,10 @@ void load_band_info(u8 cur_band)
 		Current_Band.Band=SW_MODE; 
 
 		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
-		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-2;
-		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-2;
-		Current_Band.AFCTH =SW_AFCTH+2;
-		Current_Band.RSSI_TH=SW_RSSI_TH;
+		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
+		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
+		Current_Band.AFCTH =SW_AFCTH+16;
+		Current_Band.RSSI_TH=SW_RSSI_TH-2;
     }		
     else if(cur_band==4){
 		
@@ -1580,6 +1580,8 @@ xd_u8 KT_FMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 	mem_snr[0]=snr[0];mem_snr[1]=snr[1];mem_snr[2]=snr[2];
 #endif
 
+	KT_FMTune(Frequency);
+
 	//Determine the validation of current station
 	if ((afc[0]<afc[1]) && (afc[1]<afc[2]) && (afc[0]<-FM_AFCTH_PREV) && (afc[1]>-FM_AFCTH) && (afc[1]<FM_AFCTH) && (afc[2]>FM_AFCTH_NEXT)) {
 
@@ -1709,7 +1711,7 @@ xd_u8 KT_AMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 			KT_AMTune( Frequency + Current_Band.ValidStation_Step );
 			delay_10ms(22);
 			AM_afc[2] = KT_AMGetAFC();
-
+			KT_AMTune( Frequency );
 			if( AM_afc[2] > Current_Band.AFCTH_Next )
 			{
 				if ( (AM_afc[0] < AM_afc[1]) && (AM_afc[1] < AM_afc[2]) ){
@@ -1747,7 +1749,7 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 #endif	
 	
 	KT_AMTune( Frequency - Current_Band.ValidStation_Step );
-	delay_10ms(16);
+	delay_10ms(10);
 	AM_afc[0] = KT_AMGetAFC();
 #ifdef DEBUG_SW    	
 	printf(" ----------------------------->KT  AM_afc  [ 0000 ]  %d  \r\n ",(u16)AM_afc[0]);
@@ -1758,7 +1760,7 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 	{
 
 		KT_AMTune(Frequency);
-		delay_10ms(22);		
+		delay_10ms(8);		
 		AM_afc[1] = KT_AMGetAFC();
 #ifdef DEBUG_SW    
 		printf(" ----------------------------------------->KT  AM_afc  [ 1111 ]  %d  \r\n ",(u16)AM_afc[1]);
@@ -1768,9 +1770,11 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 		if( (AM_afc[1] >= -Current_Band.AFCTH) && (AM_afc[1] <= Current_Band.AFCTH) )
 		{
 			KT_AMTune( Frequency + Current_Band.ValidStation_Step );
-			delay_10ms(22);
+			delay_10ms(8);
 
-			
+
+			KT_AMTune( Frequency );
+
 			AM_afc[2] = KT_AMGetAFC();
 #ifdef DEBUG_SW    
 			printf(" ---------------------------------------------------> KT  AM_afc  [ 2222 ]  %d  \r\n ",(u16)AM_afc[2]);
@@ -2025,26 +2029,6 @@ void KT_FM_SOFTMUTE(u16 Frequency)
 	}
 //	reg4=KT_Bus_Read(0x04);									// FM Softmute Enable
 //	KT_Bus_Write(0x04,reg4 & 0x7FFF);
-}
-
-/*****************************************************************************/
-/*函 数 名：KT_FM_SOFTMUTE_SETTING										 	 */
-/*功能描述：FM 自动静音设置程序											  	 */
-/*函数说明：																 */
-/*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
-/*全局变量：无																 */
-/*输    入：u8 SMUTEA, u8 SMUTER, u8 FM_SMTH, u8 VOLUMET		 */
-/*返    回：无																 */
-/*设 计 者：Kanghekai				时间：											*/
-/*修 改 者：Kanghekai				时间：2011-04-08								*/
-/*版    本：V4.0																	*/
-/************************************************************************************/
-void KT_FM_SOFTMUTE_SETTING(u8 SMUTEA, u8 SMUTER, u8 FM_SMTH, u8 VOLUMET)
-{
-	u16 reg2E;
-	reg2E = KT_Bus_Read(0x2E);
-	KT_Bus_Write(0x2E,(reg2E & 0x0E00) | (SMUTEA<<14) | (SMUTER<<12) | (VOLUMET<<4) | 0x0008 | FM_SMTH );
-//									SMUTEA=4,SMUTER=120ms,VOLUMET=1,SMMD=SNR mode,FM_SMTH=3
 }
 #endif
 
@@ -2859,7 +2843,7 @@ void KT_AM_SOFTMUTE_SETTING(xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 AM_SMTH, xd_u8 VOL
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-#ifdef FM_SOFTMUTE
+#ifdef FM_SOFTMUTE000000000000000000000000000000000000000
 void KT_FM_SOFTMUTE(xd_u16 Frequency)
 {
 	xd_u16 reg4;

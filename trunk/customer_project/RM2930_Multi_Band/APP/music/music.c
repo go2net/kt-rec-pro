@@ -134,7 +134,7 @@ static void music_info_init(void)
     device_active = NO_DEVICE;
     if (given_device == NO_DEVICE)
     {
-        given_device = read_info(MEM_ACTIVE_DEV);
+        //given_device = read_info(MEM_ACTIVE_DEV);
     }
 
     if ( (given_device & (~VIRTUAL_DEVICE)) == DEVICE_SDMMC0)
@@ -677,22 +677,23 @@ void music_play(void)
             break;
 
         case MSG_MUSIC_PREV_FILE:												//选择上一个文件进行播放
-
+#if 0
 	     if((disp_scenario == DISP_RTC_SCEN)&&(rtc_setting_flag!=0)){
 			goto __HOT_MSG_HDLR;
 			break;
 	     }
-		 
+#endif		 
             given_file_method = PLAY_PREV_FILE;
             put_msg_lifo(MSG_MUSIC_SELECT_NEW_FILE);
             break;
 
         case MSG_MUSIC_NEXT_FILE:												//选择下一个文件进行播放
-
+#if 0
 	     if((disp_scenario == DISP_RTC_SCEN)&&(rtc_setting_flag!=0)){
 			goto __HOT_MSG_HDLR;
 			break;
 	     }		
+#endif		 
             //delay_10ms(30);
             given_file_method = PLAY_NEXT_FILE;
             put_msg_lifo(MSG_MUSIC_SELECT_NEW_FILE);
@@ -814,12 +815,12 @@ void music_play(void)
 
 #if (FF_FR_EN == 1)
         case MSG_MUSIC_FR:											//启动快退
-
+#if 0
 	     if((disp_scenario == DISP_RTC_SCEN)&&(rtc_setting_flag!=0)){
 			goto __HOT_MSG_HDLR;
 			break;
 	     }
-		 
+#endif		 
             if (find_break_point_file_flag)							//如果是记忆播放的歌曲，不能快退
             {
                 break;
@@ -832,12 +833,12 @@ void music_play(void)
             break;
 
         case MSG_MUSIC_FF:											//启动快进
-
+#if 0
 	     if((disp_scenario == DISP_RTC_SCEN)&&(rtc_setting_flag!=0)){
 			goto __HOT_MSG_HDLR;
 			break;
 	     }
-		 
+#endif		 
             if (play_status == MAD_PLAY)
             {
                 play_status = MAD_FF;
@@ -948,12 +949,13 @@ void music_play(void)
 		}
 ////////////////////////////////////////////////////////////
 //显示界面的切换
-
+#if 0
 		if(disp_scenario == DISP_RTC_SCEN){
 
 			rtc_disp_hdlr();
 			break;
 		}	
+#endif		
 		if (main_menu_conter < (SUB_MENU_TIME - 3))
 		{
                 	main_menu_conter++;
@@ -1026,7 +1028,7 @@ void music_play(void)
             break;
 #endif		
 #if 0
-		  case	MSG_DEL_ALL_FILE:
+	    case MSG_DEL_ALL_FILE:
 			if(0 == encode_filenum)
 				break;
 			disp_port(MENU_REC_DEL);		  

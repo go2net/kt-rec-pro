@@ -65,6 +65,13 @@ typedef enum {
 
 typedef enum {
 
+	 RADIO_STATION_NEXT,
+	 RADIO_STATION_PREV,	
+	 RADIO_STATION_CURR=0x80,	
+}RADIO_STATION_MODE;
+
+typedef enum {
+
 	 RADIO_READ_FREQ,
 	 RADIO_READ_BAND,
 	 RADIO_READ_STATION_SUM,

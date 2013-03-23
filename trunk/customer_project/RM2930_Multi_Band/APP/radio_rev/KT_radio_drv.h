@@ -15,7 +15,7 @@
 //#define LOWFM_MODE
 //#define MANUAL_SEPARATION				 
 //#define AM_SOFTMUTE
-//#define FM_SOFTMUTE
+#define FM_SOFTMUTE
 //#define AM_GAIN
 //#define AUDIO_LEVEL_BOOST
 //#define FM_HIGHLEVER_RF_SIGAL_INPUT
@@ -123,9 +123,9 @@
 #define SW14_BOTTOM_LIMIT 24670
 
 
-#define FM_AFCTH_PREV 0			//Range from 0 to 127
-#define FM_AFCTH 15				//Range from 0 to 127
-#define FM_AFCTH_NEXT 0			//Range from 0 to 127
+#define FM_AFCTH_PREV 	7			//Range from 0 to 127
+#define FM_AFCTH 		15				//Range from 0 to 127
+#define FM_AFCTH_NEXT 	7			//Range from 0 to 127
 
 #define MW_AFCTH_PREV 6			//Range from 128 to 127
 #define MW_AFCTH 6				//Range from 128 to 127

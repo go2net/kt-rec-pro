@@ -300,37 +300,6 @@ void disp_radio_main(void)
 	}
 #endif	
 }
-
-
-/*----------------------------------------------------------------------------*/
-/**@brief  显示FM频点
-   @param  无
-   @return 无
-   @note   void disp_fm_freq(void)
-*/
-/*----------------------------------------------------------------------------*/
-#if 0//FM_MODULE
-void disp_fm_freq(void)
-{
-    disp_radio_main();
-}
-#endif
-/*----------------------------------------------------------------------------*/
-/**@brief  显示搜索到的FM频道
-   @param  无
-   @return 无
-   @note   void disp_fm_find_station(void)
-*/
-/*----------------------------------------------------------------------------*/
-#if 0//FM_MODULE
-void disp_fm_find_station(void)
-{
-    led_putchar('P',1);
-    printf_num(fre_channel,2,2);//my_printf("%c P%02b%m", fre_channel, LED_FM_ICON);
-    delay_10ms(50);
-
-}
-#endif
 /*----------------------------------------------------------------------------*/
 /**@brief  显示FM频道
    @param  无
@@ -338,14 +307,18 @@ void disp_fm_find_station(void)
    @note   void disp_fm_channel(void)
 */
 /*----------------------------------------------------------------------------*/
-#if 0//FM_MODULE
-void disp_fm_channel(void)
+void disp_radio_station_ch(void)
 {
     led_putchar('P',1);
-    printf_num(fre_channel,2,2);
+    printf_num(radio_band.bCurChannel,2,2);
 
 }
-#endif
+void disp_radio_station(void)
+{
+    led_putchar('P',1);
+    printf_num(radio_band.bTotalChannel,2,2);
+
+}
 /*----------------------------------------------------------------------------*/
 /**@brief  显示输入数字
    @param  num:数值
@@ -355,7 +328,13 @@ void disp_fm_channel(void)
 /*----------------------------------------------------------------------------*/
 void disp_input_number(u16 num)
 {
-    printf_num(num,0,4);      
+    if(num>999)
+    		printf_num(num,0,4);     
+    else if(num>99)
+	    	printf_num(num,1,3);     
+    else
+	    	printf_num(num,2,2);     
+
     disp_device();
 }
 
@@ -396,7 +375,10 @@ void disp_music_play_time(void)
 //	printf_u16(play_time,'t');
 #if 1//((monitor == DISP_LED5X7)||(LCD_DISP == monitor))
     printf_num(sec,2,2);
-    printf_num(min,0,2);
+    if(min>59)
+    	printf_num(min,0,2);
+    else
+   	 printf_num(min,1,2);
     led_putchar(':',0);
 #endif
     //disp_play_mode();
@@ -653,35 +635,6 @@ void disp_rec_working(void)
 	disp_rec_time();
 	disp_device();
 }
-/*----------------------------------------------------------------------------*/
-/**@brief 	录音开始界面显示
-   @param 	void
-   @return  void
-   @note  	void disp_rec(void)
-*/
-/*----------------------------------------------------------------------------*/
-#if 0
-void disp_rec(void)
-{
-    printf_str("REC",1);
-    disp_device();
-}
-#endif
-/*----------------------------------------------------------------------------*/
-/**@brief 	录音暂停显示
-   @param 	void
-   @return  void
-   @note  	void disp_rec_err(void)
-*/
-/*----------------------------------------------------------------------------*/
-#if 0
-
-void disp_rec_pause(void)
-{
-	disp_rec_time();
-	disp_device();
-}
-#endif
 
 extern bool sys_mute_flag;
 void update_disp_icon()
@@ -772,10 +725,16 @@ void disp_port(u8 menu)
             disp_input_number(input_number);
             break;
 
-        case MENU_FM_MAIN:
+        case MENU_RADIO_MAIN:
             disp_radio_main();
             break;
 
+        case MENU_RADIO_STATION_CH:
+            disp_radio_station_ch();
+            break;
+        case MENU_RADIO_SCAN_STATION:
+            disp_radio_station();
+            break;			
         case MENU_AUX_MAIN:
 	    disp_aux_main();
             break;
@@ -790,18 +749,11 @@ void disp_port(u8 menu)
             disp_del_file();
             break;				
 #endif			
-      //  case MENU_FM_DISP_FRE:
-     //       disp_radio_main();
-     //       break;
 
 	case MENU_REC_ERR:
 		disp_rec_err();
 		break;
-
-	//case MENU_REC_MAIN:
-	//	disp_music_main();
-	//	break;
-
+		
 	case MENU_SET_EQ:
             disp_eq();
             break;

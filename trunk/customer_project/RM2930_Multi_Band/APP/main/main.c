@@ -247,24 +247,19 @@ void timer0isr(void)
 /*----------------------------------------------------------------------------*/
 static void sys_info_init(void)
 {
- //   u8 tmp;
+    u8 vol_tmp;
 
-#if 0
-#if (DEFAULT_VOL>0)
-	tmp = MAX_MAIN_VOL;
-#else
-    tmp = read_info(MEM_VOL);
+#if 1
 
-    if ((tmp > MAX_MAIN_VOL) || (tmp == 0))              //每次开机时，不要超过最大音量的一半，以免开机音量过大
+    vol_tmp = read_info(MEM_SYS_VOL);
+
+    if ((vol_tmp > MAX_MAIN_VOL) || (vol_tmp == 0))              //每次开机时，不要超过最大音量的一半，以免开机音量过大
     {
-       // tmp = MAX_MAIN_VOL/2;
-        tmp = 20;
+        vol_tmp = 20;
     }
 #endif
-#endif
-	//tmp = MAX_MAIN_VOL;
 
-    dac_init(MAX_MAIN_VOL);
+    dac_init(vol_tmp);
     delay_10ms(50);										//等待,检测USB,SD在线状态
     //init_rec_name();
     //restore_music_point();

@@ -45,6 +45,7 @@ u8 _idata irda_state;     ///<IR当前状态
 u16 _idata irda_data;     ///<IR读取读取出的数据
 u16 _idata adkey_value1;  ///<adkey 采样值
 extern bool sys_pwr_flag;
+bool adkey_activated=0;
 
 #ifdef USE_TWO_ADKEY
 u16 _idata adkey_value2;  ///<adkey 采样值
@@ -912,11 +913,11 @@ void keyScan(void)
         	}        
         }
         else{			
-		key_mode = ADKEY_2_CH;
+		key_mode = ADKEY_1_CH;
 	}	 
     }
     else{
-        key_mode = ADKEY_1_CH;															//按键为AD按键
+        key_mode = ADKEY_2_CH;															//按键为AD按键
     }
 
 
@@ -936,6 +937,7 @@ void keyScan(void)
     else if (keyTemp != last_key)
     {
         key_counter = 0;
+	 adkey_activated=1;	   		
         put_msg_fifo(MSG_KEY_CHANGE);
     }
     else
@@ -995,11 +997,14 @@ void keyScan(void)
         {
             if (key == MSG_MUSIC_FFR_DONE)
             {
+            	  adkey_activated=1;	   
                 put_msg_lifo(key);
                 flush_low_msg();
                 goto _exit_keyScan;
             }
         }
+
+	 adkey_activated=1;	   
         put_msg_fifo(key);
 
     }

@@ -234,6 +234,8 @@ void dsp_recode_channel(u8 channel);
 #define MAIN_CLK_24M     1
 #define MAIN_CLK_48M     2
 
+#define MAIN_CLK_RC     3
+
 //P05Êä³öÑ¡Ôñ
 #define P05_SEL_IO			0
 #define P05_SEL_OSC1		1
