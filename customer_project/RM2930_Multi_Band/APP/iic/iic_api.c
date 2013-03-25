@@ -82,18 +82,18 @@ u8 read_eerom(u16 iic_addr)
 
     iic_busy = 1;
     iic_start();                    //I2CÆô¶¯
-    if(iic_addr >0xFF){
-	addr =iic_addr>>8;
-    	iic_sendbyte(0xa0|EPPROM_PAGE2);             //Ð´ÃüÁî
+    if(iic_addr >255){
+	addr =(u8)(iic_addr-255);
+    	iic_sendbyte((0xa0|EPPROM_PAGE2));             //Ð´ÃüÁî
     }
     else{
+	addr =(u8)(iic_addr);
     	iic_sendbyte(0xa0);             //Ð´ÃüÁî
     }
-    iic_sendbyte(iic_addr);       //Ð´µØÖ·
+    iic_sendbyte(addr);       //Ð´µØÖ·
     iic_start();                    //Ð´×ªÎª¶ÁÃüÁî£¬ÐèÒªÔÙ´ÎÆô¶¯I2C
-    if(iic_addr >0xFF){
-	addr =iic_addr>>8;
-    	iic_sendbyte(0xa1|EPPROM_PAGE2);             //Ð´ÃüÁî
+    if(iic_addr >255){
+    	iic_sendbyte((0xa1|EPPROM_PAGE2));             //Ð´ÃüÁî
     }
     else{    
     	iic_sendbyte(0xa1);             //¶ÁÃüÁî
@@ -116,12 +116,15 @@ u8 read_eerom(u16 iic_addr)
 /*----------------------------------------------------------------------------*/
 void write_eerom(u16 addr,u8 dat)
 {
-    if(addr >0xFF){
-	addr =addr>>8;
-    	iic_write((0xa0|EPPROM_PAGE2),(u8)addr,&dat,1);
+     u8 u8_addr=0;
+	 
+    if(addr >255){
+	u8_addr =(u8)(addr-255);
+    	iic_write((0xa0|EPPROM_PAGE2),u8_addr,&dat,1);
     }
     else{
-    	iic_write(0xa0,(u16)addr,&dat,1);
+	u8_addr= (u8)addr;
+    	iic_write(0xa0,u8_addr,&dat,1);
     }
     delay_10ms(2);
 }
