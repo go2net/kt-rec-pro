@@ -93,37 +93,9 @@ void ap_handle_hotkey(u8 key)
 		break;
 		
     case MSG_MUTE_UNMUTE:
-
 		sys_mute_flag=~sys_mute_flag;
-		//dac_mute_toggle();		
         	dac_mute_control(sys_mute_flag,1);					//调节音量时，自动UNMUTE
-
 		break;		    
-#if 0
-    case MSG_MUSIC_PREV_FILE:												//选择上一个文件进行播放
-    case MSG_MUSIC_FR:											//启动快退
-	      	if ((disp_scenario == DISP_RTC_SCEN)&&(rtc_setting_flag!=0))
-            	{
-                	rtc_set_cnt=30;
-                	curr_time_minus();
-                	write_rtc(&curr_time);
-                	//write_next_alm_sec();
-                	disp_port(MENU_RTC);
-            	}
-    		break;
-    case MSG_MUSIC_NEXT_FILE:												//选择下一个文件进行播放
-    case MSG_MUSIC_FF:											//启动快退
-
-	      	if ((disp_scenario == DISP_RTC_SCEN)&&(rtc_setting_flag!=0))
-            	{
-                	rtc_set_cnt=30;
-                	curr_time_plus();
-                	write_rtc(&curr_time);
-                	//write_next_alm_sec();
-                	disp_port(MENU_RTC);
-            	}
-		break;
-#endif
 #if 1
     case MSG_NEXT_WORKMODE:
 
@@ -131,8 +103,9 @@ void ap_handle_hotkey(u8 key)
 		work_mode++;
 		if(work_mode>AUX_MODE)
 			work_mode=MUSIC_MODE;
-
+		
 		put_msg_lifo(MSG_CHANGE_WORK_MODE);
+
 #else
 		//set_brightness_all_on();
 		if(work_mode==FM_RADIO_MODE)break;
@@ -164,17 +137,7 @@ void ap_handle_hotkey(u8 key)
 		}
 #endif		
 		break;    
-#if 0		
-    case MSG_TIME_SETTING:
-	       //set_brightness_all_on();
-		if(disp_scenario == DISP_RTC_SCEN){
 
-	             	rtc_set_cnt=30;				
-			rtc_setting_flag = 0x01;
-			rtc_coordinate = 3;
-		}
-	break;
-#endif	
     case MSG_USB_DISK_OUT:
     case MSG_SDMMC_OUT:
         if((RECODE_WORKING == encode_status)||(RECODE_PAUSE == encode_status))
@@ -206,6 +169,7 @@ void ap_handle_hotkey(u8 key)
         disk_remove_deal_for_music();
         break;
 #endif
+
 #if USB_DEVICE_ENABLE
     case MSG_USB_PC_IN:
         break_encode();
@@ -219,6 +183,7 @@ void ap_handle_hotkey(u8 key)
         set_brightness_all_on();
         break;
 #endif
+
 #ifdef AUX_DETECT_FUNC
     case MSG_AUX_OUT :
 	if(work_mode == AUX_MODE){
@@ -235,6 +200,7 @@ void ap_handle_hotkey(u8 key)
 	}
 	break;
 #endif
+
     case MSG_SDMMC_IN :
 #ifndef LCD_BACK_LIGHT_DUMMY						
         set_brightness_all_on();
@@ -257,8 +223,6 @@ void ap_handle_hotkey(u8 key)
 		given_device = read_info(MEM_ACTIVE_DEV);
 
 		if(given_device != DEVICE_SDMMC0_REC)
-		//	given_device = DEVICE_SDMMC0_REC;
-		//else
 			given_device = DEVICE_SDMMC0;
 
         given_file_method = PLAY_BREAK_POINT;
@@ -281,44 +245,11 @@ void ap_handle_hotkey(u8 key)
 	given_device = read_info(MEM_ACTIVE_DEV);
 
 	if(given_device != DEVICE_UDISK_REC)
-		//	given_device = DEVICE_UDISK_REC;
-		//else
 		given_device = DEVICE_UDISK;
 
         given_file_method = PLAY_BREAK_POINT;      
         put_msg_lifo(MSG_MUSIC_NEW_DEVICE_IN);
         break;
-		
-#if 0
-    case MSG_NEXT_WORKMODE:
-
-#if 0//def K820_LHD_820_REC_V001
-	    if(MUSIC_MODE != work_mode)
-			break;
-	 if(device_check()>0){
-	 
-	        given_device = DEVICE_AUTO_NEXT;
-	        given_file_method = PLAY_BREAK_POINT;
-	        put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
-	        backup_music_point();
-	 }
-	 else{
-    		//flashled(3);
-              work_mode =IDLE_MODE;
-        	put_msg_lifo(MSG_CHANGE_WORK_MODE);		
-	 }
-	break;
-
-#endif
-
-	break_encode();
-        work_mode++;
-        if (work_mode > MAX_WORK_MODE)
-            work_mode = MUSIC_MODE;
-
-        put_msg_lifo(MSG_CHANGE_WORK_MODE);
-        break;
-#endif		
 #if 1
     case MSG_VOL_UP:
         if(vol_change_en==0)
@@ -413,11 +344,10 @@ void ap_handle_hotkey(u8 key)
 			break;
 		}
 
-        api_stop_encode();		//停止录音
+        	api_stop_encode();		//停止录音
 		put_msg_lifo(MSG_REC_PLAY);
 		break;
-
-	 case MSG_ENCODE_FAT_FULL:  //建文件时
+    case MSG_ENCODE_FAT_FULL:  //建文件时
 		api_stop_encode();		//停止录音
         if((!device_check())&& (REC_MIC_MODE == work_mode))
         {
