@@ -431,10 +431,12 @@ bool radio_band_scan(u8 mode)
 		return 1;
 	 }
     }
+
+    disp_port(MENU_RADIO_MAIN);			
 		
     res = radio_get_validstation(radio_band.wFreq);
 
-    disp_port(MENU_RADIO_MAIN);			
+    //disp_port(MENU_RADIO_MAIN);			
 
     if (res)						//找到一个台
     {
@@ -447,6 +449,7 @@ bool radio_band_scan(u8 mode)
 				scan_mode = RADIO_SCAN_STOP;
 			}
 			disp_port(MENU_RADIO_SCAN_STATION);	
+			delay_10ms(60);
        	}
 #ifdef SAVE_BAND_FREQ_INFO	
     		mem_radio_info(RADIO_SAVE_FREQ,&radio_band.wFreq,0);
@@ -671,10 +674,12 @@ void radio_rev_hdlr( void )
 					    	dac_mute_control(0,1);	
    			 			input_number_en = 1;
 			     	  		vol_change_en=1;				  
+						disp_port(MENU_RADIO_MAIN);			
                     				break;								
 					}
 	             	      }
 			      else{
+					disp_port(MENU_RADIO_MAIN);			
 					dac_mute_control(0,1);		
 		                     scan_mode = RADIO_SCAN_STOP;
    			 		input_number_en = 1;
