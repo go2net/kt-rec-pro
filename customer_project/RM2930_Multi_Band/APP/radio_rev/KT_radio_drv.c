@@ -852,7 +852,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	//regx = KT_Bus_Read(0x0F);       
 	//KT_Bus_Write(0x0F, regx & 0xFFE0);		//Write volume to 0
 
-	if(Current_Band.Band >= MW_MODE){
+	if(Current_Band.Band == MW_MODE){
 		
 		KT_Bus_Write(0x18,0x0000);						//Enable cap
 	}
@@ -886,7 +886,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 		KT_Bus_Write(0x16, 	regx & 0xD0FF);       				//reference clock=32.768K;
 		KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #ifdef KT0915
-		if(Current_Band.Band >= MW_MODE)
+		if(Current_Band.Band >= SW_MODE)
 			KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #endif
 	}
@@ -900,7 +900,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	regx = KT_Bus_Read(0x0F);       
 
 #ifdef KT0915
-	if(Current_Band.Band >= MW_MODE)
+		if(Current_Band.Band >= SW_MODE)
 #endif
 	{
 		KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1D));		//Write volume to 0
@@ -1109,7 +1109,7 @@ xd_u8 KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip an
 
 	KT_Bus_Write(0x17, 0x8000 | Frequency);	   					//set tune bit to 1
 #ifdef KT0915
-	if(Current_Band.Band >= MW_MODE)
+	if(Current_Band.Band >= SW_MODE)
 		KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #endif
 	//delay_10ms(100);
@@ -1182,7 +1182,7 @@ void load_band_info(u8 cur_band)
 		
 		Current_Band.AFCTH_Prev =MW_AFCTH_PREV;
 		Current_Band.AFCTH_Next =MW_AFCTH_NEXT;
-		Current_Band.AFCTH =MW_AFCTH;
+		Current_Band.AFCTH =MW_AFCTH+2;
 
     }
     else if(cur_band==2){
@@ -1193,7 +1193,7 @@ void load_band_info(u8 cur_band)
 		
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-2;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-2;
-		Current_Band.AFCTH =SW_AFCTH+10;
+		Current_Band.AFCTH =SW_AFCTH+12;
 		Current_Band.RSSI_TH=SW_RSSI_TH;
 
     }	
@@ -1582,6 +1582,8 @@ xd_u8 KT_FMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 
 	KT_FMTune(Frequency);
 
+	if(Frequency == 9600)return 0;
+	
 	//Determine the validation of current station
 	if ((afc[0]<afc[1]) && (afc[1]<afc[2]) && (afc[0]<-FM_AFCTH_PREV) && (afc[1]>-FM_AFCTH) && (afc[1]<FM_AFCTH) && (afc[2]>FM_AFCTH_NEXT)) {
 
@@ -1732,6 +1734,7 @@ xd_u8 KT_AMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 	}
 	else
 	{
+		KT_AMTune( Frequency );	
 		return(0); 
 	}
 }
@@ -1772,14 +1775,12 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 			KT_AMTune( Frequency + Current_Band.ValidStation_Step );
 			delay_10ms(8);
 
-
-			KT_AMTune( Frequency );
-
 			AM_afc[2] = KT_AMGetAFC();
 #ifdef DEBUG_SW    
 			printf(" ---------------------------------------------------> KT  AM_afc  [ 2222 ]  %d  \r\n ",(u16)AM_afc[2]);
 #endif
 			KT_AMReadRSSI(&rssi_reg[2]);	
+			KT_AMTune( Frequency );
 
 			if(( AM_afc[2] >= Current_Band.AFCTH_Next)||((rssi_reg[0]-rssi_reg[1])<=-Current_Band.RSSI_TH ))
 			{
@@ -1805,6 +1806,7 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 	}
 	else
 	{
+		KT_AMTune( Frequency );	
 		last_rssi_reg= rssi_reg[0];
 		return(0); 
 	}

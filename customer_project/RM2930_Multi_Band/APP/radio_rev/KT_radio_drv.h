@@ -128,7 +128,7 @@
 #define FM_AFCTH_NEXT 	7			//Range from 0 to 127
 
 #define MW_AFCTH_PREV 6			//Range from 128 to 127
-#define MW_AFCTH 6				//Range from 128 to 127
+#define MW_AFCTH 12			//Range from 128 to 127
 #define MW_AFCTH_NEXT 6			//Range from 128 to 127
 
 #define SW_AFCTH_PREV 6		//Range from 128 to 127
