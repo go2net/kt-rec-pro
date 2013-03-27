@@ -1,1 +1,1 @@
-isd_download.exe -f myoutotp.bin.fw -toram -osc 32K
+isd_download.exe -f myoutotp.bin.fw -toram -osc 32K -dev jieliide -w 3000 ¨Cchiptype hb002
