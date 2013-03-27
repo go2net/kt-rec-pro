@@ -335,7 +335,7 @@ void disp_input_number(u16 num)
     else
 	    	printf_num(num,2,2);     
 
-    disp_device();
+  //  disp_device();
 }
 
 /*----------------------------------------------------------------------------*/

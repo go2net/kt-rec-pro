@@ -1074,7 +1074,7 @@ void timer3isr(void)
 //    {
 //        goto _exit2_timer2;
 //    }
-    else if ((counter == 13)||(counter < 9)||(counter > 96))
+    else if ((counter == 13)||(counter < 9)||(counter > 120))
     {
         irda_state = 0;
     }

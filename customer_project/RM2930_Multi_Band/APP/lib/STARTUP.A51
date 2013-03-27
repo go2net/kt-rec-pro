@@ -33,7 +33,7 @@ STARTUP1:
 				MOV     SPH,#high(STACK_START - 1)
 
 				MOV 	DPTR, #LVDCON
-				MOV 	A, #03BH 	   //0x38:2.2V;0x39:2.4V;0x3A:2.6V;0x3B:2.8V;
+				MOV 	A, #039H 	   //0x38:2.2V;0x39:2.4V;0x3A:2.6V;0x3B:2.8V;
 				MOVX 	@DPTR,A
 
 				MOV     P0PD, #0

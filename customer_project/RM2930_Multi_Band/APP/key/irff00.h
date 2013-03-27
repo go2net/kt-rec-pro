@@ -35,7 +35,7 @@
 								/*17*/    MSG_MUSIC_NEXT_FILE,\
 								/*18*/    MSG_VOL_UP,\
 								/*19*/    MSG_MUTE_UNMUTE,\
-								/*20*/    MSG_POWER_DOWN
+								/*20*/    MSG_POWER
 
 #define IRFF00_MUSIC_LONG		\
                                                         /*00*/    NO_MSG,\
@@ -118,27 +118,27 @@ const u8 _code irff00_msg_music_table[4][21] =				//Music模式下的遥控转换表
 
 //
 #define IRFF00_RADIO_SHORT			\
-								/*00*/    NO_MSG,\
-							       /*01*/    NO_MSG,\
-								/*02*/    NO_MSG,\
-								/*03*/    NO_MSG,\
-								/*04*/    NO_MSG,\
-								/*05*/    NO_MSG,\
-								/*06*/    NO_MSG,\
-								/*07*/    NO_MSG,\
-								/*08*/    NO_MSG,\
-								/*09*/    NO_MSG,\
+								/*00*/    MSG_0,\
+							       /*01*/    MSG_1,\
+								/*02*/    MSG_2,\
+								/*03*/    MSG_3,\
+								/*04*/    MSG_4,\
+								/*05*/    MSG_5,\
+								/*06*/    MSG_6,\
+								/*07*/    MSG_7,\
+								/*08*/    MSG_8,\
+								/*09*/    MSG_9,\
                                 				/*10*/    NO_MSG,\
 								/*11*/    MSG_REC_KEY,\
-								/*12*/    MSG_RADIO_NEXT_STEP,\
-								/*13*/    NO_MSG,\
+								/*12*/    MSG_RADIO_PREV_STEP,\
+								/*13*/    MSG_RADIO_SCAN_ALL,\
 								/*14*/    MSG_VOL_DOWN,\
-								/*15*/    NO_MSG,\
+								/*15*/    MSG_CHANGE_RADIO_MODE,\
 								/*16*/    NO_MSG,\
-								/*17*/    MSG_RADIO_PREV_STEP,\
+								/*17*/    MSG_RADIO_NEXT_STEP,\
 								/*18*/    MSG_VOL_UP,\
 								/*19*/    MSG_MUTE_UNMUTE,\
-								/*20*/    MSG_POWER_DOWN
+								/*20*/    MSG_POWER
 
 #define IRFF00_RADIO_LONG			\
 								/*00*/    NO_MSG,\
@@ -153,12 +153,12 @@ const u8 _code irff00_msg_music_table[4][21] =				//Music模式下的遥控转换表
 								/*09*/    NO_MSG,\
                                 				/*10*/    NO_MSG,\
 								/*11*/    NO_MSG,\
-								/*12*/    NO_MSG,\
+								/*12*/    MSG_RADIO_SCAN_ALL_DOWN,\
 								/*13*/    NO_MSG,\
 								/*14*/    NO_MSG,\
 								/*15*/    NO_MSG,\
 								/*16*/    NO_MSG,\
-								/*17*/    NO_MSG,\
+								/*17*/    MSG_RADIO_SCAN_ALL_UP,\
 								/*18*/    NO_MSG,\
 								/*19*/    NO_MSG,\
 								/*20*/    NO_MSG//NO_MSG
@@ -178,18 +178,18 @@ const u8 _code irff00_msg_music_table[4][21] =				//Music模式下的遥控转换表
 								/*11*/    NO_MSG,\
 								/*12*/    NO_MSG,\
 								/*13*/    NO_MSG,\
-								/*14*/    NO_MSG,\
+								/*14*/    MSG_VOL_DOWN,\
 								/*15*/    NO_MSG,\
 								/*16*/    NO_MSG,\
 								/*17*/    NO_MSG,\
-								/*18*/    NO_MSG,\
+								/*18*/    MSG_VOL_UP,\
 								/*19*/    NO_MSG,\
 								/*20*/    NO_MSG
 
 
 #define IRFF00_RADIO_LONG_UP		\
 								/*00*/    NO_MSG,\
-                                /*01*/    NO_MSG,\
+                                				/*01*/    NO_MSG,\
 								/*02*/    NO_MSG,\
 								/*03*/    NO_MSG,\
 								/*04*/    NO_MSG,\
@@ -202,7 +202,7 @@ const u8 _code irff00_msg_music_table[4][21] =				//Music模式下的遥控转换表
 								/*11*/    NO_MSG,\
 								/*12*/    NO_MSG,\
 								/*13*/    NO_MSG,\
-                                /*14*/    NO_MSG,\
+                                				/*14*/    NO_MSG,\
 								/*15*/    NO_MSG,\
 								/*16*/    NO_MSG,\
 								/*17*/    NO_MSG,\

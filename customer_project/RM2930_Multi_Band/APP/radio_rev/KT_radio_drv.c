@@ -437,7 +437,7 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 {
 	xd_u16 regx;
 	
-	KT_AMFMInit();
+	//KT_AMFMInit();
 	
 	KT_RF_AP_POWER_INIT();
 		
@@ -603,7 +603,7 @@ xd_u8 KT_AMFMWakeUp(void) //0->Fail 1->Success
 	xd_u16 regx;
 	regx = KT_Bus_Read(0x0F);
 	KT_Bus_Write(0x0F, regx & 0xEFFF);			//Write Standby bit to 0
-	delay_10ms(20);	
+	delay_10ms(50);	
 #if 1
 	if(KT_pre_init()==1){
 
@@ -862,6 +862,8 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	KT_Bus_Write(0x23, regx & 0xDFFF);							//Enable fast gain function
 #endif
 
+	regx = KT_Bus_Read(0x0A);
+	KT_Bus_Write(0x0A, regx & 0xFFBF);
 	if((Frequency == 1368) || (Frequency == 1370) || (Frequency == 1404))
 	{
 		KT_Bus_Write(0x1E, 0x0001);								//DIVIDERP<9:0>=1
@@ -900,7 +902,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	regx = KT_Bus_Read(0x0F);       
 
 #ifdef KT0915
-		if(Current_Band.Band >= SW_MODE)
+	if(Current_Band.Band >= SW_MODE)
 #endif
 	{
 		KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1D));		//Write volume to 0
@@ -1194,7 +1196,7 @@ void load_band_info(u8 cur_band)
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-2;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-2;
 		Current_Band.AFCTH =SW_AFCTH+12;
-		Current_Band.RSSI_TH=SW_RSSI_TH;
+		Current_Band.RSSI_TH=SW_RSSI_TH-2;
 
     }	
     else if(cur_band==3){
@@ -1204,8 +1206,8 @@ void load_band_info(u8 cur_band)
 		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
-		Current_Band.AFCTH =SW_AFCTH+16;
-		Current_Band.RSSI_TH=SW_RSSI_TH-2;
+		Current_Band.AFCTH =SW_AFCTH+18;
+		Current_Band.RSSI_TH=SW_RSSI_TH-3;
     }		
     else if(cur_band==4){
 		
@@ -1806,7 +1808,7 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 	}
 	else
 	{
-		KT_AMTune( Frequency );	
+		KT_AMTune( Frequency);	
 		last_rssi_reg= rssi_reg[0];
 		return(0); 
 	}
