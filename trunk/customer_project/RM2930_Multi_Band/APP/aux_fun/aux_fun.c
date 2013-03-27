@@ -109,11 +109,10 @@ void aux_main_handlr(void)
                 disp_port(cur_menu);
             }
 
-//            if(MENU_RECWORKING == cur_menu)
-//            {
-//              // disp_rec_working();   
-//			   disp_port(MENU_RECWORKING); 
-//            }
+	     if(RECODE_WORKING == encode_status)
+	     {	
+	     		disp_port(MENU_AUX_MAIN);
+	     }	
             break;
 
         default:

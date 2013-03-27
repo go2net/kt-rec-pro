@@ -181,6 +181,7 @@ void sdmmc_chk_io(u8 flag);
 
 u8 cmd_ctl_rec(u8 cmd,u8 dat);
 
+void sys_clock_select(u8 select);
 
 /*----------------------------------------------------------------------------*/
 /**@brief 录音通道设置
@@ -215,6 +216,8 @@ void dsp_recode_channel(u8 channel);
 #define OTP_CLK_DIV1()  PCON &= ~BIT(3)
 #define DECODER_DIV1()	PCON &= ~BIT(2)
 #define DECODER_DIV2()	PCON |= BIT(2)
+
+
 #endif
 
 //PLL 输入
@@ -240,4 +243,5 @@ void dsp_recode_channel(u8 channel);
 #define P05_SEL_IO			0
 #define P05_SEL_OSC1		1
 #define P05_SEL_PLL			2
+
 #endif
