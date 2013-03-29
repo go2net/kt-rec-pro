@@ -343,9 +343,10 @@ void radio_band_hdlr()
     	dac_mute_control(1,1);
 	scan_mode = RADIO_SCAN_STOP;
 
-	if(radio_band.bCurBand>((sizeof(radio_freq_tab)/6)-1))
+	if(radio_band.bCurBand>((sizeof(radio_freq_tab)/6)-1)){
+		
 		radio_band.bCurBand = FM_MODE;
-	
+	}
 	radio_band.wFreqUpLimit = radio_freq_tab[radio_band.bCurBand].MAX_FREQ;
 	radio_band.wFreqDownLimit = radio_freq_tab[radio_band.bCurBand].MIN_FREQ;
 	radio_band.bTuneStep  = radio_freq_tab[radio_band.bCurBand].FREQ_STEP;
@@ -448,14 +449,16 @@ bool radio_band_scan(u8 mode)
 			mem_radio_info(RADIO_SAVE_STATION,&radio_band.wFreq,radio_band.bTotalChannel);
 			mem_radio_info(RADIO_SAVE_STATION_SUM,&radio_band.wFreq,0);
 #endif
+			dac_mute_control(0,1);
 			disp_port(MENU_RADIO_SCAN_STATION);
-			delay_10ms(60);
+			delay_10ms(100);
 			if(radio_band.bTotalChannel ==MEM_RADIO_STATION_MAX){
 				restore_station_from_epprom((RADIO_STATION_CURR|1));		
 			}
 			else{
 				radio_band.bTotalChannel++;
 			}
+			dac_mute_control(1,1);
        	}
 		else{
        		scan_mode = RADIO_SCAN_STOP;
@@ -562,6 +565,7 @@ void radio_rev_init(void)
     vol_change_en=1;
     encode_channel = REC_FM;
     encode_vol = 3;
+    sys_mute_flag=0;
 	
     main_menu = MENU_RADIO_MAIN;
 	
@@ -635,7 +639,7 @@ void radio_rev_hdlr( void )
 	        case MSG_CHANGE_RADIO_MODE:
     		    flush_all_msg();
             	     scan_mode = RADIO_SCAN_STOP;		
-		     radio_band.bCurBand++;
+		     //radio_band.bCurBand++;
 		     radio_band_hdlr();
 		     break;
         	 case MSG_MUSIC_NEW_DEVICE_IN:							//有新设备接入

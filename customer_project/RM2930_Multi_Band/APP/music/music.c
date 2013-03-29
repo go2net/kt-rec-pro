@@ -83,6 +83,7 @@ extern u16 _idata adkey_value1;
 extern u16 _idata user_code;
 //extern u8 _pdata music_spec[9];
 extern u8 _bdata device_online;
+extern bool sys_mute_flag;
 extern xd_u8 disp_scenario,rtc_setting_flag;
 extern bool rec_pley_bp_flag;
 /** 存放ID3V2信息的结构体变量 */
@@ -1051,7 +1052,7 @@ void music_play(void)
 			break;
 #endif			
         default :
-__HOT_MSG_HDLR:        			
+//__HOT_MSG_HDLR:        			
             ap_handle_hotkey(key);
             break;
         }
@@ -1079,7 +1080,7 @@ void music_decode(void)
     //flashled(3);
      play_mode = REPEAT_ALL;
      disp_scenario = DISP_NORMAL;
-
+    sys_mute_flag =0;
     main_menu = MENU_MUSIC_MAIN;
     dec_msg = get_dec_msg_ptr();
     fat_ptr1.buf = win_buffer;

@@ -16,6 +16,9 @@
 #include "dac.h"
 #include "rtc_api.h"
 #include "rtc_ui.h"
+#include "radio_rev.h"
+#include "radio_api.h"
+#include "KT_radio_drv.h"
 
 extern void disk_remove_deal_for_music(void);
 extern void rtc_disp_hdlr(void);
@@ -51,6 +54,7 @@ bool sys_pwr_flag=0;
 bool rec_pley_bp_flag=0;
 xd_u16 last_play_index=0;
 #endif
+extern RADIO_MODE_VAR _data radio_band;
 
 
 xd_u8 rtc_set_cnt=0;
@@ -100,8 +104,23 @@ void ap_handle_hotkey(u8 key)
     case MSG_NEXT_WORKMODE:
 
 #if 1
-		work_mode++;
-		if(work_mode>AUX_MODE)
+		if(work_mode==FM_RADIO_MODE){
+
+		       radio_band.bCurBand++;
+			if(radio_band.bCurBand>3/*((sizeof(radio_freq_tab)/6)-1)*/){
+				radio_band.bCurBand = FM_MODE;
+				work_mode=MUSIC_MODE;
+			}
+			else{
+				put_msg_lifo(MSG_CHANGE_RADIO_MODE);
+				break;
+			}
+		}
+		else{
+			work_mode++;
+		}
+		
+		if(work_mode>=AUX_MODE)
 			work_mode=MUSIC_MODE;
 		
 		put_msg_lifo(MSG_CHANGE_WORK_MODE);
@@ -192,7 +211,7 @@ void ap_handle_hotkey(u8 key)
 	}
 	break;
     case MSG_AUX_IN :
-	if(work_mode != AUX_MODE){\
+	if(work_mode != AUX_MODE){
 
 		last_work_mode = work_mode;
 		work_mode = AUX_MODE;
@@ -445,7 +464,9 @@ void ap_handle_hotkey(u8 key)
         */
         encode_status = RECODE_WORKING;
 #if FM_MODULE 
-	//	if(FM_RADIO_MODE != work_mode)
+		if(FM_RADIO_MODE == work_mode)
+			disp_port(MENU_RADIO_MAIN);
+		else
 #endif
 		{
 		 	main_menu = MENU_RECWORKING;//
@@ -457,10 +478,18 @@ void ap_handle_hotkey(u8 key)
         if(work_mode==REC_MIC_MODE){
 	 	put_msg_lifo(MSG_REC_PLAY);
         }
+#if FM_MODULE 
+	if(FM_RADIO_MODE == work_mode)
+		disp_port(MENU_RADIO_MAIN);
+	else
+#endif
+	disp_port(main_menu);
+
 #ifdef REC_PLAY_KEY_BREAK_POINT
 	rec_pley_bp_flag=0;
 #endif		
         break;
+
     case MSG_REC_PAUSE:     //ÔÝÍ£Â¼Òô
 		encode_status = RECODE_PAUSE;
 	
@@ -569,7 +598,7 @@ void ap_handle_hotkey(u8 key)
             break;
         }
         else
-        {		
+        {
             if(RECODE_PLAY < encode_status)
             {
                 put_msg_lifo(MSG_REC_START);

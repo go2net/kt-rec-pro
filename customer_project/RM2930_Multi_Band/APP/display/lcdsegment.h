@@ -194,7 +194,7 @@ enum {
 #define F_FM_DEV		(lcd_buff[1])	
 
 #define AM_DEV_MASK	0x0100
-#define F_AM_DEV		(lcd_buff[0])	
+#define F_AM_DEV		(lcd_buff[2])	
 
 #define SW_DEV_MASK	0x0100
 #define F_SW_DEV		(lcd_buff[4])	
