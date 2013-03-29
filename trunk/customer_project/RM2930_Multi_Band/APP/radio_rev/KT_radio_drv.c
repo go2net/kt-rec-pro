@@ -1193,10 +1193,10 @@ void load_band_info(u8 cur_band)
 
 		Current_Band.ValidStation_Step =SM_2KHz_STEP;	
 		
-		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-2;
-		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-2;
-		Current_Band.AFCTH =SW_AFCTH+12;
-		Current_Band.RSSI_TH=SW_RSSI_TH-2;
+		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
+		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
+		Current_Band.AFCTH =SW_AFCTH+15;
+		Current_Band.RSSI_TH=SW_RSSI_TH-3;
 
     }	
     else if(cur_band==3){
@@ -1206,7 +1206,7 @@ void load_band_info(u8 cur_band)
 		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
-		Current_Band.AFCTH =SW_AFCTH+18;
+		Current_Band.AFCTH =SW_AFCTH+20;
 		Current_Band.RSSI_TH=SW_RSSI_TH-3;
     }		
     else if(cur_band==4){
@@ -1214,10 +1214,10 @@ void load_band_info(u8 cur_band)
 		Current_Band.Band=SW_MODE; 
 
 		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
-		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-2;
-		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-2;
-		Current_Band.AFCTH =SW_AFCTH+4;
-		Current_Band.RSSI_TH=SW_RSSI_TH;
+		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
+		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
+		Current_Band.AFCTH =SW_AFCTH+24;
+		Current_Band.RSSI_TH=SW_RSSI_TH-3;
 		
     }
     else if(cur_band==5){
@@ -1754,7 +1754,7 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 #endif	
 	
 	KT_AMTune( Frequency - Current_Band.ValidStation_Step );
-	delay_10ms(10);
+	delay_10ms(20);
 	AM_afc[0] = KT_AMGetAFC();
 #ifdef DEBUG_SW    	
 	printf(" ----------------------------->KT  AM_afc  [ 0000 ]  %d  \r\n ",(u16)AM_afc[0]);
@@ -1765,7 +1765,7 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 	{
 
 		KT_AMTune(Frequency);
-		delay_10ms(8);		
+		delay_10ms(16);		
 		AM_afc[1] = KT_AMGetAFC();
 #ifdef DEBUG_SW    
 		printf(" ----------------------------------------->KT  AM_afc  [ 1111 ]  %d  \r\n ",(u16)AM_afc[1]);
@@ -1775,7 +1775,7 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 		if( (AM_afc[1] >= -Current_Band.AFCTH) && (AM_afc[1] <= Current_Band.AFCTH) )
 		{
 			KT_AMTune( Frequency + Current_Band.ValidStation_Step );
-			delay_10ms(8);
+			delay_10ms(16);
 
 			AM_afc[2] = KT_AMGetAFC();
 #ifdef DEBUG_SW    

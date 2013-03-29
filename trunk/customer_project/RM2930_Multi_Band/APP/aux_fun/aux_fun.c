@@ -23,6 +23,7 @@ extern u8 _xdata decode_buffer[];
 extern u8 eq_mode;
 extern bool vol_change_en,aux_online;
 extern xd_u8 P2IE_REG;
+extern bool sys_mute_flag;
 
 
 
@@ -74,6 +75,11 @@ void aux_main_handlr(void)
             work_mode = MUSIC_MODE;
             return;
 
+    	 case MSG_MUSIC_PP:
+    	 case MSG_MUTE_UNMUTE:
+	     sys_mute_flag=~sys_mute_flag;
+            dac_mute_control(sys_mute_flag,1);					//调节音量时，自动UNMUTE
+	     break;		
         case MSG_HALF_SECOND:
 ////////////////////////////////////////////////////////////
 //显示界面的切换
@@ -139,6 +145,7 @@ void aux_main(void)
 #endif
 
     key_table_sel(SYS_DEFUALT_KEY_TABLE);
+    sys_mute_flag=0;
     input_number_en = 0;
     vol_change_en=1;
     main_menu = MENU_AUX_MAIN;
@@ -152,7 +159,7 @@ void aux_main(void)
     set_max_vol(MAX_ANOLOG_VOL,MAX_DIGITAL_VOL);///设置最大音量
     aux_main_handlr();
     main_vol_set(0, CHANGE_VOL_NO_MEM);
-
+    sys_mute_flag=0;
     break_encode();
 }
 #endif
