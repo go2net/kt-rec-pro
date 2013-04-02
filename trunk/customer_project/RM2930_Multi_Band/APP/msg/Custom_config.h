@@ -84,6 +84,7 @@
 #endif
 
 #define AUX_DISP_VOL
+#define RADIO_BAND_SEL_USE_MODE_KEY
 
 #define DISP_REC_ICON_WHEN_RECORDING
 #define PLAY_MODE_IN_USE

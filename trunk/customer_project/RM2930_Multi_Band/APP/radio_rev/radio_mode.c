@@ -580,8 +580,11 @@ void radio_rev_init(void)
 	   return;
 #endif
     }
-
+#ifdef RADIO_BAND_SEL_USE_MODE_KEY
+    radio_band.bCurBand = FM_MODE;
+#else
     mem_radio_info(RADIO_READ_BAND,&radio_band.wFreq,0);
+#endif
     radio_band_hdlr();
     SYSTEM_CLK_DIV4();
     mcu_pll_clk=MAIN_CLK_12M;
