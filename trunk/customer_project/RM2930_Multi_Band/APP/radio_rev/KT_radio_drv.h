@@ -123,9 +123,9 @@
 #define SW14_BOTTOM_LIMIT 24670
 
 
-#define FM_AFCTH_PREV 	7			//Range from 0 to 127
-#define FM_AFCTH 		15				//Range from 0 to 127
-#define FM_AFCTH_NEXT 	7			//Range from 0 to 127
+#define FM_AFCTH_PREV 	5			//Range from 0 to 127
+#define FM_AFCTH 		30				//Range from 0 to 127
+#define FM_AFCTH_NEXT 	5			//Range from 0 to 127
 
 #define MW_AFCTH_PREV 6			//Range from 128 to 127
 #define MW_AFCTH 12			//Range from 128 to 127
@@ -135,6 +135,9 @@
 #define SW_AFCTH 16				//Range from 128 to 127
 #define SW_AFCTH_NEXT 6		//Range from 128 to 127
 
+
+#define AM_SNR_TH			0x28
+#define AM_RSSI_TH			-66
 
 #define SW_RSSI_TH		6
 
@@ -184,7 +187,7 @@ typedef struct
 #define SEEKDOWN 0
 
 #define TST_TH 0x2800
-#define FM_SNR_TH 0x40
+#define FM_SNR_TH 0x30
 #define AM_TUNING_LIGHT_TH 30
 #define SEPARATION_POINT -91
 #define BLEND_POINT -97
