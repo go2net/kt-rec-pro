@@ -443,6 +443,12 @@ bool radio_band_scan(u8 mode)
 
     if (res)						//找到一个台
     {
+#ifdef DEBUG_FM    	
+	printf(" ---->KT  VALID  %d  \r\n ",(u16)radio_band.bTotalChannel);
+	printf(" ---->OK OK   \r\n ");
+	printf(" \r\n   \r\n ");
+#endif
+
        	if(mode==RADIO_SCAN_ALL){
 				
 #ifdef SAVE_BAND_FREQ_INFO	
@@ -721,10 +727,18 @@ void radio_rev_hdlr( void )
 		       break;	
 	        case MSG_RADIO_NEXT_STEP:
     		    	flush_all_msg();
+			if(scan_mode != RADIO_SCAN_STOP){
+				radio_all_scan_stop();			  
+				break;
+			}					
 	    		set_radio_freq(FM_FRE_INC);
 			break;
 	        case MSG_RADIO_PREV_STEP:
     		    	flush_all_msg();
+			if(scan_mode != RADIO_SCAN_STOP){
+				radio_all_scan_stop();			  
+				break;
+			}					
 		    	set_radio_freq(FM_FRE_DEC);
 		       break;		 
 	        case MSG_HALF_SECOND:

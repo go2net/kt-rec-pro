@@ -923,6 +923,8 @@ void keyScan(void)
 
     if ( (NO_KEY == keyTemp) /*|| (keyTemp != last_key)*/ )
     {
+
+	
         if (key_counter >= KEY_LONG_CNT)			 //长按抬起
         {
             key_style = 3;
@@ -930,7 +932,8 @@ void keyScan(void)
         }
         else if (key_counter >= KEY_BASE_CNT)		//短按抬起
         {
-            key_style = 0;
+	 	adkey_activated=1;	  
+            	key_style = 0;
         }
         key_counter = 0;
     }
@@ -950,10 +953,13 @@ void keyScan(void)
         }
         else if (KEY_LONG_CNT == key_counter)				//长按
         {
+            adkey_activated=1;	   
             key_style = 1;
         }
         else if ((KEY_LONG_CNT + KEY_HOLD_CNT) == key_counter)			//连按
         {
+
+            adkey_activated=1;	           
             key_style = 2;
             key_counter = KEY_LONG_CNT;
         }
@@ -997,14 +1003,12 @@ void keyScan(void)
         {
             if (key == MSG_MUSIC_FFR_DONE)
             {
-            	  adkey_activated=1;	   
                 put_msg_lifo(key);
                 flush_low_msg();
                 goto _exit_keyScan;
             }
         }
 
-	 adkey_activated=1;	   
         put_msg_fifo(key);
 
     }

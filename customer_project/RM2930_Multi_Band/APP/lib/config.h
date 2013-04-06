@@ -78,6 +78,12 @@ enum
 
 };
 
+enum{
+
+	SYS_CLK_1M_RC,
+	SYS_CLK_4M_HPRC,
+	SYS_CLK_48M_PLL,
+};
 
 
 //    void flashled(u8 fre);

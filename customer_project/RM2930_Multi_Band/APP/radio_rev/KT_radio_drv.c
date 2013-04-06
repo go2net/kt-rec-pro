@@ -75,6 +75,10 @@ xd_u8 mem_snr[3];			  //Rememberred SNR values for previous, current and next st
 
 char rssi_value;
 
+//#define DEBUG_FM
+//#define DEBUG_AM
+//#define DEBUG_SW
+
 #define I2C
 #ifdef I2C
 
@@ -864,6 +868,7 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 
 	regx = KT_Bus_Read(0x0A);
 	KT_Bus_Write(0x0A, regx & 0xFFBF);
+	
 	if((Frequency == 1368) || (Frequency == 1370) || (Frequency == 1404))
 	{
 		KT_Bus_Write(0x1E, 0x0001);								//DIVIDERP<9:0>=1
@@ -910,8 +915,6 @@ void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and
 	else{
 		KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1B));		//Write volume to 0
 	}
-
-	//return(1);
 }
 
 void sw_auto_gain_hdlr(void)
@@ -1191,12 +1194,12 @@ void load_band_info(u8 cur_band)
 		
 		Current_Band.Band=SW_MODE; 
 
-		Current_Band.ValidStation_Step =SM_2KHz_STEP;	
+		Current_Band.ValidStation_Step =SM_3KHz_STEP;	
 		
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
-		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
+		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-6;
 		Current_Band.AFCTH =SW_AFCTH+15;
-		Current_Band.RSSI_TH=SW_RSSI_TH-3;
+		Current_Band.RSSI_TH=SW_RSSI_TH-4;
 
     }	
     else if(cur_band==3){
@@ -1205,9 +1208,9 @@ void load_band_info(u8 cur_band)
 
 		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
-		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-3;
+		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-6;
 		Current_Band.AFCTH =SW_AFCTH+20;
-		Current_Band.RSSI_TH=SW_RSSI_TH-3;
+		Current_Band.RSSI_TH=SW_RSSI_TH-4;
     }		
     else if(cur_band==4){
 		
@@ -1547,6 +1550,11 @@ xd_u8 KT_FMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 #ifdef SEEK_WITH_SNR
 	snr[0]=0;snr[1]=0;snr[2]=0;				//initialize
 #endif
+
+#ifdef DEBUG_FM    
+	printf(" KT  FM  %4u  \r\n ",Frequency);
+#endif	
+
 	nextfreq = Frequency-Current_Band.ValidStation_Step;		
 	//Get AFC values of previous, current and next channels
 	for (i=0;i<3;i++)
@@ -1584,7 +1592,15 @@ xd_u8 KT_FMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 
 	KT_FMTune(Frequency);
 
+
+#ifdef DEBUG_FM    	
+	printf(" ---->KT  FM _AFC  ->afc[0]=%d  ->afc[1]=%d  ->afc[2]=%d  \r\n ",(u16)afc[0],(u16)afc[1],(u16)afc[2]);
+#endif
+
 	if(Frequency == 9600)return 0;
+	if(Frequency == 10780)return 0;
+	if(Frequency == 10790)return 0;
+	if(Frequency == 10800)return 0;
 	
 	//Determine the validation of current station
 	if ((afc[0]<afc[1]) && (afc[1]<afc[2]) && (afc[0]<-FM_AFCTH_PREV) && (afc[1]>-FM_AFCTH) && (afc[1]<FM_AFCTH) && (afc[2]>FM_AFCTH_NEXT)) {
@@ -1593,6 +1609,9 @@ xd_u8 KT_FMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 		KT_FMTune(Frequency);
 		delay_10ms(6);
 		snr2=KT_FMGetSNR();
+#ifdef DEBUG_FM    	
+	printf(" ---->KT  FM _SNR =%d   \r\n ",(u16)snr2);
+#endif
 		if ((snr[1]>=FM_SNR_TH) && (snr2>=FM_SNR_TH)) return(1);
 		if ((snr[1]<FM_SNR_TH) && (snr2<FM_SNR_TH)) return(0);
 		delay_10ms(2);
@@ -1693,15 +1712,50 @@ xd_u8 KT_AMSeekFromCurrentCh(xd_u16 seekDir, xd_u16 *Frequency)   //	seekDir: 0-
 /************************************************************************************/
 xd_u8 KT_AMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station //check AFC_DELTA only
 {
+#ifdef AMNEWSEEK
+	char afc;							//AFC value for previous, current and next channels
+	char rssi;
+	xd_u16 snr;
+
+    //Display_Channel_AM(iFrequency);			//display current channel frequency
+	KT_AMTune(Frequency);
+	afc = KT_AMGetAFC();
+	KT_AMReadRSSI( & rssi);
+	if (rssi > AM_RSSI_TH)
+	{	
+		if ((afc > -MW_AFCTH) && (afc < MW_AFCTH))
+		{
+//			delay_n10ms(50);
+			snr = KT_AMGetSNR();
+			if (snr >= AM_SNR_TH)
+				return(1);
+			else
+				return(0);
+		}
+		else
+			return(0);
+	}
+	else
+		return(0);
+#endif
+
+#if 1
 	char AM_afc[3];							//AFC value for previous, current and next channels
 	AM_afc[0] = 0;AM_afc[1] = 0;AM_afc[2] = 0;	//initialize
 
     //Display_Channel_AM(Frequency);			//display current channel frequency
 
+#ifdef DEBUG_AM
+	printf(" KT  AW  %4u  \r\n ",Frequency);
+#endif	
+
 	KT_AMTune( Frequency - Current_Band.ValidStation_Step );
 	delay_10ms(20);
 	
 	AM_afc[0] = KT_AMGetAFC();
+#ifdef DEBUG_AM    	
+	printf(" ---->KT  AW_afc[ 00 ] =%d  \r\n ",(u16)AM_afc[0]);
+#endif
 
 	if( AM_afc[0] < -Current_Band.AFCTH_Prev )
 	{
@@ -1709,12 +1763,18 @@ xd_u8 KT_AMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 		KT_AMTune( Frequency );
 		delay_10ms(22);				
 		AM_afc[1] = KT_AMGetAFC();
+#ifdef DEBUG_AM    
+		printf(" ------>KT  AW_afc[ 11 ]=%d  \r\n ",(u16)AM_afc[1]);
+#endif
 
 		if( (AM_afc[1] >= -Current_Band.AFCTH) && (AM_afc[1] <= Current_Band.AFCTH) )
 		{
 			KT_AMTune( Frequency + Current_Band.ValidStation_Step );
 			delay_10ms(22);
 			AM_afc[2] = KT_AMGetAFC();
+#ifdef DEBUG_AM    
+		printf(" ------->KT  AW_afc[ 22 ]=%d  \r\n ",(u16)AM_afc[2]);
+#endif
 			KT_AMTune( Frequency );
 			if( AM_afc[2] > Current_Band.AFCTH_Next )
 			{
@@ -1726,7 +1786,21 @@ xd_u8 KT_AMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 			}
 			else
 			{
-				return(0);
+				KT_AMTune( Frequency + Current_Band.ValidStation_Step+AM_1KHz_STEP );
+				delay_10ms(10);
+				AM_afc[2] = KT_AMGetAFC();	
+#ifdef DEBUG_AM    
+		printf(" ------->KT  AW_afc[ 33 ]=%d  \r\n ",(u16)AM_afc[2]);
+#endif
+				
+				if( AM_afc[2] >=0 )
+				{
+					return(1);
+				}
+				else{
+					
+					return(0);
+				}
 			}
 		}
 		else
@@ -1739,25 +1813,26 @@ xd_u8 KT_AMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 		KT_AMTune( Frequency );	
 		return(0); 
 	}
+#endif	
 }
 
 xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station //check AFC_DELTA only
 {
 	char AM_afc[3],rssi_reg[3];
-	static char last_rssi_reg=0;							//AFC value for previous, current and next channels
+	//static char last_rssi_reg=0;							//AFC value for previous, current and next channels
 	AM_afc[0] = 0;AM_afc[1] = 0;AM_afc[2] = 0;	//initialize
 	rssi_reg[0] = 0;rssi_reg[1] = 0;rssi_reg[2] = 0;	//initialize
 
     //Display_Channel_AM(Frequency);			//display current channel frequency
 #ifdef DEBUG_SW    
-	printf(" KT %d    AM  SW  %u  \r\n ",(u16)cur_band,Frequency);
+	printf(" KT  SW  %4u  \r\n ",Frequency);
 #endif	
 	
 	KT_AMTune( Frequency - Current_Band.ValidStation_Step );
 	delay_10ms(20);
 	AM_afc[0] = KT_AMGetAFC();
 #ifdef DEBUG_SW    	
-	printf(" ----------------------------->KT  AM_afc  [ 0000 ]  %d  \r\n ",(u16)AM_afc[0]);
+	printf(" --->KT  SW_afc [ 00 ]=%d  \r\n ",(u16)AM_afc[0]);
 #endif
 	KT_AMReadRSSI(&rssi_reg[0]);	
 
@@ -1768,7 +1843,7 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 		delay_10ms(16);		
 		AM_afc[1] = KT_AMGetAFC();
 #ifdef DEBUG_SW    
-		printf(" ----------------------------------------->KT  AM_afc  [ 1111 ]  %d  \r\n ",(u16)AM_afc[1]);
+		printf(" ---->KT  SW_afc[ 11 ]=%d  \r\n ",(u16)AM_afc[1]);
 #endif
 		KT_AMReadRSSI(&rssi_reg[1]);	
 
@@ -1779,7 +1854,7 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 
 			AM_afc[2] = KT_AMGetAFC();
 #ifdef DEBUG_SW    
-			printf(" ---------------------------------------------------> KT  AM_afc  [ 2222 ]  %d  \r\n ",(u16)AM_afc[2]);
+			printf(" -----> KT  SW_afc[ 22 ]=%d  \r\n ",(u16)AM_afc[2]);
 #endif
 			KT_AMReadRSSI(&rssi_reg[2]);	
 			KT_AMTune( Frequency );
@@ -1787,9 +1862,8 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 			if(( AM_afc[2] >= Current_Band.AFCTH_Next)||((rssi_reg[0]-rssi_reg[1])<=-Current_Band.RSSI_TH ))
 			{
 #ifdef DEBUG_SW    
-			printf(" ---------------------------------------------------> KT  (rssi_reg[0]-rssi_reg[1])  [ 3333 ]  %d   (?)  -%d \r\n ",(u16)(rssi_reg[0]-rssi_reg[1]),(u16)Current_Band.RSSI_TH);
+				printf(" ------> KT  (rssi_reg[0]-rssi_reg[1])  [ 33 ]  %d   (?)  -%d \r\n ",(u16)(rssi_reg[0]-rssi_reg[1]),(u16)Current_Band.RSSI_TH);
 #endif
-			
 				//if ( (AM_afc[0] < AM_afc[1]) && (AM_afc[1] < AM_afc[2]) ){
 					return(1);
 				//}
@@ -1809,7 +1883,7 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 	else
 	{
 		KT_AMTune( Frequency);	
-		last_rssi_reg= rssi_reg[0];
+		//last_rssi_reg= rssi_reg[0];
 		return(0); 
 	}
 }

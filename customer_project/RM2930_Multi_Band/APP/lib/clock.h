@@ -196,6 +196,9 @@ void dsp_recode_channel(u8 channel);
 /*******************************************************************************/
 //APP 函数
 /*******************************************************************************/
+void radio_auto_pll_ctrl(void);
+void radio_auto_pll_handlr(void);
+void radio_auto_pll_resume(void);
 
 
 #define WDT_EN()		WDTCON = 0x9D; while(WDTCON & BIT(6)); WDTCON = 0xBD			//允许复位功能，溢出时间为6.7S
@@ -216,7 +219,6 @@ void dsp_recode_channel(u8 channel);
 #define OTP_CLK_DIV1()  PCON &= ~BIT(3)
 #define DECODER_DIV1()	PCON &= ~BIT(2)
 #define DECODER_DIV2()	PCON |= BIT(2)
-
 
 #endif
 
