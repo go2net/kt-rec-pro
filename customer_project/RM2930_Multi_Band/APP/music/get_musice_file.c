@@ -14,7 +14,7 @@
 
 
 extern u16 given_file_number;
-extern u16 break_point_filenum;
+extern xd_u16 break_point_filenum;
 extern u8 given_device;
 extern u8 play_mode;
 extern FSAPIMSG _pdata fs_msg;

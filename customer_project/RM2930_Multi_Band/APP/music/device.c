@@ -9,7 +9,7 @@ extern DECODER_MSG _xdata *dec_msg;
 extern u8 _xdata decode_buffer[];
 extern u8 given_device;
 extern u8 given_file_method;
-extern u16 break_point_filenum;
+extern xd_u16 break_point_filenum;
 extern u8 _xdata win_buffer[512];
 //extern u8 _code one_table[];
 extern void stop_decode(void);
@@ -146,17 +146,17 @@ u8 device_init(void)
             if ((device_active & (~VIRTUAL_DEVICE)) == DEVICE_SDMMC0)
             {
                 //break_point = disk_mus_point[0 + encode_cnt].id0;
-			break_point = read_info(MEM_SD_PLAYPOINT_ID0);
+			break_point = read_music_info(MEM_SD_PLAYPOINT_ID0);
 			break_point=break_point<<8;
-			break_point |= read_info(MEM_SD_PLAYPOINT_ID0+1);                
+			break_point |= read_music_info(MEM_SD_PLAYPOINT_ID0+1);                
             }
             else if ((device_active & (~VIRTUAL_DEVICE) ) == DEVICE_UDISK)
             {
                // break_point = disk_mus_point[1 + encode_cnt].id0;
-			break_point = read_info(MEM_USB_PLAYPOINT_ID0);
+			break_point = read_music_info(MEM_USB_PLAYPOINT_ID0);
 			break_point=break_point<<8;
-			break_point |= read_info(MEM_USB_PLAYPOINT_ID0+1);                
-		}
+			break_point |= read_music_info(MEM_USB_PLAYPOINT_ID0+1);                
+	     }
 			
             	break_point_filenum = fs_scan_disk(break_point);
     		encode_fristfile = fs_msg_rec.firstfilenum;	  //录音文件总数
@@ -167,10 +167,6 @@ u8 device_init(void)
                 //break_point_filenum = filenum_phy_logic(break_point_filenum);
             }
         }
-		     
-
-
-
 
 #if VIRTUAL_ENABLE
         logic_fileTotal = fs_msg.fileTotal - encode_filenum;          ///音乐文件总数
@@ -365,8 +361,8 @@ void write_file_info(u8 cmd)
     {
 
 #if 1
-	write_info(MEM_SD_PLAYPOINT_ID0+1 , (u8)(id&(0x00FF)));
-	write_info(MEM_SD_PLAYPOINT_ID0, (u8)((id>>8)&(0x00FF)));
+	write_music_info(MEM_SD_PLAYPOINT_ID0+1 , (u8)(id&(0x00FF)));
+	write_music_info(MEM_SD_PLAYPOINT_ID0, (u8)((id>>8)&(0x00FF)));
 
 	//sd_music_bp = id;
 	//write_info(MEM_SD_PLAYPOINT_ID0,(((u8 *)(&sd_music_bp))[0]));
@@ -385,8 +381,8 @@ void write_file_info(u8 cmd)
     {
 #if 1
 
-	write_info(MEM_USB_PLAYPOINT_ID0+1, (u8)(id&(0x00FF)));
-	write_info(MEM_USB_PLAYPOINT_ID0, (u8)((id>>8)&(0x00FF)));
+	write_music_info(MEM_USB_PLAYPOINT_ID0+1, (u8)(id&(0x00FF)));
+	write_music_info(MEM_USB_PLAYPOINT_ID0, (u8)((id>>8)&(0x00FF)));
 	//usb_music_bp = id;
 	//write_info(MEM_USB_PLAYPOINT_ID0,(((u8 *)(&usb_music_bp))[0]));
 	//write_info(MEM_USB_PLAYPOINT_ID0+1,(((u8 *)(&usb_music_bp))[1]));

@@ -122,7 +122,23 @@ void ap_handle_hotkey(u8 key)
 		
 		if(work_mode>=AUX_MODE)
 			work_mode=MUSIC_MODE;
-		
+
+		if(work_mode==MUSIC_MODE){
+
+			if(device_check()==0){
+
+				if(work_mode!=MUSIC_MODE){
+					put_msg_lifo(MSG_CHANGE_WORK_MODE);
+				}
+				else{
+					radio_band.bCurBand = FM_MODE;				
+					put_msg_lifo(MSG_CHANGE_RADIO_MODE);
+				}
+				work_mode=FM_RADIO_MODE;
+				break;
+			}
+
+		}
 		put_msg_lifo(MSG_CHANGE_WORK_MODE);
 
 #else
@@ -328,7 +344,7 @@ void ap_handle_hotkey(u8 key)
             put_msg_lifo(MSG_REC_FIND);
 #ifdef AUTO_PLAY_RADIO_REC_FILE
 	    if(work_mode == FM_RADIO_MODE){
-		auto_play_radio_rec=1;
+			auto_play_radio_rec=1;
 	    }
 #endif
 			
@@ -336,7 +352,7 @@ void ap_handle_hotkey(u8 key)
         else
         {
 #ifdef AUTO_PLAY_RADIO_REC_FILE
-		//auto_play_radio_rec=0;
+
 #endif
             put_msg_lifo(MSG_REC_STOP);
         }
@@ -478,6 +494,14 @@ void ap_handle_hotkey(u8 key)
         if(work_mode==REC_MIC_MODE){
 	 	put_msg_lifo(MSG_REC_PLAY);
         }
+#ifdef AUTO_PLAY_RADIO_REC_FILE
+	if(auto_play_radio_rec){
+		work_mode = MUSIC_MODE;
+            	put_msg_lifo(MSG_CHANGE_WORK_MODE);
+		break;
+	}
+#endif
+		
 #if FM_MODULE 
 	if(FM_RADIO_MODE == work_mode)
 		disp_port(MENU_RADIO_MAIN);

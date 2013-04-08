@@ -71,7 +71,7 @@ void sys_pll_select(u8 select)
 	    delay(1000);
 	}
 }
-extern u8 scan_mode;
+extern xd_u8 scan_mode;
 extern bool adkey_activated;
 u8 radio_pll_delay_timer=0;
 u8 radio_pll_setting=0;

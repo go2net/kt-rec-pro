@@ -372,13 +372,13 @@ void disp_music_play_time(void)
     play_time = dec_msg->play_time;
     min = play_time / 60;
     sec = play_time % 60;
-//	printf_u16(play_time,'t');
+    //printf(" ---->  disp_music_play_time  =%4u  \r\n ",(u16)dec_msg->play_time);
 #if 1//((monitor == DISP_LED5X7)||(LCD_DISP == monitor))
     printf_num(sec,2,2);
     if(min>59)
     	printf_num(min,0,2);
     else
-   	 printf_num(min,1,2);
+   	 printf_num(min,1,1);
     led_putchar(':',0);
 #endif
     //disp_play_mode();

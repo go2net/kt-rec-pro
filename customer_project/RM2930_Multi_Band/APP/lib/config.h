@@ -117,8 +117,8 @@ extern void disp_port(u8 menu);
 
 
 //音乐播放功能选择
-#define    BREAK_POINT_PLAY_EN				0			//是否允许断点播放功能
-#define    LAST_MEM_FILE_PLAY_EN            1			//是否允许记忆文件序号播放功能
+#define    BREAK_POINT_PLAY_EN				1			//是否允许断点播放功能
+#define    LAST_MEM_FILE_PLAY_EN            		0			//是否允许记忆文件序号播放功能
 //#define    ID3_TAG_EN						0
 #define    FF_FR_EN                         1			//是否允许快进快退功能
 #define    FF_FR_MUSIC                      1			//在快进快退时，是否需要听到声音
