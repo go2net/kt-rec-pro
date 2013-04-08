@@ -133,6 +133,10 @@ u8 read_eerom(u16 iic_addr);
 void write_eerom(u16 addr,u8 dat);
 void  eeprom_page_write_start(void);
 void  eeprom_page_write_stop(void);
+
+u8 read_music_info(u16 addr);
+void write_music_info(u16 addr,u8 dat);
+
 #endif
 
 

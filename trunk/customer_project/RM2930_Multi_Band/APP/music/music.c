@@ -39,7 +39,7 @@ u8 play_mode;							 ///<循环模式
 //u8 play_mode_rec;							 ///<循环模式
 u8 given_device;						 ///<需要查找的设备
 u16 given_file_number;					 ///<需要查找的文件号
-u16 break_point_filenum;				 ///<断点信息对应的文件号
+xd_u16 break_point_filenum;				 ///<断点信息对应的文件号
 u8 play_status;							///<播放状态
 u8 play_delay_time;
 
@@ -135,7 +135,9 @@ static void music_info_init(void)
     device_active = NO_DEVICE;
     if (given_device == NO_DEVICE)
     {
-        //given_device = read_info(MEM_ACTIVE_DEV);
+#if (BREAK_POINT_PLAY_EN == 1)    
+        given_device = read_info(MEM_ACTIVE_DEV);
+#endif
     }
 
     if ( (given_device & (~VIRTUAL_DEVICE)) == DEVICE_SDMMC0)
@@ -250,8 +252,7 @@ void backup_music_point_to_eeprom(void)
 #if (BREAK_POINT_PLAY_EN == 1)
 void backup_music_point(void)
 {
-
-    u16 reg_id=0;
+    xd_u16 reg_id=0;
     if ((play_status != MAD_PLAY) && (play_status != MAD_PAUSE))				//当前没有处于播放或暂停状态,不保存断点
     {
         return;
@@ -260,35 +261,35 @@ void backup_music_point(void)
     if ((device_active & (~VIRTUAL_DEVICE))== DEVICE_SDMMC0)
     {
 		reg_id =(u16)(dec_msg->id1);
-		write_info(MEM_SD_PLAYPOINT_ID1, (u8)(reg_id&(0x00FF)));
-		write_info(MEM_SD_PLAYPOINT_ID1+1, (u8)((reg_id>>8)&(0x00FF)));
+		write_music_info(MEM_SD_PLAYPOINT_ID1, (u8)(reg_id&(0x00FF)));
+		write_music_info(MEM_SD_PLAYPOINT_ID1+1, (u8)((reg_id>>8)&(0x00FF)));
 		reg_id =(u16)(dec_msg->id1>>16);
-		write_info(MEM_SD_PLAYPOINT_ID1+2, (u8)(reg_id&(0x00FF)));
-		write_info(MEM_SD_PLAYPOINT_ID1+3, (u8)((reg_id>>8)&(0x00FF)));
+		write_music_info(MEM_SD_PLAYPOINT_ID1+2, (u8)(reg_id&(0x00FF)));
+		write_music_info(MEM_SD_PLAYPOINT_ID1+3, (u8)((reg_id>>8)&(0x00FF)));
 
 		reg_id =(u16)(dec_msg->id2);
-		write_info(MEM_SD_PLAYPOINT_ID2, (u8)(reg_id&(0x00FF)));
-		write_info(MEM_SD_PLAYPOINT_ID2+1, (u8)((reg_id>>8)&(0x00FF)));
+		write_music_info(MEM_SD_PLAYPOINT_ID2, (u8)(reg_id&(0x00FF)));
+		write_music_info(MEM_SD_PLAYPOINT_ID2+1, (u8)((reg_id>>8)&(0x00FF)));
 		reg_id =(u16)(dec_msg->id2>>16);
-		write_info(MEM_SD_PLAYPOINT_ID2+2, (u8)(reg_id&(0x00FF)));
-		write_info(MEM_SD_PLAYPOINT_ID2+3, (u8)((reg_id>>8)&(0x00FF)));
+		write_music_info(MEM_SD_PLAYPOINT_ID2+2, (u8)(reg_id&(0x00FF)));
+		write_music_info(MEM_SD_PLAYPOINT_ID2+3, (u8)((reg_id>>8)&(0x00FF)));
 		
     }
     else if ((device_active  & (~VIRTUAL_DEVICE)) == DEVICE_UDISK)
     {
 		reg_id =(u16)(dec_msg->id1);
-		write_info(MEM_USB_PLAYPOINT_ID1, (u8)(reg_id&(0x00FF)));
-		write_info(MEM_USB_PLAYPOINT_ID1+1, (u8)((reg_id>>8)&(0x00FF)));
+		write_music_info(MEM_USB_PLAYPOINT_ID1, (u8)(reg_id&(0x00FF)));
+		write_music_info(MEM_USB_PLAYPOINT_ID1+1, (u8)((reg_id>>8)&(0x00FF)));
 		reg_id =(u16)(dec_msg->id1>>16);
-		write_info(MEM_USB_PLAYPOINT_ID1+2, (u8)(reg_id&(0x00FF)));
-		write_info(MEM_USB_PLAYPOINT_ID1+3, (u8)((reg_id>>8)&(0x00FF)));
+		write_music_info(MEM_USB_PLAYPOINT_ID1+2, (u8)(reg_id&(0x00FF)));
+		write_music_info(MEM_USB_PLAYPOINT_ID1+3, (u8)((reg_id>>8)&(0x00FF)));
     
 		reg_id =(u16)(dec_msg->id2);
-		write_info(MEM_USB_PLAYPOINT_ID2, (u8)(reg_id&(0x00FF)));
-		write_info(MEM_USB_PLAYPOINT_ID2+1, (u8)((reg_id>>8)&(0x00FF)));
+		write_music_info(MEM_USB_PLAYPOINT_ID2, (u8)(reg_id&(0x00FF)));
+		write_music_info(MEM_USB_PLAYPOINT_ID2+1, (u8)((reg_id>>8)&(0x00FF)));
 		reg_id =(u16)(dec_msg->id2>>16);
-		write_info(MEM_USB_PLAYPOINT_ID2+2, (u8)(reg_id&(0x00FF)));
-		write_info(MEM_USB_PLAYPOINT_ID2+3, (u8)((reg_id>>8)&(0x00FF)));
+		write_music_info(MEM_USB_PLAYPOINT_ID2+2, (u8)(reg_id&(0x00FF)));
+		write_music_info(MEM_USB_PLAYPOINT_ID2+3, (u8)((reg_id>>8)&(0x00FF)));
     }
 }
 #endif
@@ -319,19 +320,19 @@ void save_music_point(void)
 static bool load_music_point(void)
 {
     //get_rec_mem_info();
-	u16 reg_id=0;
+	xd_u16 reg_id=0;
     if ((device_active & (~VIRTUAL_DEVICE)) == DEVICE_SDMMC0)
     {
-		reg_id = read_info(MEM_SD_PLAYPOINT_ID1+3);
+		reg_id = read_music_info(MEM_SD_PLAYPOINT_ID1+3);
 		reg_id=reg_id<<8;
-		reg_id |= read_info(MEM_SD_PLAYPOINT_ID1+2); 
+		reg_id |= read_music_info(MEM_SD_PLAYPOINT_ID1+2); 
 	
 		dec_msg->id1=reg_id;
 		dec_msg->id1=(dec_msg->id1<<16);
 
-		reg_id = read_info(MEM_SD_PLAYPOINT_ID1+1);
+		reg_id = read_music_info(MEM_SD_PLAYPOINT_ID1+1);
 		reg_id=reg_id<<8;
-		reg_id |= read_info(MEM_SD_PLAYPOINT_ID1+0); 
+		reg_id |= read_music_info(MEM_SD_PLAYPOINT_ID1+0); 
 	
 		dec_msg->id1|=reg_id;
 
@@ -340,16 +341,16 @@ static bool load_music_point(void)
         {
             return 0;
         }
-		reg_id = read_info(MEM_SD_PLAYPOINT_ID2+3);
+		reg_id = read_music_info(MEM_SD_PLAYPOINT_ID2+3);
 		reg_id=reg_id<<8;
-		reg_id |= read_info(MEM_SD_PLAYPOINT_ID2+2); 
+		reg_id |= read_music_info(MEM_SD_PLAYPOINT_ID2+2); 
 	
 		dec_msg->id2=reg_id;
 		dec_msg->id2=(dec_msg->id2<<16);
 
-		reg_id = read_info(MEM_SD_PLAYPOINT_ID2+1);
+		reg_id = read_music_info(MEM_SD_PLAYPOINT_ID2+1);
 		reg_id=reg_id<<8;
-		reg_id |= read_info(MEM_SD_PLAYPOINT_ID2+0); 
+		reg_id |= read_music_info(MEM_SD_PLAYPOINT_ID2+0); 
 	
 		dec_msg->id2|=reg_id;
         //dec_msg->id1 = disk_mus_point[0 + encode_cnt].id1;
@@ -358,16 +359,16 @@ static bool load_music_point(void)
     else if ((device_active & (~VIRTUAL_DEVICE)) == DEVICE_UDISK)
     {
 
-		reg_id = read_info(MEM_USB_PLAYPOINT_ID1+3);
+		reg_id = read_music_info(MEM_USB_PLAYPOINT_ID1+3);
 		reg_id=reg_id<<8;
-		reg_id |= read_info(MEM_USB_PLAYPOINT_ID1+2); 
+		reg_id |= read_music_info(MEM_USB_PLAYPOINT_ID1+2); 
 	
 		dec_msg->id1=reg_id;
 		dec_msg->id1=(dec_msg->id1<<16);
 
-		reg_id = read_info(MEM_USB_PLAYPOINT_ID1+1);
+		reg_id = read_music_info(MEM_USB_PLAYPOINT_ID1+1);
 		reg_id=reg_id<<8;
-		reg_id |= read_info(MEM_USB_PLAYPOINT_ID1+0); 
+		reg_id |= read_music_info(MEM_USB_PLAYPOINT_ID1+0); 
 	
 		dec_msg->id1|=reg_id;
 
@@ -376,16 +377,16 @@ static bool load_music_point(void)
 	        {
 	            return 0;
 	        }
-		reg_id = read_info(MEM_USB_PLAYPOINT_ID2+3);
+		reg_id = read_music_info(MEM_USB_PLAYPOINT_ID2+3);
 		reg_id=reg_id<<8;
-		reg_id |= read_info(MEM_USB_PLAYPOINT_ID2+2); 
+		reg_id |= read_music_info(MEM_USB_PLAYPOINT_ID2+2); 
 	
 		dec_msg->id2=reg_id;
 		dec_msg->id2=(dec_msg->id2<<16);
 
-		reg_id = read_info(MEM_USB_PLAYPOINT_ID2+1);
+		reg_id = read_music_info(MEM_USB_PLAYPOINT_ID2+1);
 		reg_id=reg_id<<8;
-		reg_id |= read_info(MEM_USB_PLAYPOINT_ID2+0); 
+		reg_id |= read_music_info(MEM_USB_PLAYPOINT_ID2+0); 
 	
 		dec_msg->id2|=reg_id;    
         //if (!disk_mus_point[1 + encode_cnt].id1)
@@ -506,6 +507,9 @@ static u8 start_decode(void)
     mad_control(MAD_INIT, 0);
     mad_control(MAD_PLAY, 0);
     play_status = MAD_PLAY;
+
+    sys_mute_flag =0;	   	
+    dac_mute_control(0,1);
 	
 #ifdef PLAY_STATUS_LED_FUNC
 	set_play_status_led_spark(PLED_SPARK_NOR);

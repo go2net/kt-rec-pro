@@ -122,7 +122,7 @@ void backup_music_point(void);
 #endif
 
 #define FR_LIMIT_SIZE    50L					//快退支持的最大文件大小,以M为单位
-#define FF_FR_STEP			1					//快进快退的步长，每半秒内快进或快退的时间，以秒为单位
+#define FF_FR_STEP			2					//快进快退的步长，每半秒内快进或快退的时间，以秒为单位
 
 
 

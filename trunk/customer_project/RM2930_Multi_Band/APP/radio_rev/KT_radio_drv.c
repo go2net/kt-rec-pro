@@ -506,7 +506,6 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 #endif
 
 #ifndef RADIO_VAR_VOL_TUNE
-
 		KT_AMTune(900);
 		regx = KT_Bus_Read(0x0F);       
 		KT_Bus_Write(0x0F, regx & 0xFFE0);		//Write volume to 0
@@ -529,8 +528,10 @@ void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 		regx = KT_Bus_Read(0x0a);
 		KT_Bus_Write(0x0a, regx & 0x9FFF | 0x6000);        //LOUPEG=max
 		regx = KT_Bus_Read(0x1C);
-		KT_Bus_Write(0x1C,regx & 0xFFF8);                 //IFPGA = 11.8dB(max)
-		//  KT_Bus_Write(0x1C,regx & 0xFFF8 | 0x0003);      //IFPGA = 7.7dB
+		
+		//KT_Bus_Write(0x1c, ((regx & 0xFFF8) | 0x0001));  //IFPGA = 11.8dB(max)
+		//KT_Bus_Write(0x1C,regx & 0xFFF8);                 	//IFPGA = 11.8dB(max)
+		 KT_Bus_Write(0x1C,(regx & 0xFFF8) | 0x0003);      //IFPGA = 7.7dB
 		
 #ifdef RADIO_VAR_VOL_TUNE
 
@@ -750,7 +751,7 @@ void KT_FMTune(xd_u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and T
 	regx=KT_Bus_Read(0x03);
 	KT_Bus_Write(0x03, (regx & 0xF000) | 0x8000 | (Frequency / 5));	   		//set tune bit to 1
 
-	delay_10ms(3);
+	delay_10ms(5);
 
 	regx = KT_Bus_Read(0x0F);       
 	KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1D));		//Write volume to 0
@@ -1194,11 +1195,11 @@ void load_band_info(u8 cur_band)
 		
 		Current_Band.Band=SW_MODE; 
 
-		Current_Band.ValidStation_Step =SM_3KHz_STEP;	
+		Current_Band.ValidStation_Step =SM_1KHz_STEP;	
 		
-		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
+		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-2;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-6;
-		Current_Band.AFCTH =SW_AFCTH+15;
+		Current_Band.AFCTH =SW_AFCTH+16;
 		Current_Band.RSSI_TH=SW_RSSI_TH-4;
 
     }	
@@ -1206,10 +1207,10 @@ void load_band_info(u8 cur_band)
 		
 		Current_Band.Band=SW_MODE; 
 
-		Current_Band.ValidStation_Step =SM_3KHz_STEP;					
+		Current_Band.ValidStation_Step =SM_1KHz_STEP;					
 		Current_Band.AFCTH_Prev =SW_AFCTH_PREV-3;
 		Current_Band.AFCTH_Next =SW_AFCTH_NEXT-6;
-		Current_Band.AFCTH =SW_AFCTH+20;
+		Current_Band.AFCTH =SW_AFCTH+16;
 		Current_Band.RSSI_TH=SW_RSSI_TH-4;
     }		
     else if(cur_band==4){
@@ -1573,7 +1574,6 @@ xd_u8 KT_FMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 		if (!freq[i])
 		{
 		    KT_FMTune(nextfreq);
-		    delay_10ms(6);			
 			afc[i]=KT_FMGetAFC(nextfreq);
 #ifdef SEEK_WITH_SNR
 			snr[i]=KT_FMGetSNR();
@@ -1607,7 +1607,6 @@ xd_u8 KT_FMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 
 #ifdef SEEK_WITH_SNR
 		KT_FMTune(Frequency);
-		delay_10ms(6);
 		snr2=KT_FMGetSNR();
 #ifdef DEBUG_FM    	
 	printf(" ---->KT  FM _SNR =%d   \r\n ",(u16)snr2);
@@ -1712,34 +1711,6 @@ xd_u8 KT_AMSeekFromCurrentCh(xd_u16 seekDir, xd_u16 *Frequency)   //	seekDir: 0-
 /************************************************************************************/
 xd_u8 KT_AMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station //check AFC_DELTA only
 {
-#ifdef AMNEWSEEK
-	char afc;							//AFC value for previous, current and next channels
-	char rssi;
-	xd_u16 snr;
-
-    //Display_Channel_AM(iFrequency);			//display current channel frequency
-	KT_AMTune(Frequency);
-	afc = KT_AMGetAFC();
-	KT_AMReadRSSI( & rssi);
-	if (rssi > AM_RSSI_TH)
-	{	
-		if ((afc > -MW_AFCTH) && (afc < MW_AFCTH))
-		{
-//			delay_n10ms(50);
-			snr = KT_AMGetSNR();
-			if (snr >= AM_SNR_TH)
-				return(1);
-			else
-				return(0);
-		}
-		else
-			return(0);
-	}
-	else
-		return(0);
-#endif
-
-#if 1
 	char AM_afc[3];							//AFC value for previous, current and next channels
 	AM_afc[0] = 0;AM_afc[1] = 0;AM_afc[2] = 0;	//initialize
 
@@ -1750,7 +1721,7 @@ xd_u8 KT_AMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 #endif	
 
 	KT_AMTune( Frequency - Current_Band.ValidStation_Step );
-	delay_10ms(20);
+	delay_10ms(16);
 	
 	AM_afc[0] = KT_AMGetAFC();
 #ifdef DEBUG_AM    	
@@ -1761,7 +1732,7 @@ xd_u8 KT_AMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 	{
 
 		KT_AMTune( Frequency );
-		delay_10ms(22);				
+		delay_10ms(12);				
 		AM_afc[1] = KT_AMGetAFC();
 #ifdef DEBUG_AM    
 		printf(" ------>KT  AW_afc[ 11 ]=%d  \r\n ",(u16)AM_afc[1]);
@@ -1770,12 +1741,13 @@ xd_u8 KT_AMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 		if( (AM_afc[1] >= -Current_Band.AFCTH) && (AM_afc[1] <= Current_Band.AFCTH) )
 		{
 			KT_AMTune( Frequency + Current_Band.ValidStation_Step );
-			delay_10ms(22);
+			delay_10ms(12);
 			AM_afc[2] = KT_AMGetAFC();
 #ifdef DEBUG_AM    
 		printf(" ------->KT  AW_afc[ 22 ]=%d  \r\n ",(u16)AM_afc[2]);
 #endif
-			KT_AMTune( Frequency );
+			KT_AMTune( Frequency );			
+
 			if( AM_afc[2] > Current_Band.AFCTH_Next )
 			{
 				if ( (AM_afc[0] < AM_afc[1]) && (AM_afc[1] < AM_afc[2]) ){
@@ -1786,14 +1758,16 @@ xd_u8 KT_AMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 			}
 			else
 			{
-				KT_AMTune( Frequency + Current_Band.ValidStation_Step+AM_1KHz_STEP );
-				delay_10ms(10);
+				KT_AMTune((Frequency + Current_Band.ValidStation_Step+AM_1KHz_STEP));
+				delay_10ms(12);
+				
 				AM_afc[2] = KT_AMGetAFC();	
 #ifdef DEBUG_AM    
 		printf(" ------->KT  AW_afc[ 33 ]=%d  \r\n ",(u16)AM_afc[2]);
 #endif
+				KT_AMTune( Frequency );	
 				
-				if( AM_afc[2] >=0 )
+				if(AM_afc[2] >=0)
 				{
 					return(1);
 				}
@@ -1813,7 +1787,6 @@ xd_u8 KT_AMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 		KT_AMTune( Frequency );	
 		return(0); 
 	}
-#endif	
 }
 
 xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station //check AFC_DELTA only
@@ -1828,8 +1801,8 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 	printf(" KT  SW  %4u  \r\n ",Frequency);
 #endif	
 	
-	KT_AMTune( Frequency - Current_Band.ValidStation_Step );
-	delay_10ms(20);
+	KT_AMTune((Frequency - Current_Band.ValidStation_Step));
+	delay_10ms(8);
 	AM_afc[0] = KT_AMGetAFC();
 #ifdef DEBUG_SW    	
 	printf(" --->KT  SW_afc [ 00 ]=%d  \r\n ",(u16)AM_afc[0]);
@@ -1838,9 +1811,8 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 
 	if( (AM_afc[0] <= -Current_Band.AFCTH_Prev)/*||((last_rssi_reg-rssi_reg[0])<=-Current_Band.RSSI_TH )*/)
 	{
-
 		KT_AMTune(Frequency);
-		delay_10ms(16);		
+		delay_10ms(8);		
 		AM_afc[1] = KT_AMGetAFC();
 #ifdef DEBUG_SW    
 		printf(" ---->KT  SW_afc[ 11 ]=%d  \r\n ",(u16)AM_afc[1]);
@@ -1849,8 +1821,8 @@ xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station /
 
 		if( (AM_afc[1] >= -Current_Band.AFCTH) && (AM_afc[1] <= Current_Band.AFCTH) )
 		{
-			KT_AMTune( Frequency + Current_Band.ValidStation_Step );
-			delay_10ms(16);
+			KT_AMTune( (Frequency + Current_Band.ValidStation_Step));
+			delay_10ms(8);
 
 			AM_afc[2] = KT_AMGetAFC();
 #ifdef DEBUG_SW    
@@ -2025,19 +1997,19 @@ void KT_Mute_Ctrl(bool m_f)
 #ifdef AM_SOFTMUTE
 void KT_AM_SOFTMUTE(xd_u16 Frequency)
 {
-	xd_u16 reg4;
+	xd_u16 regx;
 
-	reg4 = KT_Bus_Read(0x04);
+	regx = KT_Bus_Read(0x04);
 
 	if(KT_AMValidStation(Frequency))
 	{
-//		KT_AM_SOFTMUTE_SETTING(2,3,2,5);					// SMUTEA=4,SMUTER=60ms,AM_SMTH=3,VOLUMET=5,SMMD=RSSI mode
-		KT_Bus_Write(0x04,reg4 | 0x4000);					// AM Softmute Disable
+		regx = KT_Bus_Read(0x0F);
+		KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x1F));		//Write volume to 0	
 	}
 	else
 	{
-		KT_AM_SOFTMUTE_SETTING(0,3,7,5);					// SMUTEA=16,SMUTER=60ms,AM_SMTH=8,VOLUMET=5,SMMD=RSSI mode
-		KT_Bus_Write(0x04,reg4 & 0xBFFF);					// AM Softmute Enable
+		regx = KT_Bus_Read(0x0F);
+		KT_Bus_Write(0x0f, ((regx & 0xFFE0)|0x18));		//Write volume to 0	
 	}
 //	reg4=KT_Bus_Read(0x04);									// AM Softmute Enable
 //	KT_Bus_Write(0x04,reg4 & 0xBFFF);
@@ -2055,13 +2027,7 @@ void KT_AM_SOFTMUTE(xd_u16 Frequency)
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-void KT_AM_SOFTMUTE_SETTING(xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 AM_SMTH, xd_u8 VOLUMET)
-{
-	xd_u16 reg2E;
-	reg2E = KT_Bus_Read(0x2E);
-	KT_Bus_Write(0x2E,(reg2E & 0x0007) | (SMUTEA<<14) | (SMUTER<<12) | (AM_SMTH<<9) | (VOLUMET<<4) | 0x0000 );
-//									SMUTEA=4,SMUTER=120ms,AM_SMTH=3,VOLUMET=1,SMMD=RSSI mode
-}
+
 #endif
 
 /*****************************************************************************/

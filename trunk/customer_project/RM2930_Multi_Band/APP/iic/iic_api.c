@@ -163,7 +163,25 @@ void write_info(u16 addr,u8 dat)
     write_eerom(addr,dat);
 #endif
 }
+u8 read_music_info(u16 addr)
+{
+#if (BREAK_POINT_PLAY_EN == 1)
+    return read_rtc_ram(addr);
+#else
 
+    return read_eerom(addr);
+#endif
+}
+void write_music_info(u16 addr,u8 dat)
+{
+#if (BREAK_POINT_PLAY_EN == 1)
+    //printf("write RAM addr:%u\n",(u16)addr);
+    write_rtc_ram(addr,dat);
+#else
+    //printf("write EEPROM addr:%u\n",(u16)addr);
+    write_eerom(addr,dat);
+#endif
+}
 /*----------------------------------------------------------------------------*/
 /**@brief   eeprom START
    @param   нч

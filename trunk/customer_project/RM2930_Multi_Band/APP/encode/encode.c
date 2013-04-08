@@ -46,8 +46,8 @@ u8 _code rec_aux_dirfile[2][12] =
 #else
 u8 _code rec_dirfile[2][12] = 
 {
-    {"JKT_REC     "},
-    {"REC00000MP3"},
+    {"USC_REC     "},
+    {"REC_0000MP3"},
 };
 #endif
 u8 _xdata rec_dirfilename[2][12];                   

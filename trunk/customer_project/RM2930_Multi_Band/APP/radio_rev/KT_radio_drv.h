@@ -136,10 +136,6 @@
 #define SW_AFCTH_NEXT 6		//Range from 128 to 127
 
 
-#define AM_SNR_TH			0x28
-#define AM_RSSI_TH			-66
-
-#define SW_RSSI_TH		6
 
 #define BAND_NUM	17
 
@@ -186,8 +182,14 @@ typedef struct
 #define SEEKUP 1
 #define SEEKDOWN 0
 
-#define TST_TH 0x2800
-#define FM_SNR_TH 0x30
+#define TST_TH 		0x2800
+
+#define FM_SNR_TH 	0x2A
+#define AM_SNR_TH	0x28
+#define AM_RSSI_TH	-66
+
+#define SW_RSSI_TH		6
+
 #define AM_TUNING_LIGHT_TH 30
 #define SEPARATION_POINT -91
 #define BLEND_POINT -97

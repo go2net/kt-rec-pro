@@ -43,8 +43,9 @@ extern bool sys_mute_flag;
 
 extern xd_u8 fast_step_cnt;
 xd_u16 freq_reg_stop=0;
+xd_u8 radio_scan_safeguard=0;
 
-u8 scan_mode=RADIO_SCAN_STOP;
+xd_u8 scan_mode=RADIO_SCAN_STOP;
 
 #if defined(FAST_STICK_TUNE_FUNC)
 bool freq_step_flag=0;
@@ -374,8 +375,8 @@ void radio_band_hdlr()
 #endif
 
 	KT_AMFMSetMode(radio_band.bCurBand);	
-	delay_10ms(10);
     	set_radio_freq(FM_CUR_FRE);
+	delay_10ms(10);
 	radio_all_scan_stop();
 }
 
@@ -402,7 +403,8 @@ bool radio_band_scan(u8 mode)
     input_number_en = 0;
     vol_change_en=0;	
     adkey_activated=1;	  
-	  
+    radio_scan_safeguard=3;
+		
     dac_mute_control(1,1);
 	
     if(mode == RADIO_SCAN_NEXT)
@@ -430,6 +432,7 @@ bool radio_band_scan(u8 mode)
 		
 	 if(radio_band.wFreq > radio_band.wFreqUpLimit){
 	     	radio_band.wFreq = radio_band.wFreqDownLimit;
+		radio_band.bTotalChannel=radio_band.bTotalChannel-1;						  				
 		restore_station_from_epprom((RADIO_STATION_CURR|1));
 		return 1;
 	 }
@@ -485,7 +488,7 @@ void restore_station_from_epprom(u8 radio_cmd)
 	if(radio_cmd ==RADIO_STATION_NEXT){
 		
 		radio_band.bCurChannel++;
-		if(radio_band.bCurChannel> radio_band.bTotalChannel)
+		if(radio_band.bCurChannel>radio_band.bTotalChannel)
 			radio_band.bCurChannel=1;
 	}
 	else if(radio_cmd ==RADIO_STATION_PREV){
@@ -516,44 +519,19 @@ void restore_station_from_epprom(u8 radio_cmd)
     	set_radio_freq(FM_CUR_FRE);
 	disp_port(MENU_RADIO_STATION_CH);
 	delay_10ms(50);
+	sys_mute_flag =0;	   	
     	dac_mute_control(0,1);
 }
 #endif
 void radio_all_scan_stop(void)
 {
+      radio_scan_safeguard=0;
 	input_number_en = 1;
-       vol_change_en=1;					
+       vol_change_en=1;	
+	sys_mute_flag =0;	   
 	dac_mute_control(0,1);		
        scan_mode = RADIO_SCAN_STOP;
     	set_radio_freq(FM_CUR_FRE);			
-}
-xd_u8 mcu_pll_clk=0;
-void radio_mcu_auto_freq_ctrl(void)
-{
-#if 0
-	if((adkey_activated)&&(scan_mode != RADIO_SCAN_STOP)){
-		flush_all_msg();
-		scan_mode = RADIO_SCAN_STOP;
-	}
-	
-	if((adkey_activated)||(scan_mode != RADIO_SCAN_STOP)){
-
-		 adkey_activated=0;	  
-		 
-		 if(mcu_pll_clk!=MAIN_CLK_12M){
-
-			//SYSTEM_CLK_DIV4();		 	
-	    		mcu_pll_clk=MAIN_CLK_12M;
-		 }
-	}
-	else{
-
-		 if(mcu_pll_clk!=MAIN_CLK_RC){
-	    		mcu_pll_clk=MAIN_CLK_RC;
-			
-		 }
-	}
-#endif	
 }
 /*----------------------------------------------------------------------------*/
 /**@brief  FM任务函数
@@ -562,6 +540,35 @@ void radio_mcu_auto_freq_ctrl(void)
    @note   void fm_rev( void )
 */
 /*----------------------------------------------------------------------------*/
+void radio_info_pre_init()
+{
+#ifdef RADIO_BAND_SEL_USE_MODE_KEY
+    	radio_band.bCurBand = FM_MODE;
+#else
+    	mem_radio_info(RADIO_READ_BAND,&radio_band.wFreq,0);
+#endif
+
+	if(radio_band.bCurBand>((sizeof(radio_freq_tab)/6)-1)){
+		
+		radio_band.bCurBand = FM_MODE;
+	}
+	radio_band.wFreqUpLimit = radio_freq_tab[radio_band.bCurBand].MAX_FREQ;
+	radio_band.wFreqDownLimit = radio_freq_tab[radio_band.bCurBand].MIN_FREQ;
+	radio_band.bTuneStep  = radio_freq_tab[radio_band.bCurBand].FREQ_STEP;
+	
+#ifdef SAVE_BAND_FREQ_INFO	
+    	mem_radio_info(RADIO_READ_FREQ,&radio_band.wFreq,0);
+
+	if (radio_band.wFreq > radio_band.wFreqUpLimit)
+        	radio_band.wFreq = radio_band.wFreqDownLimit;
+	
+    	if (radio_band.wFreq < radio_band.wFreqDownLimit)
+        	radio_band.wFreq =radio_band.wFreqDownLimit;
+#endif
+
+    disp_port(MENU_RADIO_MAIN);			
+
+}
 void radio_rev_init(void)
 {
     dac_mute_control(1,1);
@@ -579,27 +586,18 @@ void radio_rev_init(void)
     amux_dsp_eq();
     SYSTEM_CLK_DIV2();
 
-    if (KT_AMFMWakeUp()==0)
+    radio_info_pre_init();
+   // if (KT_AMFMWakeUp()==0)
     {
 #if 0
     	   work_mode = MUSIC_MODE;
 	   return;
 #endif
     }
-#ifdef RADIO_BAND_SEL_USE_MODE_KEY
-    radio_band.bCurBand = FM_MODE;
-#else
-    mem_radio_info(RADIO_READ_BAND,&radio_band.wFreq,0);
-#endif
-    radio_band_hdlr();
-    SYSTEM_CLK_DIV4();
-    mcu_pll_clk=MAIN_CLK_12M;
-    dac_mute_control(0,1);
-	
-    set_max_vol(MAX_ANOLOG_VOL,MAX_DIGITAL_VOL);///设置最大音量
 }
 void radio_rev_end_handlr(void)
 {
+    sys_mute_flag =0;
     main_vol_set(0, CHANGE_VOL_NO_MEM);
     KT_AMFMStandby();
     break_encode();
@@ -630,6 +628,7 @@ void radio_rev_hdlr( void )
 #endif	
 	P2IE_reg_OverWrite();	
 #endif	
+    	put_msg_lifo(MSG_RADIO_DEVICE_INIT);
     	while (1)
     	{
 
@@ -645,6 +644,19 @@ void radio_rev_hdlr( void )
 	        switch (key)
 	        {
 
+	        case MSG_RADIO_DEVICE_INIT:
+
+   			if(KT_AMFMWakeUp()){
+
+			    	radio_band_hdlr();
+			       SYSTEM_CLK_DIV4();
+			       set_max_vol(MAX_ANOLOG_VOL,MAX_DIGITAL_VOL);///设置最大音量		
+   			}
+			else{
+	            		put_msg_lifo(MSG_CHANGE_WORK_MODE);
+			}
+			flush_all_msg();
+			break;
 	        case MSG_CHANGE_RADIO_MODE:
     		    flush_all_msg();
             	     scan_mode = RADIO_SCAN_STOP;		
@@ -700,29 +712,51 @@ void radio_rev_hdlr( void )
             	       put_msg_fifo(MSG_RADIO_SCAN);
 			break;	
 			
-	        case SEMI_AUTO_SCAN_KEY_UP:			
+	        case SEMI_AUTO_SCAN_KEY_UP:
+#ifdef NEXT_PREV_KEY_NO_RESPONSE_SCAN_ALL
+			if(scan_mode != RADIO_SCAN_STOP){
+				break;
+			}
+#endif
             		scan_mode = RADIO_SCAN_NEXT;		
             		put_msg_lifo(MSG_RADIO_SCAN_ALL);
 			break;
-	        case SEMI_AUTO_SCAN_KEY_DOWN:			
+	        case SEMI_AUTO_SCAN_KEY_DOWN:	
+#ifdef NEXT_PREV_KEY_NO_RESPONSE_SCAN_ALL
+			if(scan_mode != RADIO_SCAN_STOP){
+				break;
+			}
+#endif				
             		scan_mode = RADIO_SCAN_PREV;	
             		put_msg_lifo(MSG_RADIO_SCAN_ALL);
 			break;	
 #endif
 	        case MSG_RADIO_NEXT_STATION:
+#ifdef NEXT_PREV_KEY_NO_RESPONSE_SCAN_ALL
+			if(scan_mode != RADIO_SCAN_STOP){
+				break;
+			}
+#else
     		    	flush_all_msg();
 			if(scan_mode != RADIO_SCAN_STOP){
 				radio_all_scan_stop();			  
 				break;
 			}
+#endif			
 			restore_station_from_epprom(RADIO_STATION_NEXT);
 			break;
 	        case MSG_RADIO_PREV_STATION:
+#ifdef NEXT_PREV_KEY_NO_RESPONSE_SCAN_ALL
+			if(scan_mode != RADIO_SCAN_STOP){
+				break;
+			}
+#else				
     		    	flush_all_msg();
 			if(scan_mode != RADIO_SCAN_STOP){
 				radio_all_scan_stop();			  
 				break;
-			}				
+			}	
+#endif			
 			restore_station_from_epprom(RADIO_STATION_PREV);
 		       break;	
 	        case MSG_RADIO_NEXT_STEP:
@@ -757,8 +791,18 @@ void radio_rev_hdlr( void )
 			     }
 		     }
 #endif		 
+			if(scan_mode != RADIO_SCAN_STOP){
+				
+				if(radio_scan_safeguard>0){
+					radio_scan_safeguard--;
+					if(radio_scan_safeguard==1){
+	            				put_msg_lifo(MSG_RADIO_SCAN);
+					}
+				}
+			}
 #if 1
-			sw_auto_gain_hdlr();
+			if(scan_mode == RADIO_SCAN_STOP)
+				sw_auto_gain_hdlr();
 #endif
 #ifndef LCD_BACK_LIGHT_DUMMY
 		     set_brightness_fade_out();
@@ -772,7 +816,7 @@ void radio_rev_hdlr( void )
 	            {
 	            		//if(radio_band.bCurBand>1){
 				//}
-				if((u8)(input_number)<=radio_band.bTotalChannel){
+				if((input_number)<=radio_band.bTotalChannel){
 					restore_station_from_epprom(RADIO_STATION_CURR|(u8)input_number);
 				}
 	            	 	else{
