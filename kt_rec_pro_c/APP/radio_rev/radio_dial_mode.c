@@ -52,7 +52,8 @@ extern xd_u16 KT_AMGetFreq(void);
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
 	875,		1080,	5,
-	520,		1630,	9,
+	//520,		1630,	10,
+	522,		1620,	9,
 	3200,	17900,	10,
 	17905,	25000,	10,
 };
@@ -60,21 +61,24 @@ FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
 	875,		1080,	5,
-	520,		1630,	9,
+	//520,		1630,	10,
+	522,		1620,	9,	
 	3200,	25000,	10,
 };
 #elif defined(SW_FULL_BAND_RANGE_END_AT_23MHZ)
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
 	875,		1080,	5,
-	520,		1630,	9,
+	//520,		1630,	10,
+	522,		1620,	9,	
 	3200,	23000,	10,
 };
 #else
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
 	875,		1080,	5,
-	520,		1630,	9,
+	//520,		1630,	10,
+	522,		1620,	9,		
 	3200,	5200,	1,
 	5210,	7300,	1,
 	7310,	9400,	1,
@@ -148,7 +152,7 @@ void radio_rev_hdlr( void )
 			
 	     freq_regx=get_radio_freq();
 #ifdef UART_ENABLE
-			printf_u16(freq_regx,'F');
+			//printf_u16(freq_regx,'F');
 #endif
 
 	     if(freq_regx!=frequency){
