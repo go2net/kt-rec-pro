@@ -23,7 +23,9 @@
 #include "disp.h"
 #include "rtc_mode.h"
 #include "lcdsegment.h"
-
+#if defined(BLUE_TOOTH_UART_FUNC)
+#include "blue_tooth.h"
+#endif
 extern u8 _idata clock_in;
 extern u8 given_device;
 extern u16 given_file_number;
@@ -334,6 +336,9 @@ void sys_init(void)
     //interrupt_init(15, rtcisr);
     interrupt_init(3, timer3isr);
     interrupt_init(0, timer0isr);
+#if defined(BLUE_TOOTH_UART_FUNC)
+    interrupt_init(7, uart_isr);
+#endif
     enable_interrupt();
    /// flashled(3);
 }
@@ -346,12 +351,15 @@ void idle_mode(void)
     //dac_out_select(DAC_MUSIC, 0);
     //clear_all_event();
     KT_AMFMStandby();
-
+    usb_suspend();
+	
     flush_all_msg();
     disp_port(MENU_POWER_OFF);
     input_number_en=0;
     vol_change_en=0;
-
+	
+    core_power_off();
+	
    while (1)
     {
         key = app_get_msg();
@@ -416,6 +424,12 @@ void main(void)
         case FM_RADIO_MODE:
             radio_hdlr();
             break;
+#endif
+
+#ifdef USE_BLUE_TOOTH_FUNC
+	case BLUE_TOOTH_MODE:
+		Blue_tooth_main();
+		break;
 #endif
         //case AUX_MODE:
             //aux_fun();

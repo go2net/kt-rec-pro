@@ -15,6 +15,32 @@
 #if 1//def _MY_IR_KEY_
 
 #if 1
+#if 1
+_code u8 My_IRTab[]=       /*user code is 0xFF*/
+{
+	My_IR_KEY_0,
+	My_IR_KEY_1,
+	My_IR_KEY_2,
+	My_IR_KEY_3,	
+	My_IR_KEY_4,	
+	My_IR_KEY_5,	
+	My_IR_KEY_6,	
+	My_IR_KEY_7,	
+	My_IR_KEY_8,	
+	My_IR_KEY_9,	
+	My_IR_KEY_100,
+	My_IR_KEY_MODE,
+	My_IR_KEY_PREV,
+	My_IR_KEY_PLAY_M,
+	My_IR_KEY_VOL_DN,
+	My_IR_KEY_EQ_UP,
+	My_IR_KEY_PLAY,	
+	My_IR_KEY_NEXT,
+	My_IR_KEY_VOL_UP,
+	My_IR_KEY_CHN_UP,
+	My_IR_KEY_CHN_DN,
+};
+#else
 _code MY_IR_KEY_STRUCT My_IRTab[]=       /*user code is 0xFF*/
 {
 	{My_IR_KEY_0,			IR_00},
@@ -39,6 +65,7 @@ _code MY_IR_KEY_STRUCT My_IRTab[]=       /*user code is 0xFF*/
 	{My_IR_KEY_CHN_UP,		IR_19},
 	{My_IR_KEY_CHN_DN,		IR_20},
 };
+#endif
 #else
 _code MY_IR_KEY_STRUCT My_IRTab[]=       /*user code is 0xFF*/
 {

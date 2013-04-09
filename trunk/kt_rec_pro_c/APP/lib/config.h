@@ -52,8 +52,9 @@ typedef enum
 }Sd_api_cmd;
 
 
-
-#ifdef RADIO_VAR_VOL_TUNE
+#ifdef MCU_ADC_VOL_TUNER
+#define FM_MODULE			3
+#elif defined(RADIO_VAR_VOL_TUNE)
 #define FM_MODULE			2
 #else
 #define FM_MODULE			1
@@ -70,6 +71,7 @@ enum
 #endif
 
     AUX_MODE,
+    BLUE_TOOTH_MODE,
 #if RTC_ENABLE
     RTC_MODE,
 #endif
