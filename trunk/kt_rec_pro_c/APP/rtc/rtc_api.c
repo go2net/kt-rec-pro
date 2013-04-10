@@ -31,7 +31,7 @@ extern u16 given_file_number;
 extern u8 given_file_method;
 extern u8 eq_mode;
 extern u8 play_mode;
-extern u8  main_menu, cur_menu, main_menu_conter;
+extern xd_u8  main_menu, cur_menu, main_menu_conter;
 //extern bool alm_on_flag;
 //extern void write_next_alm_sec(void);
 

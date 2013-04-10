@@ -99,7 +99,7 @@ void get_hex_data(u8 dat)
 }
 void printf_u16(u16 dat,u8 c)
 {
-uart_init();
+	uart_init();
 
     putchar(' ');
     get_hex_data(((u8 *)(&dat))[0] >> 4);

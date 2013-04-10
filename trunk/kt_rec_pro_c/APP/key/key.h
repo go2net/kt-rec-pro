@@ -37,7 +37,8 @@ enum
     MSG_8,
     MSG_9,
     MSG_DEVICE_REMOVED,
-    MSG_CHANGE_FM_MODE,
+    MSG_RADIO_DEVICE_INIT,
+    MSG_CHANGE_RADIO_MODE,
     MSG_CHANGE_WORK_MODE,
     MSG_MUSIC_NEW_DEVICE_IN,
     MSG_MUSIC_SELECT_NEW_DEVICE,
@@ -51,7 +52,9 @@ enum
     MSG_MUSIC_PLAY,
     MSG_MUSIC_PAUSE,
     MSG_MUSIC_FF,
+    MSG_MUSIC_FF_START,
     MSG_MUSIC_FR,
+    MSG_MUSIC_FR_START,
     MSG_MUSIC_FFR_DONE,
     MSG_MUSIC_NEXT_EQ,
     MSG_MUSIC_PREV_EQ,
@@ -65,6 +68,8 @@ enum
     MSG_NEXT_DEVICE,
     MSG_PREV_DEVICE,
 
+    MSG_RADIO_SCAN_ALL,
+    MSG_RADIO_SCAN_RUNNING,
     MSG_FM_NEXT_STEP,
     MSG_FM_PREV_STEP,
     MSG_FM_NEXT_STATION,
@@ -143,6 +148,13 @@ enum
     NO_MSG = 0xff,
 };
 
+enum {
+
+	UNPROTECT,
+	PROTECT,
+};
+
+
 void timer3Init_ir(void);
 void timer3isr(void);
 void key_init(void);
@@ -159,6 +171,7 @@ void alarm_tone(void);
 void bmt_hdlr(void);
 #endif
 void ad_mod_sel_hdlr();
+void set_adc_mode_protect(bool set_bit);
 
 void kv_init(void);
 #endif

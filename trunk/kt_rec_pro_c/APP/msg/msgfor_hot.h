@@ -19,8 +19,15 @@ enum {
 	DISP_RTC_SCEN,
 };
 
+enum {
+
+	DAC_UNMUTE,
+	DAC_MUTE,
+};
+
 #ifdef __C51__
 void ap_handle_hotkey(u8 msg);
+void sys_dac_mute(bool mutectrl);
 #endif
 
 #endif

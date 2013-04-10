@@ -24,20 +24,39 @@
 //#include "QN8035.h"
 //#include "KT_AMFMdrv.h"
 
-//void get_channl(u8 flag);
-//bool init_fm_rev(void);
-//bool set_fre(u8);
-//void fm_rev_powerdown(void);
-//void save_fre(u16 fre);
-//void fm_module_mute(u8 flag);
-//v/oid fm_set_ch(u8 db);
+bool radio_device_init(void);
+void radio_device_standby(void);
+
+void radio_info_pre_init(void);
+
+void set_radio_freq(u8 mode);
+bool radio_band_scan(u8 mode);
+void radio_all_scan_stop(void);
+void radio_band_switcher(void);
+void radio_freq_auto_align(void);
+
+
+
 #endif
+
+
+typedef struct _RADIO_MODE_VAR
+{
+    u16 wFreq;          ///<µ±Ç°Æµµã
+    u16 wFreqUpLimit;          
+    u16 wFreqDownLimit;          
+    u8  bCurBand; 	
+    u8  bTuneStep; 	
+    u8  bCurChannel; 	
+    u8  bTotalChannel;  
+}RADIO_MODE_VAR;
+
 
 typedef struct{
 	u16	MIN_FREQ;
 	u16 	MAX_FREQ;
-#if defined(RADIO_VAR_VOL_TUNE)||defined(MCU_ADC_VOL_TUNER)
-	u16 	FREQ_STEP;
+#if 1//defined(RADIO_VAR_VOL_TUNE)||defined(MCU_ADC_VOL_TUNER)
+	u8	FREQ_STEP;
 #endif	
 }FREQ_RAGE;
 
@@ -46,9 +65,25 @@ enum {
 	BAND_NEXT,
 	BAND_PREV,
 };
-#define FM_CUR_FRE          0
-#define FM_FRE_DEC          1
-#define FM_FRE_INC			2
+enum {
+
+	RADIO_SCAN_STOP,
+	RADIO_SCAN_NEXT,
+	RADIO_SCAN_PREV,
+	RADIO_SCAN_ALL,	
+};
+
+
+enum {
+	
+	 RADIO_CUR_FRE,
+	 RADIO_FRE_DEC,
+	 RADIO_FRE_INC,
+};
+
+
+#define SEMI_AUTO_SCAN_KEY_UP		MSG_MUSIC_FF_START
+#define SEMI_AUTO_SCAN_KEY_DOWN	MSG_MUSIC_FR_START
 
 
 #endif
