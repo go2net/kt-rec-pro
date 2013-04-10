@@ -721,7 +721,8 @@ void music_play(void)
 #ifdef PLAY_STATUS_LED_FUNC
 		 set_play_status_led_spark(PLED_ON);
 #endif	
-				
+    		sys_mute_flag =1;
+    		dac_mute_control(1,1);
             }
             else if (play_status == MAD_PAUSE)
             {
@@ -732,7 +733,9 @@ void music_play(void)
 #ifdef PLAY_STATUS_LED_FUNC
 		 set_play_status_led_spark(PLED_SPARK_NOR);
 #endif	
-				
+    		sys_mute_flag =0;
+    		dac_mute_control(0,1);
+
             }
             flush_all_msg();
             break;
