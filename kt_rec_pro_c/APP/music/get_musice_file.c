@@ -129,7 +129,11 @@ u8 fs_get_filenum(u8 playmode, u8 searchMode)
             given_file_number--;
             if (given_file_number == 0)
             {
+#ifdef SELECT_FILE_EXCAPE_TO_OTHER_DEVICE            
                 return GET_DEVICE_HEAD;
+#else
+                given_file_number = logic_fileTotal;
+#endif
             }
         }
         else					                //next file
@@ -139,7 +143,9 @@ u8 fs_get_filenum(u8 playmode, u8 searchMode)
             if (given_file_number > logic_fileTotal)
             {
                 given_file_number = 1;
+#ifdef SELECT_FILE_EXCAPE_TO_OTHER_DEVICE            				
                 return GET_DEVICE_END;
+#endif
             }
         }
         break;

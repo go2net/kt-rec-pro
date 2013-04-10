@@ -20,10 +20,12 @@
 #if defined(USE_LCD_DRV_HT1621)
 #include "lcd_ht1621_drv.h"
 #endif
+#include "radio_api.h"
 
 extern u8 work_mode;
 extern u8 _idata last_work_mode;
 extern DECODER_MSG _xdata *dec_msg;
+extern RADIO_MODE_VAR  radio_band;
 
 //extern bit kv_flag;
 //u16 _xdata kv_rate_tab[6] _at_ 0x011E;
@@ -50,8 +52,8 @@ u8 _xdata adc_vdd12;	  ///<参考电压VDD1.25v的采样值
 u8 _xdata adc_vddio;	  ///<VDDI0的采样值
 
 xd_u8 fm_sw_volt=0,sys_mod_volt=0,cur_work_mod=0;
-extern xd_u8 sw_fm_mod,cur_sw_fm_band;
-extern u8 cur_menu;
+extern xd_u8 sw_fm_mod;
+extern xd_u8 cur_menu;
 
 //bool key_voice_en;		  ///<按键音使能位
 //bool key_sel_table=0;
@@ -188,6 +190,9 @@ xd_u8 fast_step_cnt=0,reset_cnt=0,last_reg=0;
 #endif
 void Jog_stick_gpio_init()
 {
+#ifdef UART_ENABLE
+	return;
+#endif
     P2DIR &= ~(BIT(5)|(BIT(4)));    //P11, P12
     P2 |=(BIT(5)|(BIT(4)));
     P2PU	|= (BIT(5)|(BIT(4)));
@@ -226,6 +231,9 @@ void JogDetect(void)
 			if(reset_cnt>=12){
 				fast_step_cnt=0;
 			}
+			if(fast_step_cnt>11){
+				fast_step_cnt--;
+			}		
 		}
 	}
 #endif
@@ -248,8 +256,9 @@ void JogDetect(void)
 	                    JogBuf = 0;
 #ifdef FAST_STICK_TUNE_FUNC
 	                    	reset_cnt=0;
-				if(fast_step_cnt<6)
-				fast_step_cnt++;
+				if(fast_step_cnt<12){
+					fast_step_cnt++;
+				}
 #endif								
 	                }
 	                if (JogBuf == 0x01)
@@ -260,8 +269,9 @@ void JogDetect(void)
 	                    JogBuf = 0;
 #ifdef FAST_STICK_TUNE_FUNC
 	                    	reset_cnt=0;
-				if(fast_step_cnt<6)
-				fast_step_cnt++;
+				if(fast_step_cnt<12){
+					fast_step_cnt++;
+				}
 #endif							 
 	                }
 	            }
@@ -743,9 +753,14 @@ u8 adkey1(u16 key_value)
 
     return i;
 }
+bool ad_mode_switcher_protect=0;
+void set_adc_mode_protect(bool set_bit)
+{
+	ad_mode_switcher_protect= set_bit;
+}
 void ad_mod_sel_hdlr()
 {
-     
+     if(ad_mode_switcher_protect) return;
 #if 1		
 	if(sys_mod_volt>ADKEY2_RES_NOKEY){
 			
@@ -817,21 +832,21 @@ void ad_mod_sel_hdlr()
 	      	   	sw_fm_mod =FM_MODE ;
 
 
-		if(cur_sw_fm_band !=sw_fm_mod){
-			cur_sw_fm_band=sw_fm_mod;
+		if(radio_band.bCurBand !=sw_fm_mod){
+			radio_band.bCurBand=sw_fm_mod;
 #if 0
 			deg_str(" \r\n");
 			printf_u16(fm_sw_volt,'V');
-			printf_u16(cur_sw_fm_band,'F');
+			printf_u16(radio_band.bCurBand,'F');
 			printf_u16(sw_fm_mod,'F');
 			deg_str(" \r\n");
-		    deg_str("---->MSG_CHANGE_FM_MODE \n");
+		    deg_str("---->MSG_CHANGE_RADIO_MODE \n");
 #endif		
 			if(work_mode!=REC_MIC_MODE){
 #ifndef LCD_BACK_LIGHT_DUMMY								
 				set_brightness_all_on();
 #endif
-				put_msg_fifo(MSG_CHANGE_FM_MODE);
+				put_msg_fifo(MSG_CHANGE_RADIO_MODE);
 			}
 		}
 #endif		
@@ -1012,7 +1027,7 @@ void timer3isr(void)
 //    {
 //        goto _exit2_timer2;
 //    }
-    else if ((counter == 13)||(counter < 9)||(counter > 96))
+    else if ((counter == 13)||(counter < 9)||(counter > 110))
     {
         irda_state = 0;
     }

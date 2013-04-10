@@ -32,13 +32,11 @@
 #include "dac.h"
 #include "rtc_mode.h"
 #include "gpio_if.h"
+#include "radio_api.h"
 
-extern u8 LCDPAGE,LCDCOLUMN;
-#if FM_MODULE
-extern u16 frequency;
-//extern u8 fre_channel, total_channel;
-#endif
-extern u16 input_number;
+extern RADIO_MODE_VAR  radio_band;
+
+extern xd_u16 input_number;
 extern u8 _bdata device_online;
 
 extern u16 given_file_number;
@@ -48,40 +46,27 @@ extern u8 play_mode;
 extern u8 music_type;
 extern DECODER_MSG _xdata *dec_msg;
 extern FSAPIMSG _pdata fs_msg;
-extern _xdata u8 LCDBuff[8][132];
 extern u8 _xdata rtc_coordinate;
-extern u8 _xdata alm_coordinate;
-extern u8 _code rtc_coordinate_tab[][3];
-extern u8 _code alm_coordinate_tab[][3];
 extern u8 work_mode;
 extern u8 _idata last_work_mode;
-extern u8 _code alm_request_tab[][3];
-extern u8 _xdata alm_request_cnt;
 extern xd_u8 rtc_setting_flag;
 
-extern u8  main_menu;			///<记录各种不同模式下的主界面
-extern u8  cur_menu;        	///<当前界面
-extern u8  main_menu_conter;	///<离开主界面的时间
+extern xd_u8  main_menu;			///<记录各种不同模式下的主界面
+extern xd_u8  cur_menu;        	///<当前界面
+extern xd_u8  main_menu_conter;	///<离开主界面的时间
 extern bool flash_en;			///<显示闪动允许
 extern u8 bright_counter;		///<显示亮度调整延时
 extern u8 play_status;	
+extern xd_u8 sys_main_vol;	
+
 u8 led_flag;
 xd_u8  clock_points=0;
-extern xd_u8 cur_sw_fm_band;
 
 extern void clear_lcd_disp_buf(void);
+void disp_play_mode_icon(void);
 
 extern u16 lcd_buff[5];
 
-#if 0
-u8 _code play_mode_const [5][5] = 
-{
-    {" ALL"},
-    {" FOL"},
-    {" ONE"},
-    {" RAN"},
-};
-#endif
 /*----------------------------------------------------------------------------*/
 /**@brief  显示在线和闪烁活动设备符号
    @param  无
@@ -248,66 +233,23 @@ void disp_del_file(void)
 /*----------------------------------------------------------------------------*/
 
 
-void disp_fm_main(void)
+void disp_radio_main(void)
 {
 	u16 freq=0;
-#if defined(K129_MODULE0000000000)
-	if(cur_sw_fm_band==0){
-		freq =frequency;
+
+	if(radio_band.bCurBand==0){
+		freq =radio_band.wFreq/10;
 	 	lcd_disp_icon(FM_ICON);		
 	}
-	else if(cur_sw_fm_band==1){
-		freq =frequency;
-	 	lcd_disp_icon(AM_ICON);
-	}
-	else if(cur_sw_fm_band==2){
-		
-		freq =frequency;
-		lcd_buff[0]|=0x0080;
-		lcd_buff[1]|=0x0001;
-
-	}
-	else if(cur_sw_fm_band==3){
-
-
-		if(frequency<9999){
-			freq =frequency;
-			lcd_buff[0]|=0x0080;
-		}
-		else{
-			freq =frequency/100;
-			lcd_buff[0]|=0x0020;
-		}
-
-	 	lcd_disp_icon(SW_ICON);		
-		
-	}	
-    if(freq > 999)
-    {
-        printf_num(freq,0,4);
-    }	
-    else if(freq > 99)
-    {
-        printf_num(freq,1,3);
-    }
-    else{
-
-        printf_num(freq,2,2);
-    }
-#else	
-	if(cur_sw_fm_band==0){
-		freq =frequency;
-	 	lcd_disp_icon(FM_ICON);		
-	}
-	else if(cur_sw_fm_band==1){
-		freq =frequency;
+	else if(radio_band.bCurBand==1){
+		freq =radio_band.wFreq;
 	 	lcd_disp_icon(AM_ICON);
 	}
 	else{
-		freq =frequency/10;
+		freq =radio_band.wFreq/10;
 
 #if defined(DISP_SW2_ICON)
-		if(cur_sw_fm_band==3){
+		if(radio_band.bCurBand==3){
 	 		lcd_disp_icon(SW2_ICON);		
 		}
 		else
@@ -328,7 +270,6 @@ void disp_fm_main(void)
 
         printf_num(freq,2,2);
     }
-#endif
 
 #ifdef DISP_ACTIVE_REC_DEVICE_AT_RADIO_MODE
 	if((encode_status==RECODE_WORKING)||(encode_status==RECODE_PAUSE)){
@@ -412,6 +353,7 @@ void disp_input_number(u16 num)
 /*----------------------------------------------------------------------------*/
 void disp_main_vol(u8 vol)
 {
+    sys_main_vol = vol;
     led_putchar('U',1);
     printf_num(vol,2,2);
 
@@ -473,8 +415,7 @@ void disp_music_main(void)
 #if defined(DISP_PLAY_ICON)	
 	lcd_disp_icon(PLAY_ICON);
 #endif
-//	lcd_disp_icon(MP3_ICON);
-
+	disp_play_mode_icon();
 }
 /*----------------------------------------------------------------------------*/
 /**@brief  显示 EQ
@@ -496,6 +437,16 @@ void disp_eq(void)
 */
 /*----------------------------------------------------------------------------*/
 #ifdef PLAY_MODE_IN_USE
+void disp_play_mode_icon(void)
+{
+	if(play_mode==REPEAT_ALL){
+
+		lcd_disp_icon(REP_ALL_ICON);
+	}
+	else{
+		lcd_disp_icon(REP_1_ICON);
+	}
+}
 void disp_play_mode(void)
 {
 #if VIRTUAL_ENABLE	
@@ -519,7 +470,6 @@ void disp_play_mode(void)
 		    printf_str("ALL",1);
 #endif
 #endif
-		lcd_disp_icon(REP_ALL_ICON);
 	}
 	else if(play_mode==REPEAT_ONE){
 
@@ -530,10 +480,11 @@ void disp_play_mode(void)
 		    printf_str("ONE",1);
 #endif		
 #endif		
-		lcd_disp_icon(REP_1_ICON);
 	}
     }
 #endif
+
+	disp_play_mode_icon();
 }
 #endif
 /*----------------------------------------------------------------------------*/
@@ -593,13 +544,6 @@ extern RTC_TIME _xdata curr_time;
    @return  void
    @note  void disp_curr_time(void)
 
-   Coordinate：
-   	RTC_YEAR_COORDINATE		(RTC_END_COLUMN - 12*8)/2 + 0
-	RTC_MONTH_COORDINATE	(RTC_END_COLUMN - 12*8)/2 + 40
-	RTC_DAY_COORDINATE		(RTC_END_COLUMN - 12*8)/2 + 64
-	RTC_HOUR_COORDINATE		(RTC_END_COLUMN - 12*8)/2 + 0
-	RTC_MIN_COORDINATE		(RTC_END_COLUMN - 12*8)/2 + 24
-	RTC_SEC_COORDINATE		(RTC_END_COLUMN - 12*8)/2 + 48
 */
 /*----------------------------------------------------------------------------*/
 void disp_curr_time(void)
@@ -799,8 +743,8 @@ void disp_port(u8 menu)
             disp_input_number(input_number);
             break;
 
-        case MENU_FM_MAIN:
-            disp_fm_main();
+        case MENU_RADIO_MAIN:
+            disp_radio_main();
             break;
         
         case MENU_POWER_OFF:

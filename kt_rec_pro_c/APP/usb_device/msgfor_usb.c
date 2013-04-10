@@ -19,10 +19,10 @@
 #if USB_DEVICE_ENABLE
 
 extern u8 eq_mode;
-extern u8  main_menu_conter;
+extern xd_u8 main_menu_conter;
 extern bool input_number_en;
-extern u8 cur_menu;
-extern u8  main_menu;
+extern xd_u8 cur_menu;
+extern xd_u8  main_menu;
 extern u8 work_mode;
 //extern u8 _idata last_work_mode;
 extern bool pc_connect;

@@ -24,8 +24,8 @@
 
 
 extern bool input_number_en;
-extern u8 main_menu, cur_menu, main_menu_conter;
-extern u16 input_number;
+extern xd_u8 main_menu, cur_menu, main_menu_conter;
+extern xd_u16 input_number;
 extern u8 work_mode;
 extern u8 _idata last_work_mode;
 
@@ -37,7 +37,7 @@ extern  bool vol_change_en;
 
 xd_u16 freq_regx=0;
 
-xd_u8 sw_fm_mod=0,cur_sw_fm_band=0;
+xd_u8 sw_fm_mod=0;
 xd_u16 REG_MAX_FREQ=0,REG_MIN_FREQ=0,REG_STEP=0;
 	
 extern void KT_AMFMSetMode(xd_u8 AMFM_MODE);
@@ -94,7 +94,7 @@ FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 
 u16 get_radio_freq()
 {
-	if(cur_sw_fm_band==0){
+	if(radio_band.bCurBand==0){
 		return KT_FMGetFreq();
 	}
 	else{
@@ -104,20 +104,20 @@ u16 get_radio_freq()
 void radio_band_hdlr()
 {
 
-	REG_MAX_FREQ = radio_freq_tab[cur_sw_fm_band].MAX_FREQ;
-	REG_MIN_FREQ = radio_freq_tab[cur_sw_fm_band].MIN_FREQ;
+	REG_MAX_FREQ = radio_freq_tab[radio_band.bCurBand].MAX_FREQ;
+	REG_MIN_FREQ = radio_freq_tab[radio_band.bCurBand].MIN_FREQ;
 
-	REG_STEP=radio_freq_tab[cur_sw_fm_band].FREQ_STEP;
+	REG_STEP=radio_freq_tab[radio_band.bCurBand].FREQ_STEP;
 	
-	KT_AMFMSetMode(cur_sw_fm_band);	
+	KT_AMFMSetMode(radio_band.bCurBand);	
 
 	delay_10ms(10);
 	frequency=get_radio_freq();
 
-	disp_port(MENU_FM_MAIN);			
+	disp_port(MENU_RADIO_MAIN);			
 #ifdef UART_ENABLE
 	deg_str("radio_band_hdlr \n");
-	printf_u16(cur_sw_fm_band,'B');
+	printf_u16(radio_band.bCurBand,'B');
 	printf_u16(REG_MAX_FREQ,'-');
 	printf_u16(REG_MIN_FREQ,'-');
 #endif
@@ -139,7 +139,7 @@ void radio_rev_hdlr( void )
 
         switch (key)
         {
-        case MSG_CHANGE_FM_MODE:
+        case MSG_CHANGE_RADIO_MODE:
 	     radio_band_hdlr();
 	     break;        
         case MSG_CHANGE_WORK_MODE:
@@ -158,7 +158,7 @@ void radio_rev_hdlr( void )
 	     if(freq_regx!=frequency){
 
 			frequency=freq_regx;
-    			disp_port(MENU_FM_MAIN);			
+    			disp_port(MENU_RADIO_MAIN);			
 	     }
 	     break;		 
         case MSG_HALF_SECOND:
@@ -179,11 +179,11 @@ void radio_rev_hdlr( void )
 
             else if (cur_menu != main_menu)
             {
-    			disp_port(MENU_FM_MAIN);
+    			disp_port(MENU_RADIO_MAIN);
 	     }
 	     if(RECODE_WORKING == encode_status)
             {
-     			disp_port(MENU_FM_MAIN);
+     			disp_port(MENU_RADIO_MAIN);
 		   //disp_port(MENU_RECWORKING); 
             }				
             break;
@@ -222,7 +222,7 @@ void radio_hdlr(void)
 
     input_number_en = 1;
     vol_change_en=1;
-    main_menu = MENU_FM_MAIN;
+    main_menu = MENU_RADIO_MAIN;
     radio_band_hdlr();
 
     SYSTEM_CLK_DIV4();

@@ -123,17 +123,17 @@
 #define SW14_BOTTOM_LIMIT 24670
 
 
-#define FM_AFCTH_PREV 0			//Range from 0 to 127
-#define FM_AFCTH 15				//Range from 0 to 127
-#define FM_AFCTH_NEXT 0			//Range from 0 to 127
+#define FM_AFCTH_PREV 	6			//Range from 0 to 127
+#define FM_AFCTH 		22			//Range from 0 to 127
+#define FM_AFCTH_NEXT 	6			//Range from 0 to 127
 
-#define MW_AFCTH_PREV 6			//Range from 128 to 127
-#define MW_AFCTH 6				//Range from 128 to 127
-#define MW_AFCTH_NEXT 6			//Range from 128 to 127
+#define MW_AFCTH_PREV  6			//Range from 128 to 127
+#define MW_AFCTH 		12			//Range from 128 to 127
+#define MW_AFCTH_NEXT  6			//Range from 128 to 127
 
-#define SW_AFCTH_PREV 6		//Range from 128 to 127
-#define SW_AFCTH 16				//Range from 128 to 127
-#define SW_AFCTH_NEXT 6		//Range from 128 to 127
+#define SW_AFCTH_PREV 	6			//Range from 128 to 127
+#define SW_AFCTH 		16			//Range from 128 to 127
+#define SW_AFCTH_NEXT 	6			//Range from 128 to 127
 
 
 #define SW_RSSI_TH		6
@@ -166,10 +166,10 @@ typedef struct
 	u8 		Band;						// 频段
 	
 #ifdef USE_VALIDSTATION_CHECK
-	u8			Tune_Step;					//
-	u8			Min_Step;					//
-	u8			Max_Step;					//
-	u8			Seek_Step;					// SeekFromCurrentCh 函数用的频率步进
+	//u8			Tune_Step;					//
+	//u8			Min_Step;					//
+	//u8			Max_Step;					//
+	//u8			Seek_Step;					// SeekFromCurrentCh 函数用的频率步进
 	u8			ValidStation_Step;			// ValidStation 函数用的频率步进
 	u8			AFCTH_Prev;					//
 	u8			AFCTH;						//
@@ -184,50 +184,51 @@ typedef struct
 #define SEEKUP 1
 #define SEEKDOWN 0
 
-#define TST_TH 0x2800
-#define FM_SNR_TH 0x40
+#define TST_TH 			0x2800
+#define FM_SNR_TH 		0x30
+
 #define AM_TUNING_LIGHT_TH 30
 #define SEPARATION_POINT -91
 #define BLEND_POINT -97
 
-xd_u8 KT_AMFMPreInit(void);
-xd_u8  KT_AMFMInit(void);
+u8 KT_AMFMPreInit(void);
+u8  KT_AMFMInit(void);
 void KT_AMFMStandby(void);
-xd_u8 KT_AMFMWakeUp(void);
-xd_u8 KT_AMFMVolumeSet(xd_u8 vol);
+u8 KT_AMFMWakeUp(void);
+u8 KT_AMFMVolumeSet(u8 vol);
 void KT_AMFMMute(void);
-xd_u8 KT_AMFMUnMute(void);
-void KT_AMFMSetMode(xd_u8 AMFM_MODE);
-xd_u8 KT_AMSetBW(xd_u8 AMBW);
-void KT_AMTune(xd_u16 Frequency);
-void KT_FMTune(xd_u16 Frequency);
+u8 KT_AMFMUnMute(void);
+void KT_AMFMSetMode(u8 AMFM_MODE);
+u8 KT_AMSetBW(u8 AMBW);
+void KT_AMTune(u16 Frequency);
+void KT_FMTune(u16 Frequency);
 
-//xd_u8 KT_FMReadRSSI(char *RSSI);
-//xd_u8 KT_AMReadRSSI(char *RSSI);
+//u8 KT_FMReadRSSI(char *RSSI);
+//u8 KT_AMReadRSSI(char *RSSI);
 
-//char KT_FMGetAFC(xd_u16 Frequency);
+//char KT_FMGetAFC(u16 Frequency);
 //char KT_AMGetAFC(void);
 
-//xd_u8 KT_FMSeekFromCurrentCh(xd_u16 seekDir, xd_u16 *Frequency);
-//xd_u8 KT_FMValidStation(xd_u16 Frequency);
+//u8 KT_FMSeekFromCurrentCh(u16 seekDir, u16 *Frequency);
+//u8 KT_FMValidStation(u16 Frequency);
 
-//xd_u8 KT_AMSeekFromCurrentCh(xd_u16 seekDir, xd_u16 *Frequency);
-//xd_u8 KT_AMValidStation(xd_u16 Frequency);
-//xd_u8 KT_AMFMSeekFromCurrentCh(xd_u16 seekDir, xd_u16 *Frequency);   //     seekDir: 0-->seek down 1-->seek up
+//u8 KT_AMSeekFromCurrentCh(u16 seekDir, u16 *Frequency);
+//u8 KT_AMValidStation(u16 Frequency);
+//u8 KT_AMFMSeekFromCurrentCh(u16 seekDir, u16 *Frequency);   //     seekDir: 0-->seek down 1-->seek up
 
-//xd_u16 KT_AMGetFreq(void);
-//xd_u16 KT_FMGetFreq(void);
-//xd_u8 KT_FMGetST(void);
-//xd_u8 KT_FMGetSNR(void);
+//u16 KT_AMGetFreq(void);
+//u16 KT_FMGetFreq(void);
+//u8 KT_FMGetST(void);
+//u8 KT_FMGetSNR(void);
 
 #ifdef AM_SOFTMUTE
-void KT_AM_SOFTMUTE(xd_u16 Frequency);
-void KT_AM_SOFTMUTE_SETTING(xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 AM_SMTH, xd_u8 VOLUMET);
+void KT_AM_SOFTMUTE(u16 Frequency);
+void KT_AM_SOFTMUTE_SETTING(u8 SMUTEA, u8 SMUTER, u8 AM_SMTH, u8 VOLUMET);
 #endif
 
 #ifdef FM_SOFTMUTE
-void KT_FM_SOFTMUTE(xd_u16 Frequency);
-void KT_FM_SOFTMUTE_SETTING(xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 FM_SMTH, xd_u8 VOLUMET);
+void KT_FM_SOFTMUTE(u16 Frequency);
+void KT_FM_SOFTMUTE_SETTING(u8 SMUTEA, u8 SMUTER, u8 FM_SMTH, u8 VOLUMET);
 #endif
 
 bit KT_AM_TUNING_LIGHT(void);
@@ -237,11 +238,11 @@ bit KT_FM_ST_Indicator(void);
 #ifdef AM_SOFTMUTE_AFCMODE
 //void KT_AM_SOFTMUTE_AFCMODE(bit Valid);
 void KT_AM_SOFTMUTE_AFCMODE(void);
-void KT_AM_AFC_VolumeSet(xd_u8 afc);			//Input: 0~128
+void KT_AM_AFC_VolumeSet(u8 afc);			//Input: 0~128
 #endif
 
-void KT_Bus_Write(xd_u8 Register_Address, xd_u16 Word_Data);
-xd_u16 KT_Bus_Read(xd_u8 Register_Address);
+void KT_Bus_Write(u8 Register_Address, u16 Word_Data);
+u16 KT_Bus_Read(u8 Register_Address);
 
 #endif
 

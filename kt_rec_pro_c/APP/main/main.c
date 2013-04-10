@@ -34,6 +34,7 @@ extern bool sys_pwr_flag,sys_mute_flag;
 
 extern u8 eq_mode;
 extern u8 play_mode;
+extern xd_u8 sys_main_vol;
 
 extern bool pc_connect, udisk_connect, sdmmc_connect;
 extern u8 _xdata win_buffer[];
@@ -47,9 +48,9 @@ u8 work_mode;						///<工作模式变量
 //bool aux_online;					///<AUX在线状态
 //bool kv_flag;						///<按键音的发送标记
 
-u8  main_menu;						///<记录各种不同模式下的主界面
-u8  cur_menu;        				///<当前界面
-u8  main_menu_conter;				///<离开主界面的时间
+xd_u8  main_menu;						///<记录各种不同模式下的主界面
+xd_u8  cur_menu;        				///<当前界面
+xd_u8  main_menu_conter;				///<离开主界面的时间
 //bool flash_en;						///<显示闪动允许
 //u8 bright_counter;
 extern bool iic_busy; ///<iic繁忙标记
@@ -245,22 +246,17 @@ static void sys_info_init(void)
 {
  //   u8 tmp;
 
-#if 0
-#if (DEFAULT_VOL>0)
-	tmp = MAX_MAIN_VOL;
-#else
-    tmp = read_info(MEM_VOL);
+#if 1
 
-    if ((tmp > MAX_MAIN_VOL) || (tmp == 0))              //每次开机时，不要超过最大音量的一半，以免开机音量过大
+    sys_main_vol = read_info(MEM_VOL);
+
+    if ((sys_main_vol > MAX_MAIN_VOL) || (sys_main_vol == 0))              //每次开机时，不要超过最大音量的一半，以免开机音量过大
     {
-       // tmp = MAX_MAIN_VOL/2;
-        tmp = 20;
+        sys_main_vol = 22;
     }
 #endif
-#endif
-	//tmp = MAX_MAIN_VOL;
 
-    dac_init(MAX_MAIN_VOL);
+    dac_init(sys_main_vol);
     delay_10ms(50);										//等待,检测USB,SD在线状态
     //init_rec_name();
     //restore_music_point();
@@ -422,7 +418,7 @@ void main(void)
 
 #if FM_MODULE                     
         case FM_RADIO_MODE:
-            radio_hdlr();
+            radio_main_hdlr();
             break;
 #endif
 

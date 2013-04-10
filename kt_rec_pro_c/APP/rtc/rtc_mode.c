@@ -13,8 +13,8 @@
 //extern u8 _xdata all_alm_sw;
 
 extern bool input_number_en;
-extern  u8 main_menu, cur_menu, main_menu_conter;
-extern u16 input_number;
+extern  xd_u8 main_menu, cur_menu, main_menu_conter;
+extern xd_u16 input_number;
 extern u8 work_mode;
 //extern u8 _idata last_work_mode;
 //extern u8 _xdata alm_cnt;

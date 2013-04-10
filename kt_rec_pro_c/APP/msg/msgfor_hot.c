@@ -21,7 +21,7 @@ extern void disk_remove_deal_for_music(void);
 extern void rtc_disp_hdlr(void);
 
 #ifdef AUTO_PLAY_RADIO_REC_FILE
-extern bool auto_play_radio_rec;
+bool auto_play_radio_rec=0;
 #endif
 
 extern u8 work_mode;
@@ -35,9 +35,9 @@ extern u16 given_file_number;
 extern u8 given_file_method;
 extern u8 eq_mode;
 extern u8 play_mode;
-extern u8  main_menu, cur_menu, main_menu_conter;
+extern xd_u8  main_menu, cur_menu, main_menu_conter;
 extern u8 device_active;
-u16 input_number;	 ///<输入的数字的实际值
+xd_u16 input_number;	 ///<输入的数字的实际值
 bool vol_change_en;	 ///<音量修改允许位
 extern u8 device_online;
 bool rec_device_out;
@@ -52,10 +52,16 @@ bool rec_pley_bp_flag=0;
 xd_u16 last_play_index=0;
 #endif
 
+xd_u8 sys_main_vol=0;
 
 xd_u8 rtc_set_cnt=0;
 xd_u8 disp_scenario=DISP_NORMAL;
 xd_u8 rtc_setting_flag=0;
+void sys_dac_mute(bool mutectrl)
+{
+	sys_mute_flag=mutectrl;
+	dac_mute_control(sys_mute_flag,1);
+}
 /*----------------------------------------------------------------------------*/
 /**@brief   几个任务都会用到的消息集中处理的函数
    @param   key： 需要处理的消息
@@ -73,7 +79,7 @@ void ap_handle_hotkey(u8 key)
 		if(sys_pwr_flag==0){
 			sys_pwr_flag =1;
 			sys_mute_flag =1;
-        		dac_mute_control(sys_mute_flag,1);					//调节音量时，自动UNMUTE
+        		sys_dac_mute(DAC_MUTE);
 			work_mode =  IDLE_MODE;		
 	        	put_msg_lifo(MSG_CHANGE_WORK_MODE);
 		}
@@ -93,7 +99,7 @@ void ap_handle_hotkey(u8 key)
 
 		sys_mute_flag=~sys_mute_flag;
 		//dac_mute_toggle();		
-        	dac_mute_control(sys_mute_flag,1);					//调节音量时，自动UNMUTE
+        	sys_dac_mute(sys_mute_flag);					//调节音量时，自动UNMUTE
 
 		break;		    
 #if 1   
@@ -172,8 +178,8 @@ void ap_handle_hotkey(u8 key)
 		rec_device_out = 1;
 		api_stop_encode();
             	if(work_mode == FM_RADIO_MODE){
-			main_menu = MENU_FM_MAIN;//
-			disp_port(MENU_FM_MAIN);
+			main_menu = MENU_RADIO_MAIN;//
+			disp_port(MENU_RADIO_MAIN);
             		break;
 	     	}
         } 
@@ -294,18 +300,18 @@ void ap_handle_hotkey(u8 key)
     case MSG_VOL_UP:
         if(vol_change_en==0)
             break;
-        dac_mute_control(0,1);					//调节音量时，自动UNMUTE
-        main_vol_set(0, CHANGE_VOL_INC);
-        //write_info(MEM_VOL, main_vol_set(0, CHANGE_VOL_INC));
+        sys_dac_mute(DAC_UNMUTE);					//调节音量时，自动UNMUTE
+        //main_vol_set(0, CHANGE_VOL_INC);
+        write_info(MEM_VOL, main_vol_set(0, CHANGE_VOL_INC));
         disp_port(MENU_MAIN_VOL);
         break;
 
     case MSG_VOL_DOWN:
         if(vol_change_en==0)
             break;
-        dac_mute_control(0,1);					//调节音量时，自动UNMUTE
-        main_vol_set(0, CHANGE_VOL_DEC);
-        //write_info(MEM_VOL, main_vol_set(0, CHANGE_VOL_DEC));
+        sys_dac_mute(DAC_UNMUTE);					//调节音量时，自动UNMUTE
+        //main_vol_set(0, CHANGE_VOL_DEC);
+        write_info(MEM_VOL, main_vol_set(0, CHANGE_VOL_DEC));
         disp_port(MENU_MAIN_VOL);
         break;
 #endif
@@ -500,7 +506,7 @@ void ap_handle_hotkey(u8 key)
 	
 #if FM_MODULE 
 		if(FM_RADIO_MODE == work_mode)
-			disp_port(MENU_FM_MAIN);
+			disp_port(MENU_RADIO_MAIN);
 		else
 #endif
 		{
@@ -515,7 +521,7 @@ void ap_handle_hotkey(u8 key)
 	
 #if FM_MODULE 
 		if(FM_RADIO_MODE == work_mode)
-			disp_port(MENU_FM_MAIN);
+			disp_port(MENU_RADIO_MAIN);
 		else
 #endif
 		{
@@ -562,8 +568,10 @@ void ap_handle_hotkey(u8 key)
 
     case MSG_MUSIC_SELECT_NEW_DEVICE:					        //重新选择设备
 
+	 set_adc_mode_protect(PROTECT);
         res = find_device(given_device);
-
+	 set_adc_mode_protect(UNPROTECT);
+	 
         if ((res == DEV_INIT_ERR) ||
                 (res == NO_DEFINE_DEV))                    //指定的设备不在线，或初始化失败
         {

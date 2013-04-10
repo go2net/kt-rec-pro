@@ -12,6 +12,8 @@
 #endif
 
 #define MUTE_CTRL_LEVEL_NORMAL
+//#define USE_VALIDSTATION_CHECK
+//#define SEMI_AUTO_SCAN_FUNC
 //#define REC_PLAY_KEY_BREAK_POINT
 //#define DEFAULT_VOL		0
 
@@ -28,7 +30,7 @@
 //#define JK_HT_998_MODULE
 //#define JK_SZ_S900_MODULE
 //#define JK_JF_933_MODULE
-//#define JK_JF_689_MODULE
+#define JK_JF_689_MODULE
 //#define JK_JF_168_MODULE
 //#define JK_DH_105_104_MODULE
 //#define JK_DH_289_MODULE
@@ -246,6 +248,11 @@
 #define IIC_GPIO_USE_P00_P01
 
 #define DISP_PAU_STR
+
+#define USE_DEVICE_SELECT_KEY
+//#define USE_VALIDSTATION_CHECK
+//#define SEMI_AUTO_SCAN_FUNC
+
 
 #define REPEAT_MODE_USE_ONE_ALL
 

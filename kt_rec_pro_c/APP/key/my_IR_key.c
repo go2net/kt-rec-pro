@@ -13,7 +13,6 @@
 #include "my_IR_key.h"
 
 #if 1//def _MY_IR_KEY_
-
 #if 1
 #if 1
 _code u8 My_IRTab[]=       /*user code is 0xFF*/

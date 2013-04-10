@@ -21,13 +21,15 @@
 #include "rtc_api.h"
 
 extern bool input_number_en;
-extern u8  main_menu, cur_menu, main_menu_conter;
-extern u16 input_number;
+extern xd_u8  main_menu, cur_menu, main_menu_conter;
+extern xd_u16 input_number;
 extern u8 device_active;
 
 extern u8 work_mode;
 extern u8 bright_counter;
 extern bool vol_change_en;
+extern xd_u8 sys_main_vol;
+
 
 #ifdef AUTO_PLAY_RADIO_REC_FILE
 extern bool auto_play_radio_rec;
@@ -78,6 +80,7 @@ extern void rtc_disp_hdlr(void);
 extern u8 ldoin_voltage(void);
 extern u8 _xdata adc_vdd12;
 extern u8 _xdata adc_vddio;
+extern  bool sys_mute_flag;
 
 extern u16 _idata adkey_value1;
 extern u16 _idata user_code;
@@ -134,7 +137,9 @@ static void music_info_init(void)
     device_active = NO_DEVICE;
     if (given_device == NO_DEVICE)
     {
+#if 1//(BREAK_POINT_PLAY_EN == 1)    
         given_device = read_info(MEM_ACTIVE_DEV);
+#endif
     }
 
     if ( (given_device & (~VIRTUAL_DEVICE)) == DEVICE_SDMMC0)
@@ -442,10 +447,6 @@ void restore_music_point(void)
 /*----------------------------------------------------------------------------*/
 void stop_decode(void)
 {
-    	//if(MAD_STOP == play_status)
-    	//{
-        	//return;
-    	//}
     	play_status = MAD_STOP;						   
 	if(MUSIC_MODE == work_mode)
 	{
@@ -549,6 +550,8 @@ void music_play(void)
     u8 res;
 
     clear_all_event();
+
+    main_vol_set(sys_main_vol, CHANGE_VOL_MEM);
 
 #ifdef AUTO_PLAY_RADIO_REC_FILE
 	if(auto_play_radio_rec){
@@ -813,6 +816,7 @@ void music_play(void)
 #endif
 
 #if (FF_FR_EN == 1)
+	 case MSG_MUSIC_FR_START:
         case MSG_MUSIC_FR:											//启动快退
 
 	     if((disp_scenario == DISP_RTC_SCEN)&&(rtc_setting_flag!=0)){
@@ -830,7 +834,7 @@ void music_play(void)
             }
 
             break;
-
+	 case MSG_MUSIC_FF_START:
         case MSG_MUSIC_FF:											//启动快进
 
 	     if((disp_scenario == DISP_RTC_SCEN)&&(rtc_setting_flag!=0)){
@@ -852,7 +856,7 @@ void music_play(void)
                 flush_all_msg();
 #if (FF_FR_MUSIC == 0)
 
-                dac_mute_control(0);
+                dac_mute_control(0,1);
 #endif
                 play_status = MAD_PLAY;
             }
@@ -862,7 +866,7 @@ void music_play(void)
                 flush_all_msg();
 #if (FF_FR_MUSIC == 0)
 
-                dac_mute_control(0);
+                dac_mute_control(0,1);
 #endif
                 play_status = MAD_PLAY;
             }
@@ -891,7 +895,7 @@ void music_play(void)
             if (play_status == MAD_FF)
             {
 #if (FF_FR_MUSIC == 0)							//如果需要在快进快退过程中听到声音，可以不加此行
-                dac_mute_control(1);
+                dac_mute_control(1,1);
 #endif
                 mad_control(MAD_FF, FF_FR_STEP);
                 mad_control(MAD_FAST_FORWARD, 0);
@@ -904,7 +908,7 @@ void music_play(void)
             else if (play_status == MAD_FR)
             {
 #if (FF_FR_MUSIC == 0)
-                dac_mute_control(1);							//如果需要在快进快退过程中听到声音，可以不加此行
+                dac_mute_control(1,1);							//如果需要在快进快退过程中听到声音，可以不加此行
 #endif
                 mad_control(MAD_FR, FF_FR_STEP);
                 mad_control(MAD_FAST_REVERASE, 0);
@@ -949,11 +953,12 @@ void music_play(void)
 ////////////////////////////////////////////////////////////
 //显示界面的切换
 
-		if(disp_scenario == DISP_RTC_SCEN){
+		if((disp_scenario == DISP_RTC_SCEN)&&(cur_menu == MENU_RTC)){
 
 			rtc_disp_hdlr();
 			break;
 		}	
+		
 		if (main_menu_conter < (SUB_MENU_TIME - 3))
 		{
                 	main_menu_conter++;
@@ -969,6 +974,10 @@ void music_play(void)
                 	{
                     		cur_menu = MENU_RECWORKING;
                 	}
+			else if(disp_scenario == DISP_RTC_SCEN){
+
+				disp_port(MENU_RTC);
+			}
                 	else
                 	{
                     		cur_menu = main_menu;
@@ -976,12 +985,6 @@ void music_play(void)
 
                 	disp_port(cur_menu);
             }
-/////////////////////////////////////////////////////////////
-//调整显示亮度
-/////////////////////////////////////////////////////////////
-//更新实时界面
-//            disp_port(MENU_HALF_SEC_REFRESH);
-			 // disp_port(main_menu);
             break;
 
 #if 0//RTC_ENABLE
@@ -1011,11 +1014,11 @@ void music_play(void)
             put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
 
             break;
-#if 0
+#ifdef USE_DEVICE_SELECT_KEY
         case MSG_DEVICE_MODE:		    //设备切换
-            set_brightness_all_on();
+           // set_brightness_all_on();
             device_check();
-    		backup_music_point();
+    	     backup_music_point();
             given_device = DEVICE_AUTO_NEXT; //0x81;//自动获取下一个设备。
             given_file_method = PLAY_BREAK_POINT;
             put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
@@ -1069,8 +1072,8 @@ void music_decode(void)
 
     input_number_en = 1;									//允许数字输入功能
     vol_change_en=1;
-    //enable_key_tone_flag(1);
-    //flashled(3);
+    sys_mute_flag=0;
+
      play_mode = REPEAT_ALL;
      disp_scenario = DISP_NORMAL;
 

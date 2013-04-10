@@ -17,8 +17,8 @@ u16 _xdata logic_fileTotal;		///<逻辑文件总数
 
 extern u8 work_mode;
 extern bool input_number_en;
-extern u8  main_menu, cur_menu, main_menu_conter ;
-extern u16 input_number;
+extern xd_u8  main_menu, cur_menu, main_menu_conter ;
+extern xd_u16 input_number;
 extern u8 work_mode;
 extern u8 _idata last_work_mode;
 extern u8 _xdata decode_buffer[];
@@ -46,8 +46,8 @@ u8 _code rec_aux_dirfile[2][12] =
 #else
 u8 _code rec_dirfile[2][12] = 
 {
-    {"JKT_REC     "},
-    {"REC00000MP3"},
+    {"USC_REC     "},
+    {"REC_0000MP3"},
 };
 #endif
 u8 _xdata rec_dirfilename[2][12];                   
