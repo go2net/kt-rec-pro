@@ -32,6 +32,7 @@ extern u16 input_number;
 extern u8 work_mode;
 extern u8 _idata last_work_mode;
 extern bool adkey_activated;
+extern bool aux_plugged_in;
 
 RADIO_MODE_VAR _data radio_band;
 
@@ -86,10 +87,10 @@ FREQ_RAGE _code radio_freq_tab[]=
 #elif defined(SW_TWO_BAND_RANGE_FOR_CUSTOMER_JIN_FENG)
 FREQ_RAGE _code radio_freq_tab[]=
 {
-	8750,	10800,10,
-	522,		1622,  9,
-	3500,	7800,   5,
-	8000,	20500, 5,
+	8750,	10800,	10,	50,
+	522,		1622,  	9,	50,
+	3500,	7800,  	5,	100,
+	8000,	21800, 	5,	100,
 };
 #elif defined(SW_FULL_BAND_RANGE)
 FREQ_RAGE _code radio_freq_tab[]=
@@ -176,16 +177,15 @@ void mem_radio_info(RADIO_STORE_CMD SAVE_CMD,u16 *RADIO_DATA,u8 RADIO_VALID_CH)
 	 	break;	 	
 	 case RADIO_READ_STATION:
 		if(radio_band.bCurBand<=MW_MODE ){	 	
-			read_reg = read_info(MEM_RADIO_STATION_BASE+(radio_band.bCurBand*MEM_RADIO_STATION_MAX)+RADIO_VALID_CH);	
+			read_reg = read_info(MEM_RADIO_STATION_BASE+(radio_band.bCurBand*radio_band.bTotalMAX)+RADIO_VALID_CH);	
 		}
 		else{			
-			read_reg = read_info(MEM_RADIO_STATION_BASE+(radio_band.bCurBand*MEM_RADIO_STATION_MAX*2)+RADIO_VALID_CH*2);	
+			read_reg = read_info(MEM_RADIO_STATION_BASE+(radio_band.bCurBand*radio_band.bTotalMAX*2)+RADIO_VALID_CH*2);	
 			read_reg=read_reg<<8;
-			read_reg |= read_info(MEM_RADIO_STATION_BASE+(radio_band.bCurBand*MEM_RADIO_STATION_MAX*2)+RADIO_VALID_CH*2+1);	
+			read_reg |= read_info(MEM_RADIO_STATION_BASE+(radio_band.bCurBand*radio_band.bTotalMAX*2)+RADIO_VALID_CH*2+1);	
 		}
 		*RADIO_DATA = (read_reg*radio_band.bTuneStep)+radio_band.wFreqDownLimit;
 	 	break;	 	
-
 
 //4 SAVE HANDLR		
 	 case RADIO_SAVE_FREQ:
@@ -209,13 +209,13 @@ void mem_radio_info(RADIO_STORE_CMD SAVE_CMD,u16 *RADIO_DATA,u8 RADIO_VALID_CH)
 	 case RADIO_SAVE_STATION:
 		save_reg =(*RADIO_DATA - radio_band.wFreqDownLimit)/radio_band.bTuneStep;
 		if(radio_band.bCurBand<=MW_MODE ){	 	
-			write_info((MEM_RADIO_STATION_BASE+(radio_band.bCurBand*MEM_RADIO_STATION_MAX)+RADIO_VALID_CH), (u8)save_reg);
+			write_info((MEM_RADIO_STATION_BASE+(radio_band.bCurBand*radio_band.bTotalMAX)+RADIO_VALID_CH), (u8)save_reg);
 		}	
 		else{
 			temp_reg =(u8)((save_reg&0xFF00)>>8);
-			write_info((MEM_RADIO_STATION_BASE+(radio_band.bCurBand*MEM_RADIO_STATION_MAX*2)+RADIO_VALID_CH*2), temp_reg);
+			write_info((MEM_RADIO_STATION_BASE+(radio_band.bCurBand*radio_band.bTotalMAX*2)+RADIO_VALID_CH*2), temp_reg);
 			temp_reg =(u8)((save_reg&0x00FF));
-			write_info((MEM_RADIO_STATION_BASE+(radio_band.bCurBand*MEM_RADIO_STATION_MAX*2)+RADIO_VALID_CH*2+1), temp_reg);
+			write_info((MEM_RADIO_STATION_BASE+(radio_band.bCurBand*radio_band.bTotalMAX*2)+RADIO_VALID_CH*2+1), temp_reg);
 		}
 		
 	 	break;	 	
@@ -351,6 +351,7 @@ void radio_band_hdlr()
 	radio_band.wFreqUpLimit = radio_freq_tab[radio_band.bCurBand].MAX_FREQ;
 	radio_band.wFreqDownLimit = radio_freq_tab[radio_band.bCurBand].MIN_FREQ;
 	radio_band.bTuneStep  = radio_freq_tab[radio_band.bCurBand].FREQ_STEP;
+	radio_band.bTotalMAX  = radio_freq_tab[radio_band.bCurBand].SCAN_MAX;
 	
 #ifdef SAVE_BAND_FREQ_INFO	
     	mem_radio_info(RADIO_SAVE_BAND,&radio_band.wFreq,0);
@@ -461,7 +462,7 @@ bool radio_band_scan(u8 mode)
 			dac_mute_control(0,1);
 			disp_port(MENU_RADIO_SCAN_STATION);
 			delay_10ms(100);
-			if(radio_band.bTotalChannel ==MEM_RADIO_STATION_MAX){
+			if(radio_band.bTotalChannel ==radio_band.bTotalMAX){
 				restore_station_from_epprom((RADIO_STATION_CURR|1));		
 			}
 			else{
@@ -548,6 +549,10 @@ void radio_info_pre_init()
     	mem_radio_info(RADIO_READ_BAND,&radio_band.wFreq,0);
 #endif
 
+	if(aux_plugged_in){
+		aux_plugged_in =0;
+    		mem_radio_info(RADIO_READ_BAND,&radio_band.wFreq,0);
+	}
 	if(radio_band.bCurBand>((sizeof(radio_freq_tab)/6)-1)){
 		
 		radio_band.bCurBand = FM_MODE;
@@ -655,6 +660,9 @@ void radio_rev_hdlr( void )
 			else{
 	            		put_msg_lifo(MSG_CHANGE_WORK_MODE);
 			}
+
+    			set_radio_freq(FM_CUR_FRE);
+			
 			flush_all_msg();
 			break;
 	        case MSG_CHANGE_RADIO_MODE:

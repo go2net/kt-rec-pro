@@ -39,6 +39,7 @@ typedef struct{
 #if 1//defined(RADIO_VAR_VOL_TUNE)||defined(MCU_ADC_VOL_TUNER)
 	u16 	FREQ_STEP;
 #endif	
+	u8 	SCAN_MAX;
 }FREQ_RAGE;
 
 enum {

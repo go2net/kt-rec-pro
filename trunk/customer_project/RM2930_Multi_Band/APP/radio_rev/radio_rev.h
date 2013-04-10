@@ -52,6 +52,7 @@ typedef struct _RADIO_MODE_VAR
     u8  bTuneStep; 	
     u8  bCurChannel; 	
     u8  bTotalChannel;  
+    u8  bTotalMAX;  
 }RADIO_MODE_VAR;
 
 typedef enum {

@@ -60,6 +60,7 @@ extern RADIO_MODE_VAR _data radio_band;
 xd_u8 rtc_set_cnt=0;
 xd_u8 disp_scenario=DISP_NORMAL;
 xd_u8 rtc_setting_flag=0;
+bool aux_plugged_in=0;
 /*----------------------------------------------------------------------------*/
 /**@brief   几个任务都会用到的消息集中处理的函数
    @param   key： 需要处理的消息
@@ -104,6 +105,18 @@ void ap_handle_hotkey(u8 key)
     case MSG_NEXT_WORKMODE:
 
 #if 1
+		aux_plugged_in =0;
+
+		if(work_mode == MUSIC_MODE){
+
+			if((given_device ==DEVICE_UDISK)&&((device_online&DEVICE_SDMMC0)>0)){
+
+				given_device = DEVICE_SDMMC0;
+        			given_file_method = PLAY_BREAK_POINT;      
+       			put_msg_lifo(MSG_MUSIC_NEW_DEVICE_IN);
+				break;
+			}
+		}
 		if(work_mode==FM_RADIO_MODE){
 
 		       radio_band.bCurBand++;
@@ -137,7 +150,6 @@ void ap_handle_hotkey(u8 key)
 				work_mode=FM_RADIO_MODE;
 				break;
 			}
-
 		}
 		put_msg_lifo(MSG_CHANGE_WORK_MODE);
 
@@ -222,6 +234,8 @@ void ap_handle_hotkey(u8 key)
 #ifdef AUX_DETECT_FUNC
     case MSG_AUX_OUT :
 	if(work_mode == AUX_MODE){
+
+		aux_plugged_in=1;		
 		work_mode = last_work_mode;
         	put_msg_lifo(MSG_CHANGE_WORK_MODE);
 	}

@@ -14,6 +14,7 @@
 #include "uart.h"
 #if (monitor != NO_DISP)
 
+#include "KT_radio_drv.h"
 
 #include "lcd.h"
 #include "led.h"
@@ -309,15 +310,25 @@ void disp_radio_main(void)
 /*----------------------------------------------------------------------------*/
 void disp_radio_station_ch(void)
 {
-    led_putchar('P',1);
-    printf_num(radio_band.bCurChannel,2,2);
-
+	if(radio_band.bCurChannel<100){
+    		led_putchar('P',1);
+    		printf_num(radio_band.bCurChannel,2,2);
+	}
+	else{
+    		led_putchar('P',0);
+    		printf_num(radio_band.bCurChannel,1,3);
+	}
 }
 void disp_radio_station(void)
 {
-    led_putchar('P',1);
-    printf_num(radio_band.bTotalChannel,2,2);
-
+	if(radio_band.bCurChannel<100){
+    		led_putchar('P',1);
+    		printf_num(radio_band.bTotalChannel,2,2);
+	}
+	else{
+    		led_putchar('P',0);
+    		printf_num(radio_band.bTotalChannel,1,3);
+	}
 }
 /*----------------------------------------------------------------------------*/
 /**@brief  ÏÔÊ¾ÊäÈëÊý×Ö
@@ -329,13 +340,12 @@ void disp_radio_station(void)
 void disp_input_number(u16 num)
 {
     if(num>999)
-    		printf_num(num,0,4);     
+    	printf_num(num,0,4);     
     else if(num>99)
-	    	printf_num(num,1,3);     
+	printf_num(num,1,3);     
     else
-	    	printf_num(num,2,2);     
-
-  //  disp_device();
+	printf_num(num,2,2);     
+    disp_device();
 }
 
 /*----------------------------------------------------------------------------*/
@@ -375,6 +385,9 @@ void disp_music_play_time(void)
     //printf(" ---->  disp_music_play_time  =%4u  \r\n ",(u16)dec_msg->play_time);
 #if 1//((monitor == DISP_LED5X7)||(LCD_DISP == monitor))
     printf_num(sec,2,2);
+    printf_num(min,0,2);
+
+#else
     if(min>59)
     	printf_num(min,0,2);
     else
@@ -647,6 +660,13 @@ void update_disp_icon()
 			lcd_disp_icon(MUTE_ICON);
 	    }
     }	
+
+#if 0
+	if(work_mode ==MUSIC_MODE){
+		disp_device();
+	}
+#endif	
+
 #ifdef DISP_REC_ICON_WHEN_RECORDING
 	if(encode_status==RECODE_WORKING)
 	{
