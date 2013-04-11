@@ -91,12 +91,7 @@ FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 
 bool radio_device_init(void)
 {
-	if(KT_AMFMWakeUp()==0){
-
-		return 0;
-	}
-
-	return 1;
+	return (KT_AMFMWakeUp());
 }
 void radio_device_standby(void)
 {
@@ -113,14 +108,12 @@ void radio_info_pre_init(void)
 	radio_band.wFreqDownLimit = radio_freq_tab[radio_band.bCurBand].MIN_FREQ;
 	radio_band.bTuneStep  = radio_freq_tab[radio_band.bCurBand].FREQ_STEP;
 	
-#ifdef SAVE_BAND_FREQ_INFO	
 
 	if (radio_band.wFreq > radio_band.wFreqUpLimit)
         	radio_band.wFreq = radio_band.wFreqDownLimit;
 	
     	if (radio_band.wFreq < radio_band.wFreqDownLimit)
         	radio_band.wFreq =radio_band.wFreqDownLimit;
-#endif
 
     disp_port(MENU_RADIO_MAIN);			
     scan_mode = RADIO_SCAN_STOP;

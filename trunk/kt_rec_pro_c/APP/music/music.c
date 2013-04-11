@@ -1018,7 +1018,9 @@ void music_play(void)
         case MSG_DEVICE_MODE:		    //设备切换
            // set_brightness_all_on();
             device_check();
+#if (BREAK_POINT_PLAY_EN == 1)		   
     	     backup_music_point();
+#endif
             given_device = DEVICE_AUTO_NEXT; //0x81;//自动获取下一个设备。
             given_file_method = PLAY_BREAK_POINT;
             put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);

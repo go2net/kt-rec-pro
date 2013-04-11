@@ -191,17 +191,17 @@ typedef struct
 #define SEPARATION_POINT -91
 #define BLEND_POINT -97
 
-u8 KT_AMFMPreInit(void);
-u8  KT_AMFMInit(void);
+xd_u8 KT_AMFMPreInit(void);
+xd_u8  KT_AMFMInit(void);
 void KT_AMFMStandby(void);
-u8 KT_AMFMWakeUp(void);
-u8 KT_AMFMVolumeSet(u8 vol);
+xd_u8 KT_AMFMWakeUp(void);
+xd_u8 KT_AMFMVolumeSet(xd_u8 vol);
 void KT_AMFMMute(void);
-u8 KT_AMFMUnMute(void);
-void KT_AMFMSetMode(u8 AMFM_MODE);
-u8 KT_AMSetBW(u8 AMBW);
-void KT_AMTune(u16 Frequency);
-void KT_FMTune(u16 Frequency);
+xd_u8 KT_AMFMUnMute(void);
+void KT_AMFMSetMode(xd_u8 AMFM_MODE);
+xd_u8 KT_AMSetBW(xd_u8 AMBW);
+void KT_AMTune(xd_u16 Frequency);
+void KT_FMTune(xd_u16 Frequency);
 
 //u8 KT_FMReadRSSI(char *RSSI);
 //u8 KT_AMReadRSSI(char *RSSI);
@@ -241,8 +241,8 @@ void KT_AM_SOFTMUTE_AFCMODE(void);
 void KT_AM_AFC_VolumeSet(u8 afc);			//Input: 0~128
 #endif
 
-void KT_Bus_Write(u8 Register_Address, u16 Word_Data);
-u16 KT_Bus_Read(u8 Register_Address);
+void KT_Bus_Write(xd_u8 Register_Address, xd_u16 Word_Data);
+xd_u16 KT_Bus_Read(xd_u8 Register_Address);
 
 #endif
 
