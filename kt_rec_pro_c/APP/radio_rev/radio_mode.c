@@ -78,6 +78,7 @@ void radio_rev_hdlr( void )
 			delay_10ms(20);
 	     }
 	     else{
+		   radio_band_switcher();		 	
 		   set_radio_freq(RADIO_CUR_FRE);
     		   SYSTEM_CLK_DIV4();
 		   sys_dac_mute(DAC_UNMUTE);

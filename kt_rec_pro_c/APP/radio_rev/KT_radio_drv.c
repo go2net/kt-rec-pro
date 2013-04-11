@@ -65,12 +65,12 @@
 Str_Band  KT_DEV;
 #ifdef USE_VALIDSTATION_CHECK
 char mem_afc[3];			  //Rememberred afc values for previous, current and next stations
-u16 mem_freq[3];			  //Rememberred channel frequencies for previous, current and next stations
+xd_u16 mem_freq[3];			  //Rememberred channel frequencies for previous, current and next stations
 #endif
 
-//u8 mem_vol;				  //Rememberred volume before mute
+//xd_u8 mem_vol;				  //Rememberred volume before mute
 #ifdef SEEK_WITH_SNR
-u8 mem_snr[3];			  //Rememberred SNR values for previous, current and next stations
+xd_u8 mem_snr[3];			  //Rememberred SNR values for previous, current and next stations
 #endif
 
 char rssi_value;
@@ -84,12 +84,12 @@ char rssi_value;
 #define I2C
 #ifdef I2C
 
-void KT_Bus_Write(u8 Register_Address, u16 Word_Data)
+void KT_Bus_Write(xd_u8 Register_Address, xd_u16 Word_Data)
 {
 #if 1
-	u8 write_reg_data[2]={0};
-	write_reg_data[1]=(u8)(Word_Data&0x00FF);
-	write_reg_data[0]=(u8)(Word_Data>>8);
+	xd_u8 write_reg_data[2]={0};
+	write_reg_data[1]=(xd_u8)(Word_Data&0x00FF);
+	write_reg_data[0]=(xd_u8)(Word_Data>>8);
     	EA =0;
 	iic_write((KTAMw_address),Register_Address,&write_reg_data,2);
     	EA =1;
@@ -119,9 +119,9 @@ void KT_Bus_Write(u8 Register_Address, u16 Word_Data)
 //------------------------------------------------------------------------------------
 //I2C Read Byte
 //------------------------------------------------------------------------------------
-u16 KT_Bus_Read(u8 Register_Address)
+xd_u16 KT_Bus_Read(xd_u8 Register_Address)
 {
-	u16 readdata;
+	xd_u16 readdata;
 #if 1
     EA =0;
     iic_start();                    //I2C启动
@@ -190,12 +190,12 @@ u16 KT_Bus_Read(u8 Register_Address)
 /*版    本：V4.0																	*/
 /************************************************************************************/
 #if 0
-u8 KT_AMFMPreInit(void)			  
+xd_u8 KT_AMFMPreInit(void)			  
 //This function should be called just after power-up (within 50ms) when crystal is used
 //or before reference clock is applied
 {
-	u16 regx;
-	u8 i;
+	xd_u16 regx;
+	xd_u8 i;
 
 	deg_str("KT_AMFMPreInit  \n");
 
@@ -204,7 +204,7 @@ u8 KT_AMFMPreInit(void)
 		delay_10ms(10);
 		regx = KT_Bus_Read(0x01);           			//Read Manufactory ID 
 
-		printf_u16(regx,'D');
+		printf_xd_u16(regx,'D');
 
 	  	if (regx != 0x4B54) continue;
 		break;
@@ -275,18 +275,18 @@ u8 KT_AMFMPreInit(void)
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u8 KT_pre_init(void)
+xd_u8 KT_pre_init(void)
 {	
-	u16 regx;
+	xd_u16 regx;
 
 #if 1
 	regx = KT_Bus_Read(0x01);           			//Read Manufactory ID 
-	//printf_u16(regx,'D');
+	//printf_xd_u16(regx,'D');
 	
 	if (regx != 0x4B54) return 0;
 	
 	//regx=KT_Bus_Read(0x12);						//Read power-up indicator
-	//printf_u16(regx,'S');
+	//printf_xd_u16(regx,'S');
 
 	//if ((regx&0x8000)!=0x8000) return 0;
 	//deg_str("KT_AMFMInit  \n");
@@ -303,13 +303,13 @@ u8 KT_pre_init(void)
 #endif
 	return 1;
 }
-u8 KT_AMFMInit(void)                            //0->Fail 1->Success
+xd_u8 KT_AMFMInit(void)                            //0->Fail 1->Success
 {
-	u16 regx;
+	xd_u16 regx;
 #if 0
 
 	regx = KT_Bus_Read(0x01);           			//Read Manufactory ID 
-	//printf_u16(regx,'D');
+	//printf_xd_u16(regx,'D');
 	if (regx != 0x4B54) return 0;
 	
 #ifdef X32P768K
@@ -409,16 +409,16 @@ u8 KT_AMFMInit(void)                            //0->Fail 1->Success
 /*函数说明：																 */
 /*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
 /*全局变量：AMBW															 */
-/*输    入：u8 AMBW														 */
+/*输    入：xd_u8 AMBW														 */
 /*返    回：设置完毕：1														 */
 /*设 计 者：Yangpei					时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
 #if 0
-u8 KT_AMSetBW(u8 AMBW)				//AM Channel Bandwidth=2 for 2KHz; 4 for 4KHz; 6 for 6KHz
+xd_u8 KT_AMSetBW(xd_u8 AMBW)				//AM Channel Bandwidth=2 for 2KHz; 4 for 4KHz; 6 for 6KHz
 {
-	u16 regx;
+	xd_u16 regx;
 	regx = KT_Bus_Read(0x22);
 	if (AMBW == 2) KT_Bus_Write(0x22, (regx & 0xFF3F) | 0x0000);
 	else if (AMBW == 4) KT_Bus_Write(0x22, (regx & 0xFF3F) | 0x0080);
@@ -439,9 +439,9 @@ u8 KT_AMSetBW(u8 AMBW)				//AM Channel Bandwidth=2 for 2KHz; 4 for 4KHz; 6 for 6
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-void KT_AMFMSetMode(u8 AMFM_MODE)
+void KT_AMFMSetMode(xd_u8 AMFM_MODE)
 {
-	u16 regx;
+	xd_u16 regx;
 	
 	//KT_AMFMInit();
 	
@@ -579,7 +579,7 @@ void KT_AMFMSetMode(u8 AMFM_MODE)
 /*函数说明：																 */
 /*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
 /*全局变量：无																 */
-/*输    入：u8 AMBW														 */
+/*输    入：xd_u8 AMBW														 */
 /*返    回：设置完毕：1														 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
@@ -587,7 +587,7 @@ void KT_AMFMSetMode(u8 AMFM_MODE)
 /************************************************************************************/
 void  KT_AMFMStandby(void)					//0->Fail 1->Success
 {
-	u16 regx;
+	xd_u16 regx;
 	regx = KT_Bus_Read(0x0F);
 	KT_Bus_Write(0x0F, regx | 0x1000);		//Write Standby bit to 1
 	delay_10ms(20);
@@ -599,15 +599,15 @@ void  KT_AMFMStandby(void)					//0->Fail 1->Success
 /*函数说明：																 */
 /*调用函数：KT_Bus_Read()、KT_Bus_Write()、KT_AMFMInit()					 */
 /*全局变量：无																 */
-/*输    入：u8 AMBW														 */
+/*输    入：xd_u8 AMBW														 */
 /*返    回：KT_AMFMInit()													 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u8 KT_AMFMWakeUp(void) //0->Fail 1->Success
+xd_u8 KT_AMFMWakeUp(void) //0->Fail 1->Success
 {
-	u16 regx;
+	xd_u16 regx;
 	regx = KT_Bus_Read(0x0F);
 	KT_Bus_Write(0x0F, regx & 0xEFFF);			//Write Standby bit to 0
 	delay_10ms(50);	
@@ -629,15 +629,15 @@ u8 KT_AMFMWakeUp(void) //0->Fail 1->Success
 /*函数说明：vol=0~31														 */
 /*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
 /*全局变量：mem_vol															 */
-/*输    入：u8 vol														 */
+/*输    入：xd_u8 vol														 */
 /*返    回：设置完毕：1														 */
 /*设 计 者：Yangpei					时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u8 KT_AMFMVolumeSet(u8 vol)			//Input: 0~31
+xd_u8 KT_AMFMVolumeSet(xd_u8 vol)			//Input: 0~31
 {
-	u16 regx;
+	xd_u16 regx;
 	mem_vol = vol;
 	regx = KT_Bus_Read(0x0F); 
 	KT_Bus_Write(0x0F, regx & 0xFFE0 | mem_vol);
@@ -659,7 +659,7 @@ u8 KT_AMFMVolumeSet(u8 vol)			//Input: 0~31
 #if 1
 void KT_AMFMMute(void)
 {
-	u16 regx;
+	xd_u16 regx;
 	regx = KT_Bus_Read(0x0F);       
 	KT_Bus_Write(0x0F, regx & 0xFFE0 );		//Write volume to 0
 }
@@ -678,9 +678,9 @@ void KT_AMFMMute(void)
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u8 KT_AMFMUnMute(void)
+xd_u8 KT_AMFMUnMute(void)
 {
-	u16 regx;
+	xd_u16 regx;
 	regx=KT_Bus_Read(0x0f); 
 	KT_Bus_Write(0x0f, regx & 0xFFE0 | mem_vol); 
 	return(1);
@@ -694,7 +694,7 @@ u8 KT_AMFMUnMute(void)
 /*函数说明：在Tune台的过程中静音											 */
 /*调用函数：KT_AMFMMute()、KT_Bus_Read()、KT_Bus_Write()、delay_10ms()		 */
 /*全局变量：无																 */
-/*输    入：u16 Frequency													 */
+/*输    入：xd_u16 Frequency													 */
 /*返    回：设置完毕：1														 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
@@ -702,9 +702,9 @@ u8 KT_AMFMUnMute(void)
 /************************************************************************************/
 #ifndef RADIO_VAR_VOL_TUNE
 
-void KT_FMTune(u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and Tune to Frequency
+void KT_FMTune(xd_u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and Tune to Frequency
 {
-	u16 regx;
+	xd_u16 regx;
 
 	//KT_AMFMMute();
 	//regx = KT_Bus_Read(0x0F);       
@@ -768,15 +768,15 @@ void KT_FMTune(u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and Tune
 /*函数说明：在Tune台的过程中静音											 */
 /*调用函数：KT_AMFMMute()、KT_Bus_Read()、KT_Bus_Write()、delay_10ms()		 */
 /*全局变量：无																 */
-/*输    入：u16 Frequency													 */
+/*输    入：xd_u16 Frequency													 */
 /*返    回：设置完毕：1														 */
 /*设 计 者：Kanghekai				时间：2011-04-08								*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u8 KT_FMSeekTune(u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and Tune to Frequency
+xd_u8 KT_FMSeekTune(xd_u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and Tune to Frequency
 {
-	u16 reg3,regA,regx;
+	xd_u16 reg3,regA,regx;
 
 	KT_AMFMMute();
 
@@ -846,15 +846,15 @@ u8 KT_FMSeekTune(u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and Tu
 /*函数说明：在Tune台的过程中静音											 */
 /*调用函数：KT_AMFMMute()、KT_Bus_Read()、KT_Bus_Write()、delay_10ms()		 */
 /*全局变量：无																 */
-/*输    入：u16 Frequency													 */
+/*输    入：xd_u16 Frequency													 */
 /*返    回：设置完毕：1														 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-void KT_AMTune(u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and Tune to Frequency
+void KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and Tune to Frequency
 {
-	u16 regx;
+	xd_u16 regx;
 
 	if(KT_DEV.Band == MW_MODE){
 		
@@ -897,7 +897,7 @@ void KT_AMTune(u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and Tu
 			KT_Bus_Write(0x17, 0x8000 | Frequency);	   				//set tune bit to 1
 #endif
 	}
-	delay_10ms(8);
+	delay_10ms(5);
 
 #ifdef DISABLE_FAST_GAIN_UP
 	regx = KT_Bus_Read(0x23);
@@ -919,7 +919,7 @@ void KT_AMTune(u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and Tu
 
 void sw_auto_gain_hdlr(void)
 {
-	u16 regx;
+	xd_u16 regx;
        char am_rssi;
 	   
 	if(KT_DEV.Band >= MW_MODE){
@@ -955,14 +955,14 @@ void sw_auto_gain_hdlr(void)
 /*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
 /*全局变量：无																 */
 /*输    入：无																 */
-/*返    回：u16 Frequency													 */
+/*返    回：xd_u16 Frequency													 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u16 KT_FMGetFreq(void)
+xd_u16 KT_FMGetFreq(void)
 {
-	u16 regx;
+	xd_u16 regx;
 
 	regx = KT_Bus_Read(0x1F);
 	if(regx == 0x029B)
@@ -1017,14 +1017,14 @@ u16 KT_FMGetFreq(void)
 /*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
 /*全局变量：无																 */
 /*输    入：无																 */
-/*返    回：u16 Frequency													 */
+/*返    回：xd_u16 Frequency													 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u16 KT_AMGetFreq(void)
+xd_u16 KT_AMGetFreq(void)
 {
-	u16 regx;
+	xd_u16 regx;
 	regx = KT_Bus_Read(0x1F);
 	if(regx == 0x029E)
 	{
@@ -1054,15 +1054,15 @@ u16 KT_AMGetFreq(void)
 /*函数说明：在Tune台的过程中静音											 */
 /*调用函数：KT_AMFMMute()、KT_Bus_Read()、KT_Bus_Write()、delay_10ms()		 */
 /*全局变量：无																 */
-/*输    入：u16 Frequency													 */
+/*输    入：xd_u16 Frequency													 */
 /*返    回：设置完毕：1														 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u8 KT_FMTune(u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and Tune to Frequency
+xd_u8 KT_FMTune(xd_u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and Tune to Frequency
 {
-	u16 reg3;
+	xd_u16 reg3;
 
 	KT_AMFMMute();
 
@@ -1079,13 +1079,13 @@ u8 KT_FMTune(u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and Tune t
 /*函数说明：																 */
 /*调用函数：KT_FMTune()														 */
 /*全局变量：无																 */
-/*输    入：u16 Frequency													 */
+/*输    入：xd_u16 Frequency													 */
 /*返    回：设置完毕：1														 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u8 KT_FMSeekTune(u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and Tune to Frequency
+xd_u8 KT_FMSeekTune(xd_u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and Tune to Frequency
 {
 	return( KT_FMTune(Frequency) );
 }
@@ -1096,15 +1096,15 @@ u8 KT_FMSeekTune(u16 Frequency) //87.5MHz-->Frequency=8750; Mute the chip and Tu
 /*函数说明：在Tune台的过程中静音											 */
 /*调用函数：KT_AMFMMute()、KT_Bus_Read()、KT_Bus_Write()					 */
 /*全局变量：无																 */
-/*输    入：u16 Frequency													 */
+/*输    入：xd_u16 Frequency													 */
 /*返    回：设置完毕：1														 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u8 KT_AMTune(u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and Tune to Frequency
+xd_u8 KT_AMTune(xd_u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and Tune to Frequency
 {
-	u16 regx;
+	xd_u16 regx;
 	KT_AMFMMute();
 
 #ifdef DISABLE_FAST_GAIN_UP
@@ -1134,14 +1134,14 @@ u8 KT_AMTune(u16 Frequency) //1710KHz --> Frequency=1710; Mute the chip and Tune
 /*调用函数：KT_Bus_Read()													 */
 /*全局变量：无																 */
 /*输    入：无																 */
-/*返    回：u16 Frequency													 */
+/*返    回：xd_u16 Frequency													 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u16 KT_FMGetFreq(void)
+xd_u16 KT_FMGetFreq(void)
 {
-	u16 regx;
+	xd_u16 regx;
 	regx = KT_Bus_Read(0x13);
 	return(regx * 5);
 }
@@ -1153,14 +1153,14 @@ u16 KT_FMGetFreq(void)
 /*调用函数：KT_Bus_Read()													 */
 /*全局变量：无																 */
 /*输    入：无																 */
-/*返    回：u16 Frequency													 */
+/*返    回：xd_u16 Frequency													 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u16 KT_AMGetFreq(void)
+xd_u16 KT_AMGetFreq(void)
 {
-	u16 regx;
+	xd_u16 regx;
 	regx = KT_Bus_Read(0x13);
 	return( regx );
 }
@@ -1168,10 +1168,10 @@ u16 KT_AMGetFreq(void)
 
 #ifdef USE_VALIDSTATION_CHECK
 extern bool get_band_info_config();
-void load_band_info(u8 cur_band)
+void load_band_info(xd_u8 cur_band)
 {
 #ifdef DEBUG_SW    	
-	printf(" ----->load_band_info  %d  \r\n ",(u16)cur_band);
+	printf(" ----->load_band_info  %d  \r\n ",(xd_u16)cur_band);
 #endif
 
     if(cur_band==0){
@@ -1179,7 +1179,7 @@ void load_band_info(u8 cur_band)
 		KT_DEV.Band=FM_MODE;
 		//KT_DEV.Tune_Step=FM_100KHz_STEP;
 		//KT_DEV.Seek_Step = FM_100KHz_STEP;	
-		KT_DEV.ValidStation_Step =FM_50KHz_STEP ;			
+		KT_DEV.ValidStation_Step =FM_100KHz_STEP ;			
     }
     else if(cur_band==1){
 		
@@ -1315,9 +1315,9 @@ void load_band_info(u8 cur_band)
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u8 KT_FMGetST(void)
+xd_u8 KT_FMGetST(void)
 {
-	u16 regx;
+	xd_u16 regx;
     	regx = KT_Bus_Read(0x06);
 	return ((regx & 0x7F00) < TST_TH);
 }
@@ -1334,9 +1334,9 @@ u8 KT_FMGetST(void)
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u8 KT_FMReadRSSI(char *RSSI) //range from -100 to -6, unit is dbm
+xd_u8 KT_FMReadRSSI(char *RSSI) //range from -100 to -6, unit is dbm
 {
-	u16 regx;
+	xd_u16 regx;
 	regx = KT_Bus_Read(0x12);
 	*RSSI = -(100 - (((regx >> 3) & 0x001F) * 3));
 	return(1);
@@ -1354,9 +1354,9 @@ u8 KT_FMReadRSSI(char *RSSI) //range from -100 to -6, unit is dbm
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u8 KT_AMReadRSSI(char *RSSI) //range from -90 to -6, unit is dbm
+xd_u8 KT_AMReadRSSI(char *RSSI) //range from -90 to -6, unit is dbm
 {
-	u16 regx;
+	xd_u16 regx;
 	regx = KT_Bus_Read(0x24);
 	*RSSI = -(90 - (((regx >> 8) & 0x001F) * 3));
 	return(1);
@@ -1369,14 +1369,14 @@ u8 KT_AMReadRSSI(char *RSSI) //range from -90 to -6, unit is dbm
 /*调用函数：KT_Bus_Read()													 */
 /*全局变量：无																 */
 /*输    入：无																 */
-/*返    回：u16 SNR														 */
+/*返    回：xd_u16 SNR														 */
 /*设 计 者：Yanpei				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u8 KT_FMGetSNR(void)
+xd_u8 KT_FMGetSNR(void)
 {
-	u16 regx;
+	xd_u16 regx;
 	regx = KT_Bus_Read( 0x14 );
 //	regx = (regx & 0x1FC0) >> 6;
 //	regx = regx <<1;
@@ -1388,16 +1388,16 @@ u8 KT_FMGetSNR(void)
 /*函数说明：Frequency=-127(KHz) to 127(KHz)									 */
 /*调用函数：KT_Bus_Read()						 							 */
 /*全局变量：无																 */
-/*输    入：u16 Frequency													 */
+/*输    入：xd_u16 Frequency													 */
 /*返    回：char afc_delta													 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-char KT_FMGetAFC(u16 Frequency) // returned value's range is from -127 to 127, unit is KHz
+char KT_FMGetAFC(xd_u16 Frequency) // returned value's range is from -127 to 127, unit is KHz
 {
 	char afc_delta;
-	u16 regx;
+	xd_u16 regx;
 	regx = KT_Bus_Read(0x3C);								// read AFC_DELTAF
 	afc_delta = regx & 0x00FF;
 
@@ -1428,17 +1428,17 @@ char KT_FMGetAFC(u16 Frequency) // returned value's range is from -127 to 127, u
 char KT_AMGetAFC(void) // returned value's range is from -127 to 127, unit is KHz
 {
 	char afc_delta;
-	u16 regx;
+	xd_u16 regx;
 	
 	regx = KT_Bus_Read(0x25);								// read AFC_DELTAF
 	afc_delta =(char) (regx & 0x00FF);
 	return (afc_delta);	
 }
 
-u16 KT_AMGetFreq(void)
+xd_u16 KT_AMGetFreq(void)
 {
 	char rssi_reg,afc_reg;
-	u16 regx;
+	xd_u16 regx;
 	regx = KT_Bus_Read(0x13);
 #ifdef DEBUG_SW    	
 	printf(" ------------------>KT_AMGetFreq  %u  \r\n ",regx);
@@ -1446,7 +1446,7 @@ u16 KT_AMGetFreq(void)
 	KT_AMReadRSSI(&rssi_reg);	
 	afc_reg =KT_AMGetAFC();	
 #ifdef DEBUG_SW    	
-	printf(" ------------------>KT_AMGetAFC[ ***** ]  %d  \r\n ",(u16)afc_reg);
+	printf(" ------------------>KT_AMGetAFC[ ***** ]  %d  \r\n ",(xd_u16)afc_reg);
 #endif
 
 	return( regx );
@@ -1459,22 +1459,22 @@ u16 KT_AMGetFreq(void)
 /*函数说明：																 */
 /*调用函数：Display_Channel()、KT_FMSeekTune()、KT_FMGetSNR()、KT_FMGetAFC() */
 /*全局变量：KT_DEV.ValidStation_Step									 */
-/*输    入：u16 Frequency													 */
+/*输    入：xd_u16 Frequency													 */
 /*返    回：正确：1					错误：0									 */
 /*设 计 者：Yanpei					时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u8 KT_FMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check AFC_DELTA only
+xd_u8 KT_FMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station //check AFC_DELTA only
 {
-	u16 nextfreq;
+	xd_u16 nextfreq;
 	char afc[3];							//AFC value for previous, current and next channels
-	u16 freq[3];							//frequency values for previous, current and next channels
+	xd_u16 freq[3];							//frequency values for previous, current and next channels
 #ifdef SEEK_WITH_SNR
-	u8 snr[3];							//SNR for previous, current and next channels
+	xd_u8 snr[3];							//SNR for previous, current and next channels
 #endif
 	char i,j;
-	u8 snr2,snr3;
+	xd_u8 snr2,snr3;
 
 	afc[0]=0;afc[1]=0;afc[2]=0;				//initialize
 	freq[0]=0;freq[1]=0;freq[2]=0;			//initialize
@@ -1485,7 +1485,7 @@ u8 KT_FMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 #ifdef DEBUG_FM    
 	printf(" KT  FM  %4u  \r\n ",Frequency);
 #endif	
-	nextfreq = Frequency-KT_DEV.ValidStation_Step;		
+	nextfreq = (Frequency-KT_DEV.ValidStation_Step);		
 	//Get AFC values of previous, current and next channels
 	for (i=0;i<3;i++)
 	{
@@ -1503,14 +1503,14 @@ u8 KT_FMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 		if (!freq[i])
 		{
 		    KT_FMTune(nextfreq);
-		    delay_10ms(2);
+		    //delay_10ms(2);
 			afc[i]=KT_FMGetAFC(nextfreq);
 #ifdef SEEK_WITH_SNR
 			snr[i]=KT_FMGetSNR();
 #endif
 			freq[i]=nextfreq;
 		}
-		nextfreq = nextfreq + KT_DEV.ValidStation_Step;
+		nextfreq = (nextfreq + KT_DEV.ValidStation_Step);
 	}
 	//Record AFC values
 	mem_afc[0]=afc[0];mem_afc[1]=afc[1];mem_afc[2]=afc[2];
@@ -1522,7 +1522,7 @@ u8 KT_FMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 
 	KT_FMTune(Frequency);
 #ifdef DEBUG_FM    	
-	printf(" ---->KT  FM _AFC  ->afc[0]=%d  ->afc[1]=%d  ->afc[2]=%d  \r\n ",(u16)afc[0],(u16)afc[1],(u16)afc[2]);
+	printf(" ---->KT  FM _AFC  ->afc[0]=%d  ->afc[1]=%d  ->afc[2]=%d  \r\n ",(xd_u16)afc[0],(xd_u16)afc[1],(xd_u16)afc[2]);
 #endif
 	if(Frequency == 9600)return 0;
 	if(Frequency == 10780)return 0;
@@ -1533,14 +1533,14 @@ u8 KT_FMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 
 #ifdef SEEK_WITH_SNR
 		KT_FMTune(Frequency);
-		delay_10ms(2);
+		//delay_10ms(2);
 		snr2=KT_FMGetSNR();
 #ifdef DEBUG_FM    	
-	printf(" ---->KT  FM _SNR =%d   \r\n ",(u16)snr2);
+	printf(" ---->KT  FM _SNR =%d   \r\n ",(xd_u16)snr2);
 #endif
 		if ((snr[1]>=FM_SNR_TH) && (snr2>=FM_SNR_TH)) return(1);
 		if ((snr[1]<FM_SNR_TH) && (snr2<FM_SNR_TH)) return(0);
-		delay_10ms(2);
+		//delay_10ms(2);
 		snr3=KT_FMGetSNR();
 		if (snr3>=FM_SNR_TH) return(1);
 		else return(0);
@@ -1560,16 +1560,16 @@ u8 KT_FMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 /*调用函数：KT_AMValidStation()												 */
 /*全局变量：KT_AMValidStation、KT_DEV.Seek_Down_Limit、KT_FMValidStation			 
 /*			KT_DEV.Seek_Up_Limit、KT_DEV.Seek_Step、SEEKUP		 */
-/*输    入：u16 seekDir, u16 *Frequency									 */
-/*返    回：u16 Frequency													 */
+/*输    入：xd_u16 seekDir, xd_u16 *Frequency									 */
+/*返    回：xd_u16 Frequency													 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
 /*
-u8 KT_AMSeekFromCurrentCh(u16 seekDir, u16 *Frequency)   //	seekDir: 0-->seek down 1-->seek up
+xd_u8 KT_AMSeekFromCurrentCh(xd_u16 seekDir, xd_u16 *Frequency)   //	seekDir: 0-->seek down 1-->seek up
 {
-	u16 NextFreq;
+	xd_u16 NextFreq;
 	mem_afc[0]=0;mem_afc[1]=0;mem_afc[2]=0;
 	mem_freq[0]=0;mem_freq[1]=0;mem_freq[2]=0;
 
@@ -1630,13 +1630,13 @@ u8 KT_AMSeekFromCurrentCh(u16 seekDir, u16 *Frequency)   //	seekDir: 0-->seek do
 /*函数说明：																 */
 /*调用函数：Display_Channel_AM()、KT_AMGetAFC() 							 */
 /*全局变量：KT_DEV.ValidStation_Step、KT_DEV.AFCTH_Prev			 */
-/*输    入：u16 Frequency													 */
+/*输    入：xd_u16 Frequency													 */
 /*返    回：正确：1					错误：0									 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-u8 KT_AMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check AFC_DELTA only
+xd_u8 KT_AMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station //check AFC_DELTA only
 {
 	char AM_afc[3];							//AFC value for previous, current and next channels
 	AM_afc[0] = 0;AM_afc[1] = 0;AM_afc[2] = 0;	//initialize
@@ -1648,11 +1648,11 @@ u8 KT_AMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 #endif	
 
 	KT_AMTune( Frequency - KT_DEV.ValidStation_Step );
-	delay_10ms(20);
+	delay_10ms(12);
 	
 	AM_afc[0] = KT_AMGetAFC();
 #ifdef DEBUG_AM    	
-	printf(" ---->KT  AW_afc[ 00 ] =%d  \r\n ",(u16)AM_afc[0]);
+	printf(" ---->KT  AW_afc[ 00 ] =%d  \r\n ",(xd_u16)AM_afc[0]);
 #endif
 
 	if( AM_afc[0] < -KT_DEV.AFCTH_Prev )
@@ -1662,7 +1662,7 @@ u8 KT_AMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 		delay_10ms(12);				
 		AM_afc[1] = KT_AMGetAFC();
 #ifdef DEBUG_AM    
-		printf(" ------>KT  AW_afc[ 11 ]=%d  \r\n ",(u16)AM_afc[1]);
+		printf(" ------>KT  AW_afc[ 11 ]=%d  \r\n ",(xd_u16)AM_afc[1]);
 #endif
 
 		if( (AM_afc[1] >= -KT_DEV.AFCTH) && (AM_afc[1] <= KT_DEV.AFCTH) )
@@ -1671,7 +1671,7 @@ u8 KT_AMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 			delay_10ms(12);
 			AM_afc[2] = KT_AMGetAFC();
 #ifdef DEBUG_AM    
-		printf(" ------->KT  AW_afc[ 22 ]=%d  \r\n ",(u16)AM_afc[2]);
+		printf(" ------->KT  AW_afc[ 22 ]=%d  \r\n ",(xd_u16)AM_afc[2]);
 #endif
 			KT_AMTune( Frequency );			
 
@@ -1690,7 +1690,7 @@ u8 KT_AMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 				
 				AM_afc[2] = KT_AMGetAFC();	
 #ifdef DEBUG_AM    
-		printf(" ------->KT  AW_afc[ 33 ]=%d  \r\n ",(u16)AM_afc[2]);
+		printf(" ------->KT  AW_afc[ 33 ]=%d  \r\n ",(xd_u16)AM_afc[2]);
 #endif
 				KT_AMTune( Frequency );	
 				
@@ -1716,7 +1716,7 @@ u8 KT_AMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 	}
 }
 
-u8 KT_SMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check AFC_DELTA only
+xd_u8 KT_SMValidStation(xd_u16 Frequency) //0-->False Station 1-->Good Station //check AFC_DELTA only
 {
 	char AM_afc[3],rssi_reg[3];
 	//static char last_rssi_reg=0;							//AFC value for previous, current and next channels
@@ -1732,7 +1732,7 @@ u8 KT_SMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 	delay_10ms(8);
 	AM_afc[0] = KT_AMGetAFC();
 #ifdef DEBUG_SW    	
-	printf(" --->KT  SW_afc [ 00 ]=%d  \r\n ",(u16)AM_afc[0]);
+	printf(" --->KT  SW_afc [ 00 ]=%d  \r\n ",(xd_u16)AM_afc[0]);
 #endif
 	KT_AMReadRSSI(&rssi_reg[0]);	
 
@@ -1742,7 +1742,7 @@ u8 KT_SMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 		delay_10ms(8);		
 		AM_afc[1] = KT_AMGetAFC();
 #ifdef DEBUG_SW    
-		printf(" ---->KT  SW_afc[ 11 ]=%d  \r\n ",(u16)AM_afc[1]);
+		printf(" ---->KT  SW_afc[ 11 ]=%d  \r\n ",(xd_u16)AM_afc[1]);
 #endif
 		KT_AMReadRSSI(&rssi_reg[1]);	
 
@@ -1753,7 +1753,7 @@ u8 KT_SMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 
 			AM_afc[2] = KT_AMGetAFC();
 #ifdef DEBUG_SW    
-			printf(" -----> KT  SW_afc[ 22 ]=%d  \r\n ",(u16)AM_afc[2]);
+			printf(" -----> KT  SW_afc[ 22 ]=%d  \r\n ",(xd_u16)AM_afc[2]);
 #endif
 			KT_AMReadRSSI(&rssi_reg[2]);	
 			KT_AMTune( Frequency );
@@ -1761,7 +1761,7 @@ u8 KT_SMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 			if(( AM_afc[2] >= KT_DEV.AFCTH_Next)||((rssi_reg[0]-rssi_reg[1])<=-KT_DEV.RSSI_TH ))
 			{
 #ifdef DEBUG_SW    
-				printf(" ------> KT  (rssi_reg[0]-rssi_reg[1])  [ 33 ]  %d   (?)  -%d \r\n ",(u16)(rssi_reg[0]-rssi_reg[1]),(u16)KT_DEV.RSSI_TH);
+				printf(" ------> KT  (rssi_reg[0]-rssi_reg[1])  [ 33 ]  %d   (?)  -%d \r\n ",(xd_u16)(rssi_reg[0]-rssi_reg[1]),(xd_u16)KT_DEV.RSSI_TH);
 #endif
 				//if ( (AM_afc[0] < AM_afc[1]) && (AM_afc[1] < AM_afc[2]) ){
 					return(1);
@@ -1801,7 +1801,7 @@ u8 KT_SMValidStation(u16 Frequency) //0-->False Station 1-->Good Station //check
 /************************************************************************************/
 bit KT_AM_TUNING_LIGHT(void)
 {
-	u16 reg1C;
+	xd_u16 reg1C;
 	char AM_AFC;
 	reg1C = KT_Bus_Read(0x1C);
 	reg1C = reg1C & 0x3F00;
@@ -1858,7 +1858,7 @@ bit KT_FM_TUNING_LIGHT(void)
 bit KT_FM_ST_Indicator(void)
 {
 #ifdef MANUAL_SEPARATION
-	u16 reg5;
+	xd_u16 reg5;
 	char xdata rssi_value;
 
 	KT_FMReadRSSI(&rssi_value);
@@ -1898,7 +1898,7 @@ bit KT_FM_ST_Indicator(void)
 
 void KT_Mute_Ctrl(bool m_f)
 {
-	u16 regx=0;
+	xd_u16 regx=0;
 
 	regx = KT_Bus_Read(0x0F);       
 	if(m_f){
@@ -1915,16 +1915,16 @@ void KT_Mute_Ctrl(bool m_f)
 /*调用函数：KT_AMValidStation()、KT_Bus_Read()、KT_Bus_Write()、			 */
 /*			KT_AM_SOFTMUTE_SETTING()		 								 */
 /*全局变量：无																 */
-/*输    入：u16 Frequency													 */
+/*输    入：xd_u16 Frequency													 */
 /*返    回：无																 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
 #ifdef AM_SOFTMUTE
-void KT_AM_SOFTMUTE(u16 Frequency)
+void KT_AM_SOFTMUTE(xd_u16 Frequency)
 {
-	u16 regx;
+	xd_u16 regx;
 
 	regx = KT_Bus_Read(0x04);
 
@@ -1948,7 +1948,7 @@ void KT_AM_SOFTMUTE(u16 Frequency)
 /*函数说明：																 */
 /*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
 /*全局变量：无																 */
-/*输    入：u8 SMUTEA, u8 SMUTER, u8 AM_SMTH, u8 VOLUMET		 */
+/*输    入：xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 AM_SMTH, xd_u8 VOLUMET		 */
 /*返    回：无																 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
@@ -1964,16 +1964,16 @@ void KT_AM_SOFTMUTE(u16 Frequency)
 /*调用函数：KT_FMValidStation()、KT_Bus_Read()、KT_Bus_Write()、			 */
 /*			KT_FM_SOFTMUTE_SETTING()		 								 */
 /*全局变量：无																 */
-/*输    入：u16 Frequency													 */
+/*输    入：xd_u16 Frequency													 */
 /*返    回：无																 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
 #ifdef FM_SOFTMUTE
-void KT_FM_SOFTMUTE(u16 Frequency)
+void KT_FM_SOFTMUTE(xd_u16 Frequency)
 {
-	u16 regx;
+	xd_u16 regx;
 	KT_Mute_Ctrl(1);
 	
 	//regx = KT_Bus_Read(0x04);
@@ -2009,16 +2009,16 @@ void KT_FM_SOFTMUTE(u16 Frequency)
 /*函数说明：																 */
 /*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
 /*全局变量：无																 */
-/*输    入：u8 SMUTEA, u8 SMUTER, u8 AM_SMTH, u8 VOLUMET		 */
+/*输    入：xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 AM_SMTH, xd_u8 VOLUMET		 */
 /*返    回：无																 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
 #ifdef AM_SOFTMUTE_AFCMODE
-void KT_AM_SOFTMUTE_SETTING(u8 SMUTEA, u8 SMUTER, u8 AM_SMTH, u8 VOLUMET)
+void KT_AM_SOFTMUTE_SETTING(xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 AM_SMTH, xd_u8 VOLUMET)
 {
-	u16 reg2E;
+	xd_u16 reg2E;
 	reg2E = KT_Bus_Read(0x2E);
 	KT_Bus_Write(0x2E,(reg2E & 0x0007) | (SMUTEA<<14) | (SMUTER<<12) | (AM_SMTH<<9) | (VOLUMET<<4) | 0x0000 );
 }
@@ -2039,8 +2039,8 @@ void KT_AM_SOFTMUTE_SETTING(u8 SMUTEA, u8 SMUTER, u8 AM_SMTH, u8 VOLUMET)
 void KT_AM_SOFTMUTE_AFCMODE(bit Valid)
 {
 	char xdata rssi_value;
-	u8 am_afc;
-	u16 reg4,regF;
+	xd_u8 am_afc;
+	xd_u16 reg4,regF;
 
 	reg4=KT_Bus_Read(0x04);
  	am_afc = abs(KT_AMGetAFC());
@@ -2092,9 +2092,9 @@ void KT_AM_SOFTMUTE_AFCMODE(bit Valid)
 }
 
 
-void KT_AM_AFC_VolumeSet(u8 afc)			//Input: 0~128
+void KT_AM_AFC_VolumeSet(xd_u8 afc)			//Input: 0~128
 {
-	u16 regx;
+	xd_u16 regx;
 	char afc_volume;
 
 	regx=KT_Bus_Read(0x0F); 
@@ -2180,8 +2180,8 @@ void KT_AM_SOFTMUTE_AFCMODE(void)
 //void KT_AM_SOFTMUTE_AMTUNINGLIGHTMODE(bit Valid)
 {
 	char xdata rssi_value;
-	u8 am_afc;
-	u16 reg4;
+	xd_u8 am_afc;
+	xd_u16 reg4;
 
 	reg4=KT_Bus_Read(0x04);
  	am_afc = abs(KT_AMGetAFC());
@@ -2222,15 +2222,15 @@ void KT_AM_SOFTMUTE_AFCMODE(void)
 /*函数说明：																 */
 /*调用函数：KT_Bus_Read()、KT_AMFMMute()、KT_Bus_Write()					 */
 /*全局变量：无																 */
-/*输    入：u8 afc														 */
+/*输    入：xd_u8 afc														 */
 /*返    回：无																 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-void KT_AM_AFC_VolumeSet(u8 afc)			//Input: 0~128
+void KT_AM_AFC_VolumeSet(xd_u8 afc)			//Input: 0~128
 {
-	u16 regx;
+	xd_u16 regx;
 	char afc_volume;
 
 	regx = KT_Bus_Read(0x0F); 
@@ -2307,16 +2307,16 @@ void KT_AM_AFC_VolumeSet(u8 afc)			//Input: 0~128
 /*调用函数：KT_AMValidStation()、KT_Bus_Read()、KT_Bus_Write()、			 */
 /*			KT_AM_SOFTMUTE_SETTING()		 								 */
 /*全局变量：无																 */
-/*输    入：u16 Frequency													 */
+/*输    入：xd_u16 Frequency													 */
 /*返    回：无																 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
 #ifdef AM_SOFTMUTE
-void KT_AM_SOFTMUTE(u16 Frequency)
+void KT_AM_SOFTMUTE(xd_u16 Frequency)
 {
-	u16 reg4;
+	xd_u16 reg4;
 
 	reg4 = KT_Bus_Read(0x04);
 
@@ -2340,15 +2340,15 @@ void KT_AM_SOFTMUTE(u16 Frequency)
 /*函数说明：																 */
 /*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
 /*全局变量：无																 */
-/*输    入：u8 SMUTEA, u8 SMUTER, u8 AM_SMTH, u8 VOLUMET		 */
+/*输    入：xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 AM_SMTH, xd_u8 VOLUMET		 */
 /*返    回：无																 */
 /*设 计 者：Kanghekai				时间：											*/
 /*修 改 者：Kanghekai				时间：2011-04-08								*/
 /*版    本：V4.0																	*/
 /************************************************************************************/
-void KT_AM_SOFTMUTE_SETTING(u8 SMUTEA, u8 SMUTER, u8 AM_SMTH, u8 VOLUMET)
+void KT_AM_SOFTMUTE_SETTING(xd_u8 SMUTEA, xd_u8 SMUTER, xd_u8 AM_SMTH, xd_u8 VOLUMET)
 {
-	u16 reg2E;
+	xd_u16 reg2E;
 	reg2E = KT_Bus_Read(0x2E);
 	KT_Bus_Write(0x2E,(reg2E & 0x0007) | (SMUTEA<<14) | (SMUTER<<12) | (AM_SMTH<<9) | (VOLUMET<<4) | 0x0000 );
 //									SMUTEA=4,SMUTER=120ms,AM_SMTH=3,VOLUMET=1,SMMD=RSSI mode
