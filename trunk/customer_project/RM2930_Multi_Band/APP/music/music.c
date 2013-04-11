@@ -135,8 +135,8 @@ static void music_info_init(void)
     device_active = NO_DEVICE;
     if (given_device == NO_DEVICE)
     {
-#if (BREAK_POINT_PLAY_EN == 1)    
-        given_device = read_info(MEM_ACTIVE_DEV);
+#if (BREAK_POINT_PLAY_EN == 0)    
+        	given_device = read_info(MEM_ACTIVE_DEV);
 #endif
     }
 
@@ -158,7 +158,11 @@ static void music_info_init(void)
 	        given_device = DEVICE_SDMMC0;
 
 	}
+#if (BREAK_POINT_PLAY_EN == 1)    	
+        given_file_method = PLAY_BREAK_POINT;
+#else
         given_file_method = PLAY_FIRST_FILE;
+#endif
     }
 
     put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
