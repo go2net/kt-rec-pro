@@ -186,7 +186,7 @@ xd_u8 touchkeyval;
 xd_u8 keyval_buf;
 xd_u8  JogBuf;
 #ifdef FAST_STICK_TUNE_FUNC
-xd_u8 fast_step_cnt=0,reset_cnt=0,last_reg=0;
+xd_u8 fast_step_cnt=0,reset_cnt=0,last_reg=0,dir_reg=0;
 #endif
 void Jog_stick_gpio_init()
 {
@@ -220,21 +220,16 @@ void JogDetect(void)
 #endif
 
 #ifdef FAST_STICK_TUNE_FUNC
-	if(last_reg!=touchkeyval){
-		last_reg=touchkeyval;
-	}
-	else{
+	
+	if(fast_step_cnt>0){
 
-		if(fast_step_cnt>0){
-
-			reset_cnt++;
-			if(reset_cnt>=12){
-				fast_step_cnt=0;
-			}
-			if(fast_step_cnt>11){
-				fast_step_cnt--;
-			}		
+		reset_cnt++;
+		if(reset_cnt>=12){
+			fast_step_cnt=0;
 		}
+		if(fast_step_cnt>11){
+			fast_step_cnt--;
+		}	
 	}
 #endif
 
@@ -255,6 +250,11 @@ void JogDetect(void)
 		             put_msg_fifo(MSG_FM_PREV_STEP);
 	                    JogBuf = 0;
 #ifdef FAST_STICK_TUNE_FUNC
+				dir_reg = 0x02;
+				if(last_reg != dir_reg){
+					last_reg =dir_reg;
+					fast_step_cnt =6;
+				}
 	                    	reset_cnt=0;
 				if(fast_step_cnt<12){
 					fast_step_cnt++;
@@ -268,6 +268,11 @@ void JogDetect(void)
 		             //put_msg_fifo(INFO_VOL_MINUS);
 	                    JogBuf = 0;
 #ifdef FAST_STICK_TUNE_FUNC
+				dir_reg = 0x01;
+				if(last_reg != dir_reg){
+					last_reg =dir_reg;
+					fast_step_cnt =6;
+				}
 	                    	reset_cnt=0;
 				if(fast_step_cnt<12){
 					fast_step_cnt++;
