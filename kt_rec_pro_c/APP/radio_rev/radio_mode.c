@@ -91,7 +91,9 @@ void radio_rev_hdlr( void )
 	     break;
 		 
         case MSG_CHANGE_RADIO_MODE:
+	     set_adc_mode_protect(PROTECT);			
 	     radio_band_switcher();
+	     set_adc_mode_protect(UNPROTECT);
 	     break;
         case MSG_CHANGE_WORK_MODE:
             return;

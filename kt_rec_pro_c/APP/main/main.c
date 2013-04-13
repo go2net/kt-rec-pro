@@ -354,7 +354,7 @@ void idle_mode(void)
     input_number_en=0;
     vol_change_en=0;
 	
-    core_power_off();
+    //core_power_off();
 	
    while (1)
     {
@@ -363,16 +363,14 @@ void idle_mode(void)
         switch (key)
         {
         case MSG_CHANGE_WORK_MODE:
-	     clear_all_event();
-    	     flush_all_msg();
-            return;
-
+	     	clear_all_event();
+    	     	flush_all_msg();
+            	return;
         case MSG_MUSIC_NEW_DEVICE_IN:							//有新设备接入
-	  //put_msg_lifo(MSG_CHANGE_WORK_MODE);		
 	 	break;
         default:
-            ap_handle_hotkey(key);        
-            break;
+            	ap_handle_hotkey(key);        
+            	break;
         }
     }
 }

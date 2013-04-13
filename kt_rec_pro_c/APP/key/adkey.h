@@ -11,7 +11,7 @@
 #define _ADKEY_H_
 #include "my_adkey.h"
 /************ADKEY GROUP 1****************/
-#if 1
+#if 0
 #define ADKEY1			(0xf000)
 #define ADKEY1_0		(0xf000)
 #define ADKEY1_1		(0xf000)
