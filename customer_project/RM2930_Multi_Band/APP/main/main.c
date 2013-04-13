@@ -357,7 +357,7 @@ void idle_mode(void)
     input_number_en=0;
     vol_change_en=0;
 	
-    core_power_off();
+    //core_power_off();
 	
    while (1)
     {
