@@ -345,7 +345,8 @@ void disp_input_number(u16 num)
 	printf_num(num,1,3);     
     else
 	printf_num(num,2,2);     
-    disp_device();
+   if(work_mode == MUSIC_MODE)
+    	disp_device();
 }
 
 /*----------------------------------------------------------------------------*/
@@ -392,8 +393,8 @@ void disp_music_play_time(void)
     	printf_num(min,0,2);
     else
    	 printf_num(min,1,1);
-    led_putchar(':',0);
 #endif
+    led_putchar(':',0);
     //disp_play_mode();
 }
 

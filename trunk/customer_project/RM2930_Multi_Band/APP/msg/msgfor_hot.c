@@ -619,6 +619,8 @@ void ap_handle_hotkey(u8 key)
             else
             {	
 #if 1
+
+			aux_plugged_in=1;	
 			work_mode =  FM_RADIO_MODE;
               	put_msg_lifo(MSG_CHANGE_WORK_MODE);
 #else
