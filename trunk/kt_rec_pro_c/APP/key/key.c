@@ -253,7 +253,9 @@ void JogDetect(void)
 				dir_reg = 0x02;
 				if(last_reg != dir_reg){
 					last_reg =dir_reg;
-					fast_step_cnt =6;
+					
+					if(fast_step_cnt>12)
+						fast_step_cnt =6;
 				}
 	                    	reset_cnt=0;
 				if(fast_step_cnt<12){
@@ -271,7 +273,9 @@ void JogDetect(void)
 				dir_reg = 0x01;
 				if(last_reg != dir_reg){
 					last_reg =dir_reg;
-					fast_step_cnt =6;
+					
+					if(fast_step_cnt>12)					
+						fast_step_cnt =6;
 				}
 	                    	reset_cnt=0;
 				if(fast_step_cnt<12){
