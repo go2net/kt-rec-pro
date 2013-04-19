@@ -189,6 +189,7 @@ void write_music_info(u16 addr,u8 dat)
    @note    void  eeprom_page_write_start(void)
 */
 /*----------------------------------------------------------------------------*/
+#if 0
 void  eeprom_page_write_start(void)
 {
     iic_busy  = 1;
@@ -207,6 +208,6 @@ void eeprom_page_write_stop(void)
     iic_stop();                     //I2Cֹͣ
     iic_busy = 0;
 }
-
+#endif
 
 

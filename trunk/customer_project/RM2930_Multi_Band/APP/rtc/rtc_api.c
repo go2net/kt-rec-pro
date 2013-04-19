@@ -424,7 +424,7 @@ void rtc_init(void)
     {
         rtc_reg &= ~(BIT(7)); 				//«Â¡„PDFLAG
         rtc_reset();
-#if USE_RTC_RAM
+#if 1//USE_RTC_RAM
         reset_rtc_ram();
 #endif
     }
