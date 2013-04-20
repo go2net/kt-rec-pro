@@ -27,10 +27,10 @@
 
 //#define JK_FT_780_MODULE
 //#define JK_FP_211_MODULE
-//#define JK_HT_998_MODULE
+#define JK_HT_998_MODULE
 //#define JK_SZ_S900_MODULE
 //#define JK_JF_933_MODULE
-#define JK_JF_689_MODULE
+//#define JK_JF_689_MODULE
 //#define JK_JF_168_MODULE
 //#define JK_DH_105_104_MODULE
 //#define JK_DH_289_MODULE
@@ -193,17 +193,18 @@
 
 #if defined(JK_HT_998_MODULE)
 
-#define DISP_VER		3
+#define DISP_VER		5
 
 #define JK_HT_998_LCD_MODULE
 //#define NEW_DH_228_LCD_MODULE_SM5901
 
 #define DISP_PAU_STR
 
-#define SW_TWO_BAND_RANGE
+#define SW_TWO_BAND_RANGE_FOR_CUSTOMER_HT_998
 
 #define REC_PLAY_KEY_BREAK_POINT
 #define FM_FREQ_NUM_KEY_INPUT
+#define MW_MODE_ADVANCED_TUNE_STEP
 
 #define IIC_GPIO_USE_P00_P01
 
