@@ -49,6 +49,14 @@ FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 	3200,	17900, 	5,
 	17905,	25000,	5,
 };
+#elif defined(SW_TWO_BAND_RANGE_FOR_CUSTOMER_HT_998)
+FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
+{
+	8750,	10800,	10,
+	520,		1630,	1,
+	3200,	13000,	5,
+	13000,	22500,	5,
+};
 #elif defined(SW_TWO_BAND_RANGE_FOR_CUSTOMER_JIN_FENG)
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
@@ -160,13 +168,24 @@ void set_radio_freq(u8 mode)
 		fast_step_cnt=1;
 	 }
 
-    	if(radio_band.bCurBand<SW_MODE){
+    	if(radio_band.bCurBand==FM_MODE){
 
 		if(fast_step_cnt<6)				
 			freq_step = (radio_band.bTuneStep*fast_step_cnt);
 		else if(fast_step_cnt<12)				
 			freq_step = (radio_band.bTuneStep*fast_step_cnt*5);
     	}
+    	if(radio_band.bCurBand==MW_MODE){
+
+		if(fast_step_cnt<6)				
+			freq_step = (radio_band.bTuneStep*fast_step_cnt);
+		else if(fast_step_cnt<12)				
+			freq_step = (radio_band.bTuneStep*fast_step_cnt*5);
+#ifdef MW_MODE_ADVANCED_TUNE_STEP
+		else			
+			freq_step = (radio_band.bTuneStep*fast_step_cnt*10);
+#endif		
+    	}		
 	else{
 		
 		if(fast_step_cnt<6)				
