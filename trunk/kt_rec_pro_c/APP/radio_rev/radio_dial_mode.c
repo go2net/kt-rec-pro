@@ -221,7 +221,13 @@ void radio_hdlr(void)
     }
 
     input_number_en = 1;
+
+#ifdef NO_VOL_TUNE_FUNC	
+    vol_change_en=0;
+#else	
     vol_change_en=1;
+#endif
+
     main_menu = MENU_RADIO_MAIN;
     radio_band_hdlr();
 

@@ -256,6 +256,9 @@ static void sys_info_init(void)
     }
 #endif
 
+#ifdef DEFAULT_VOL
+    sys_main_vol=DEFAULT_VOL;
+#endif
     dac_init(sys_main_vol);
     delay_10ms(50);										//µÈ´ý,¼ì²âUSB,SDÔÚÏß×´Ì¬
     //init_rec_name();
@@ -346,6 +349,10 @@ void idle_mode(void)
 
     //dac_out_select(DAC_MUSIC, 0);
     //clear_all_event();
+    dac_mute_control(1,1);    
+#ifdef PLAY_STATUS_LED_FUNC
+    set_play_status_led_spark(PLED_OFF);
+#endif	
     KT_AMFMStandby();
     usb_suspend();
 	
@@ -353,8 +360,15 @@ void idle_mode(void)
     disp_port(MENU_POWER_OFF);
     input_number_en=0;
     vol_change_en=0;
-	
-    //core_power_off();
+
+#ifdef DEFAULT_VOL
+    sys_main_vol=DEFAULT_VOL;
+#endif
+    delay_10ms(20);
+
+    if(sys_pwr_flag==0){
+		put_msg_fifo(MSG_SYS_CORE_SLEEP);		
+    }
 	
    while (1)
     {
@@ -362,6 +376,9 @@ void idle_mode(void)
 
         switch (key)
         {
+        case MSG_SYS_CORE_SLEEP:
+    		core_power_off();			
+		break;
         case MSG_CHANGE_WORK_MODE:
 	     	clear_all_event();
     	     	flush_all_msg();

@@ -497,7 +497,7 @@ static u8 start_decode(void)
 #if (BREAK_POINT_PLAY_EN == 1)
     if (find_break_point_file_flag) 								//取保存过的断点信息
     {
-        find_break_point_file_flag = load_music_point();
+        	find_break_point_file_flag = load_music_point();
     }
 #endif
     dsp_set_dcc_flt(14);
@@ -508,8 +508,9 @@ static u8 start_decode(void)
     play_status = MAD_PLAY;
 	
 #ifdef PLAY_STATUS_LED_FUNC
-	set_play_status_led_spark(PLED_SPARK_NOR);
+    set_play_status_led_spark(PLED_SPARK_NOR);
 #endif	
+    dac_mute_control(0,1);	   
     //flashled(2);
     //amp_mute(0);	
     return 0;
@@ -649,13 +650,13 @@ void music_play(void)
                 play_delay_time = 0;
                 if (given_file_method <= PLAY_BREAK_POINT) 		//重新找下一首
                 {
-                    given_file_method = PLAY_NEXT_FILE;
-                    break;
+                    		given_file_method = PLAY_NEXT_FILE;
+                    		break;
                 }
                 else											//重新找上一首
                 {
-                    given_file_method = PLAY_PREV_FILE;
-                    break;
+                    		given_file_method = PLAY_PREV_FILE;
+                    		break;
                 }
             }
             main_menu = MENU_MUSIC_MAIN;
@@ -1073,8 +1074,14 @@ void music_decode(void)
 #endif
 
     input_number_en = 1;									//允许数字输入功能
+
+#ifdef NO_VOL_TUNE_FUNC	
+    vol_change_en=0;
+#else    
     vol_change_en=1;
-    sys_mute_flag=0;
+#endif
+
+     sys_mute_flag=0;
 
      play_mode = REPEAT_ALL;
      disp_scenario = DISP_NORMAL;

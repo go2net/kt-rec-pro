@@ -802,6 +802,7 @@ void ad_mod_sel_hdlr()
 
 			if(work_mode ==cur_work_mod){
 				sys_pwr_flag =0;
+				put_msg_fifo(MSG_SYS_CORE_SLEEP);				
 			}
 		}
 	}

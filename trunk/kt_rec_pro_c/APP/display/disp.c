@@ -213,7 +213,7 @@ void disp_power_off(void)
 {
     //printf_str("OFF ",0);//my_printf("OFF ");
       clear_lcd_disp_buf();
-	LCD_BACKLIGHT_OFF();
+      LCD_BACKLIGHT_OFF();
 }
 void disp_no_device(void)
 {
@@ -825,7 +825,8 @@ void disp_port(u8 menu)
 }
 
 #ifdef PLAY_STATUS_LED_FUNC
-xd_u8 playled_spark=0,led_spark_div=0;
+xd_u8 playled_spark=0;
+xd_u16 led_spark_div=0;
 void play_status_led_init()
 {
 	PLAY_LED_GPIO_INIT();
@@ -856,7 +857,10 @@ void play_status_led_hdlr()
 	else if(PLED_SPARK_NOR== playled_spark){
 
 		led_spark_div++;
-		if((led_spark_div%100)==0)pled_bit=~pled_bit;
+		if((led_spark_div)==500){
+			led_spark_div=0;
+			pled_bit=~pled_bit;
+		}
 		set_p_led_port(pled_bit);
 	}	
 }

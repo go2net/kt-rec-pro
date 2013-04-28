@@ -81,6 +81,7 @@ void radio_rev_hdlr( void )
 		   radio_band_switcher();		 	
 		   set_radio_freq(RADIO_CUR_FRE);
     		   SYSTEM_CLK_DIV4();
+		   dac_mute_control(0,1);	   	   
 		   sys_dac_mute(DAC_UNMUTE);
     		   set_max_vol(MAX_ANOLOG_VOL,MAX_DIGITAL_VOL);///设置最大音量
 	     }
@@ -257,7 +258,11 @@ void radio_rev_init()
 #endif
        sys_mute_flag=0;
     	input_number_en = 1;
+#ifdef NO_VOL_TUNE_FUNC	
+    	vol_change_en=0;
+#else		
     	vol_change_en=1;
+#endif
     	main_menu = MENU_RADIO_MAIN;
 
     	radio_info_pre_init();
