@@ -22,8 +22,8 @@
 #define AMP_MUTE_DISABLE() 	 P01 = 0
 #define AMP_MUTE_ENABLE() 	 P01 = 1
 #endif
-#if 0
-void amp_mute(bool mute)
+#if 1
+void ext_amp_mute(bool mute)
 {
     AMP_MUTE_PORT_INIT();
     if (mute==1)

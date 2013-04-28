@@ -88,6 +88,7 @@ extern xd_u8 disp_scenario,rtc_setting_flag;
 extern bool rec_pley_bp_flag;
 /** 存放ID3V2信息的结构体变量 */
 ID3V2_PARSE _xdata s_id3v2; 
+bool first_fr_init=0;
 /*----------------------------------------------------------------------------*/
 /**@brief  跳过ID3信息获取阶段
    @param  无
@@ -158,11 +159,7 @@ static void music_info_init(void)
 	        given_device = DEVICE_SDMMC0;
 
 	}
-#if (BREAK_POINT_PLAY_EN == 1)    	
         given_file_method = PLAY_BREAK_POINT;
-#else
-        given_file_method = PLAY_FIRST_FILE;
-#endif
     }
 
     put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
@@ -370,10 +367,6 @@ void restore_music_point(void)
 /*----------------------------------------------------------------------------*/
 void stop_decode(void)
 {
-    	//if(MAD_STOP == play_status)
-    	//{
-        	//return;
-    	//}
     	play_status = MAD_STOP;						   
 	if(MUSIC_MODE == work_mode)
 	{
@@ -433,7 +426,11 @@ static u8 start_decode(void)
     mad_control(MAD_INIT, 0);
     mad_control(MAD_PLAY, 0);
     play_status = MAD_PLAY;
-
+    if(first_fr_init){
+	first_fr_init =0 ;
+    	mad_control(MAD_FF, 1);
+    	mad_control(MAD_PLAY, 0);
+    }
     sys_mute_flag =0;	   	
     dac_mute_control(0,1);
 	
@@ -441,7 +438,9 @@ static u8 start_decode(void)
 	set_play_status_led_spark(PLED_SPARK_NOR);
 #endif	
     //flashled(2);
-    //amp_mute(0);	
+    ext_amp_mute(UNMUTE);
+
+    SYS_AMP_POWER_ON();
     return 0;
 }
 /*----------------------------------------------------------------------------*/
@@ -647,6 +646,7 @@ void music_play(void)
 #ifdef PLAY_STATUS_LED_FUNC
 		 set_play_status_led_spark(PLED_ON);
 #endif	
+    		 ext_amp_mute(MUTE);
     		sys_mute_flag =1;
     		dac_mute_control(1,1);
             }
@@ -661,7 +661,7 @@ void music_play(void)
 #endif	
     		sys_mute_flag =0;
     		dac_mute_control(0,1);
-
+    		ext_amp_mute(UNMUTE);
             }
             flush_all_msg();
             break;
@@ -747,32 +747,14 @@ void music_play(void)
             break;
 #endif
 
-#if (FF_FR_EN == 1)
         case MSG_MUSIC_FR:											//启动快退
-#if 0
-	     if((disp_scenario == DISP_RTC_SCEN)&&(rtc_setting_flag!=0)){
-			goto __HOT_MSG_HDLR;
-			break;
-	     }
-#endif		 
-            if (find_break_point_file_flag)							//如果是记忆播放的歌曲，不能快退
-            {
-                break;
-            }
             if (play_status == MAD_PLAY)
             {
                 play_status = MAD_FR;
             }
-
             break;
 
         case MSG_MUSIC_FF:											//启动快进
-#if 0
-	     if((disp_scenario == DISP_RTC_SCEN)&&(rtc_setting_flag!=0)){
-			goto __HOT_MSG_HDLR;
-			break;
-	     }
-#endif		 
             if (play_status == MAD_PLAY)
             {
                 play_status = MAD_FF;
@@ -785,25 +767,19 @@ void music_play(void)
             {
                 set_eq(eq_mode);
                 flush_all_msg();
-#if (FF_FR_MUSIC == 0)
-
-                dac_mute_control(0);
-#endif
+                dac_mute_control(0,1);
                 play_status = MAD_PLAY;
             }
             else if (play_status == MAD_FF)
             {
                 set_eq(eq_mode);
                 flush_all_msg();
-#if (FF_FR_MUSIC == 0)
-
-                dac_mute_control(0);
-#endif
+                dac_mute_control(0,1);
                 play_status = MAD_PLAY;
             }
 
             break;
-#endif
+
         case MSG_PICH_SONG:
             if (cur_menu == MENU_INPUT_NUMBER)			           //数字输入模式
             {
@@ -820,32 +796,20 @@ void music_play(void)
             break;
 
         case MSG_200MS:
-////////////////////////////////////////////////////////////
-//快进快退实际的操作在这里完成
-#if (FF_FR_EN == 1)
+
             if (play_status == MAD_FF)
             {
-#if (FF_FR_MUSIC == 0)							//如果需要在快进快退过程中听到声音，可以不加此行
-                dac_mute_control(1);
-#endif
                 mad_control(MAD_FF, FF_FR_STEP);
                 mad_control(MAD_FAST_FORWARD, 0);
-#if (FF_FR_MUSIC == 1)
-
                 dac_mute_control(0,1);
-#endif
                 mad_control(MAD_PLAY, 0);
             }
             else if (play_status == MAD_FR)
             {
-#if (FF_FR_MUSIC == 0)
-                dac_mute_control(1);							//如果需要在快进快退过程中听到声音，可以不加此行
-#endif
                 mad_control(MAD_FR, FF_FR_STEP);
                 mad_control(MAD_FAST_REVERASE, 0);
-#if (FF_FR_MUSIC == 1)
+		  set_eq(eq_mode);
                 dac_mute_control(0,1);
-#endif
                 mad_control(MAD_PLAY, 0);
             }
 			
@@ -854,11 +818,12 @@ void music_play(void)
 			if(main_menu==cur_menu)
 				disp_port(MENU_HALF_SEC_REFRESH);
 	     }
-#endif
 
             break;
 
         case MSG_HALF_SECOND:
+
+		ext_pa_delay_mute_hdlr();
 
 #if defined(USE_BAT_MANAGEMENT)
 		bmt_hdlr();
@@ -955,7 +920,7 @@ void music_play(void)
 			break;
             }
             write_file_info(0xff);
-    	     //backup_music_point();
+    	     backup_music_point();
             given_device = DEVICE_AUTO_NEXT; //0x81;//自动获取下一个设备。
             given_file_method = PLAY_BREAK_POINT;
             put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
@@ -1006,33 +971,39 @@ void music_decode(void)
 	uart_init();
 	deg_str("music_decode \n");
 #endif
+    ext_amp_mute(MUTE);
 
-    input_number_en = 1;									//允许数字输入功能
-    vol_change_en=1;
+    	input_number_en = 1;									//允许数字输入功能
+    	vol_change_en=1;
+	first_fr_init=1;	
     //enable_key_tone_flag(1);
     //flashled(3);
-     play_mode = REPEAT_ALL;
-     disp_scenario = DISP_NORMAL;
-    sys_mute_flag =0;
-    main_menu = MENU_MUSIC_MAIN;
-    dec_msg = get_dec_msg_ptr();
-    fat_ptr1.buf = win_buffer;
-    SYSTEM_CLK_DIV1();
+     	play_mode = REPEAT_ALL;
+     	disp_scenario = DISP_NORMAL;
+    	sys_mute_flag =0;
+    	main_menu = MENU_MUSIC_MAIN;
+    	dec_msg = get_dec_msg_ptr();
+    	fat_ptr1.buf = win_buffer;
+    	SYSTEM_CLK_DIV1();
 
-    key_table_sel(SYS_DEFUALT_KEY_TABLE);
-    flush_all_msg();
-    music_info_init();
-    set_max_vol(MAX_ANOLOG_VOL-3,MAX_DIGITAL_VOL);///设置最大音量
-    encode_channel = REC_MIC;
-    music_play();
+    	key_table_sel(SYS_DEFUALT_KEY_TABLE);
+    	flush_all_msg();
+    	music_info_init();
+    	set_max_vol(MAX_ANOLOG_VOL-3,MAX_DIGITAL_VOL);///设置最大音量
+    	encode_channel = REC_MIC;
+    	music_play();
+
+
+    	ext_amp_mute(MUTE);
+	
     //delay_10ms(3);
-    stop_decode();
+    	stop_decode();
     //key_voice_en=0;
-    main_vol_set(0, CHANGE_VOL_NO_MEM);
-    given_device = NO_DEVICE;
-    break_encode();
+    	main_vol_set(0, CHANGE_VOL_NO_MEM);
+    	given_device = NO_DEVICE;
+    	break_encode();
 #ifdef PLAY_STATUS_LED_FUNC
-    set_play_status_led_spark(PLED_ON);
+    	set_play_status_led_spark(PLED_ON);
 #endif	
 	
 }

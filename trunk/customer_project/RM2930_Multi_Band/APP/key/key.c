@@ -46,6 +46,7 @@ u16 _idata irda_data;     ///<IR读取读取出的数据
 u16 _idata adkey_value1;  ///<adkey 采样值
 extern bool sys_pwr_flag;
 bool adkey_activated=0;
+bool irkey_activated=0;
 
 #ifdef USE_TWO_ADKEY
 u16 _idata adkey_value2;  ///<adkey 采样值
@@ -723,6 +724,8 @@ u8 keyDetect(void)
 	            if((My_IRTab[key_index])==(irda_data & 0xff)){
 				//key_index = (My_IRTab[key_index].APP_Key);
 			       //printf_u16(keyTemp,'R');
+			       if(key_index == 20)
+				irkey_activated=1;			       
 				break;
 		     }
 		}     

@@ -60,6 +60,11 @@
 #define AMP_MUTE_PORT_INIT() 	 P0DIR &= ~(BIT(3));P0PU &= ~(BIT(3));P0PD &= ~(BIT(3))
 #define AMP_MUTE_DISABLE() 	 	 P03 = UNMUTE_LEVEL
 #define AMP_MUTE_ENABLE() 	 	 P03 = MUTE_LEVEL
+#elif defined( MUTE_PORT_USE_P04)
+#define AMP_MUTE_PORT_INIT() 	 P0DIR &= ~(BIT(4));P0PU &= ~(BIT(4));P0PD &= ~(BIT(4))
+#define AMP_MUTE_DISABLE() 	 	 P04 = UNMUTE_LEVEL
+#define AMP_MUTE_ENABLE() 	 	 P04 = MUTE_LEVEL
+
 #elif defined(MUTE_PORT_USE_WKUP)
 //dummy
 #elif defined(MUTE_PORT_USE_P25)
@@ -187,27 +192,33 @@
 #define LCD_BACKLIGHT_OFF()		P04 =1;
 #endif
 
-
+#ifdef LCD_BACK_LIGHT_ON_LEVEL_HIGH
+#define LCD_ON_LEVEL		1
+#define LCD_OFF_LEVEL		0
+#else
+#define LCD_ON_LEVEL		0
+#define LCD_OFF_LEVEL		1
+#endif
 #ifdef LCD_BACK_LIGHT_USE_P06
-#define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(6));P0PU|= (BIT(6))
-#define LCD_BACKLIGHT_ON()		P06 =0
-#define LCD_BACKLIGHT_OFF()		P06=1
+#define  LCD_BACKLIGHT_INIT()	  	P0DIR &=~(BIT(6));P0PU|= (BIT(6))
+#define LCD_BACKLIGHT_ON()			P06 =LCD_ON_LEVEL
+#define LCD_BACKLIGHT_OFF()			P06=LCD_OFF_LEVEL
 #elif defined(LCD_BACK_LIGHT_USE_P03)
-#define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(3));P0PU|= (BIT(3))
-#define LCD_BACKLIGHT_ON()		P03 =0
-#define LCD_BACKLIGHT_OFF()		P03=1
+#define  LCD_BACKLIGHT_INIT()	  	P0DIR &=~(BIT(3));P0PU|= (BIT(3))
+#define LCD_BACKLIGHT_ON()			P03 =LCD_ON_LEVEL
+#define LCD_BACKLIGHT_OFF()			P03=LCD_OFF_LEVEL
 #elif defined(LCD_BACK_LIGHT_USE_P05)
-#define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(5));P0PU|= (BIT(5))
-#define LCD_BACKLIGHT_ON()		  P05 =0
-#define LCD_BACKLIGHT_OFF()		  P05=1
+#define  LCD_BACKLIGHT_INIT()	  	P0DIR &=~(BIT(5));P0PU|= (BIT(5))
+#define LCD_BACKLIGHT_ON()		  	P05 =LCD_ON_LEVEL
+#define LCD_BACKLIGHT_OFF()		  	P05=LCD_OFF_LEVEL
 #elif defined(LCD_BACK_LIGHT_DUMMY)
 #define  LCD_BACKLIGHT_INIT()	  
 #define LCD_BACKLIGHT_ON()		
 #define LCD_BACKLIGHT_OFF()		
 #else
-#define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(4));P0PU|= (BIT(4))
-#define LCD_BACKLIGHT_ON()		P04 =0
-#define LCD_BACKLIGHT_OFF()		P04 =1
+#define  LCD_BACKLIGHT_INIT()	  	P0DIR &=~(BIT(4));P0PU|= (BIT(4))
+#define LCD_BACKLIGHT_ON()			P04 =LCD_ON_LEVEL
+#define LCD_BACKLIGHT_OFF()			P04 =LCD_OFF_LEVEL
 #endif
 
 
@@ -224,26 +235,41 @@
 #define KT_RF_AP_POWER_ON()			P06=1
 #define KT_RF_AP_POWER_OFF()			P06=0
 
+#if 1
 #define SYS_POWER_ON()			       P0DIR &= ~(BIT(4));P0PU |=BIT(4);P04=1
 #define SYS_POWER_OFF()			P0DIR &= ~(BIT(4));P0PU |=BIT(4);P04=0
+#else
+#define SYS_POWER_ON()			       //P0DIR &= ~(BIT(4));P0PU |=BIT(4);P04=1
+#define SYS_POWER_OFF()				//P0DIR &= ~(BIT(4));P0PU |=BIT(4);P04=0
+#endif
+
+
+#if 0
+#define SYS_AMP_POWER_ON()			P0DIR &= ~(BIT(4));P0PU |=BIT(4);P04=1
+#define SYS_AMP_POWER_OFF()			P0DIR &= ~(BIT(4));P0PU |=BIT(4);P04=0
+#else
+#define SYS_AMP_POWER_ON()			//P0DIR &= ~(BIT(4));P0PU |=BIT(4);P04=1
+#define SYS_AMP_POWER_OFF()			//P0DIR &= ~(BIT(4));P0PU |=BIT(4);P04=0
+#endif
+
 
 
 #if defined(AUX_DETECT_USE_P02)
 #define  aux_detect_gpio_init()      			P0DIR &= ~(BIT(2)); P02=1; P0DIR |= BIT(2);P0PU |= BIT(2);//linein check port
-#define  AUX_DETECT_GPIO  			P02
-#define  aux_detect_in_off()        		P0DIR &= ~(BIT(2));P02=1;  //linein check port
+#define  AUX_DETECT_GPIO  					P02
+#define  aux_detect_in_off()        				P0DIR &= ~(BIT(2));P02=1;  //linein check port
 #elif defined(AUX_DETECT_USE_P04)
 #define  aux_detect_gpio_init()      			P0DIR &= ~(BIT(4)); P04=1; P0DIR |= BIT(4);P0PU |= BIT(4);//linein check port
-#define  AUX_DETECT_GPIO  			P04
-#define  aux_detect_in_off()        		P0DIR &= ~(BIT(4));P04=1;  //linein check port
+#define  AUX_DETECT_GPIO  					P04
+#define  aux_detect_in_off()        				P0DIR &= ~(BIT(4));P04=1;  //linein check port
 #elif defined(AUX_DETECT_USE_P03)
 #define  aux_detect_gpio_init()      			P0DIR &= ~(BIT(3)); P03=1; P0DIR |= BIT(3);P0PU |= BIT(3);//linein check port
-#define  AUX_DETECT_GPIO  			P03
-#define  aux_detect_in_off()        		P0DIR &= ~(BIT(3));P03=1;  //linein check port
+#define  AUX_DETECT_GPIO  					P03
+#define  aux_detect_in_off()        				P0DIR &= ~(BIT(3));P03=1;  //linein check port
 #elif defined(AUX_DETECT_USE_P07)
 #define  aux_detect_gpio_init()      			P0DIR |= BIT(7);P0PU |= BIT(7);//linein check port
-#define  AUX_DETECT_GPIO  			P07
-#define  aux_detect_in_off()        		P0DIR &= ~(BIT(7)); //linein check port
+#define  AUX_DETECT_GPIO  					P07
+#define  aux_detect_in_off()        				P0DIR &= ~(BIT(7)); //linein check port
 #endif
 
 

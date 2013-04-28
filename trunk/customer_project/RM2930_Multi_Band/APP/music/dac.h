@@ -100,7 +100,7 @@ u8 main_vol_set(u8 vol, u8 mode);
    @note     void amp_mute(bool mute)
 */
 /*----------------------------------------------------------------------------*/
-void amp_mute(bool mute);
+void ext_amp_mute(bool mute);
 
 #endif
 

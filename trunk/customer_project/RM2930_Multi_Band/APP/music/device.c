@@ -15,6 +15,7 @@ extern u8 _xdata win_buffer[512];
 extern void stop_decode(void);
 extern FSAPIMSG _pdata fs_msg;
 extern FIL xdata fat_ptr1;
+extern bool sys_bp_sd_init,sys_bp_usb_init;
 
 #if 0
 extern DISK_MUSIC_POINT _idata	disk_mus_point[];
@@ -143,29 +144,39 @@ u8 device_init(void)
         {
             u16 break_point;
             //get_rec_mem_info();
-            if ((device_active & (~VIRTUAL_DEVICE)) == DEVICE_SDMMC0)
-            {
-                //break_point = disk_mus_point[0 + encode_cnt].id0;
-			break_point = read_music_info(MEM_SD_PLAYPOINT_ID0);
-			break_point=break_point<<8;
-			break_point |= read_music_info(MEM_SD_PLAYPOINT_ID0+1);                
-            }
-            else if ((device_active & (~VIRTUAL_DEVICE) ) == DEVICE_UDISK)
-            {
-               // break_point = disk_mus_point[1 + encode_cnt].id0;
-			break_point = read_music_info(MEM_USB_PLAYPOINT_ID0);
-			break_point=break_point<<8;
-			break_point |= read_music_info(MEM_USB_PLAYPOINT_ID0+1);                
-	     }
-			
-            	break_point_filenum = fs_scan_disk(break_point);
-    		encode_fristfile = fs_msg_rec.firstfilenum;	  //录音文件总数
-            	encode_filenum = fs_msg_rec.fileTotalInDir;	  //录音文件夹的第一个文件号
 
-            //if (break_point_filenum)
-            {
-                //break_point_filenum = filenum_phy_logic(break_point_filenum);
-            }
+	      	if ((device_active & (~VIRTUAL_DEVICE)) == DEVICE_SDMMC0)
+	       {
+			if(sys_bp_sd_init){
+				sys_bp_sd_init=0;
+				break_point = read_info(MEM_EXT_SD_PLAYPOINT_ID0);
+				break_point=break_point<<8;
+				break_point |= read_info(MEM_EXT_SD_PLAYPOINT_ID0+1);     
+			}
+			else{
+				break_point = read_music_info(MEM_SD_PLAYPOINT_ID0);
+				break_point=break_point<<8;
+				break_point |= read_music_info(MEM_SD_PLAYPOINT_ID0+1);                
+	            	}
+	      }
+	      else if ((device_active & (~VIRTUAL_DEVICE) ) == DEVICE_UDISK)
+	      {
+			if(sys_bp_usb_init){
+				sys_bp_usb_init=0;
+				break_point = read_info(MEM_EXT_USB_PLAYPOINT_ID0);
+				break_point=break_point<<8;
+				break_point |= read_info(MEM_EXT_USB_PLAYPOINT_ID0+1);       
+	      		}
+			else{
+				break_point = read_music_info(MEM_USB_PLAYPOINT_ID0);
+				break_point=break_point<<8;
+				break_point |= read_music_info(MEM_USB_PLAYPOINT_ID0+1);      
+			}
+	      }
+
+		break_point_filenum = fs_scan_disk(break_point);
+	    	encode_fristfile = fs_msg_rec.firstfilenum;	  //录音文件总数
+	       encode_filenum = fs_msg_rec.fileTotalInDir;	  //录音文件夹的第一个文件号
         }
 
 #if VIRTUAL_ENABLE
@@ -363,6 +374,11 @@ void write_file_info(u8 cmd)
 #if 1
 	write_music_info(MEM_SD_PLAYPOINT_ID0+1 , (u8)(id&(0x00FF)));
 	write_music_info(MEM_SD_PLAYPOINT_ID0, (u8)((id>>8)&(0x00FF)));
+	
+#if 1
+	write_info(MEM_EXT_SD_PLAYPOINT_ID0+1 , (u8)(id&(0x00FF)));
+	write_info(MEM_EXT_SD_PLAYPOINT_ID0, (u8)((id>>8)&(0x00FF)));
+#endif	
 
 	//sd_music_bp = id;
 	//write_info(MEM_SD_PLAYPOINT_ID0,(((u8 *)(&sd_music_bp))[0]));
@@ -379,10 +395,16 @@ void write_file_info(u8 cmd)
     }
     else if ((device_active & (~VIRTUAL_DEVICE)) == DEVICE_UDISK)
     {
+    
 #if 1
-
 	write_music_info(MEM_USB_PLAYPOINT_ID0+1, (u8)(id&(0x00FF)));
 	write_music_info(MEM_USB_PLAYPOINT_ID0, (u8)((id>>8)&(0x00FF)));
+	
+#if 1
+	write_info(MEM_EXT_USB_PLAYPOINT_ID0+1, (u8)(id&(0x00FF)));
+	write_info(MEM_EXT_USB_PLAYPOINT_ID0, (u8)((id>>8)&(0x00FF)));
+#endif	
+
 	//usb_music_bp = id;
 	//write_info(MEM_USB_PLAYPOINT_ID0,(((u8 *)(&usb_music_bp))[0]));
 	//write_info(MEM_USB_PLAYPOINT_ID0+1,(((u8 *)(&usb_music_bp))[1]));

@@ -576,6 +576,8 @@ void radio_info_pre_init()
 }
 void radio_rev_init(void)
 {
+    ext_amp_mute(MUTE);
+
     dac_mute_control(1,1);
     key_table_sel(SYS_RADIO_KEY_TABLE);
 	
@@ -602,6 +604,7 @@ void radio_rev_init(void)
 }
 void radio_rev_end_handlr(void)
 {
+    ext_amp_mute(MUTE);
     sys_mute_flag =0;
     main_vol_set(0, CHANGE_VOL_NO_MEM);
     KT_AMFMStandby();
@@ -662,13 +665,18 @@ void radio_rev_hdlr( void )
 			}
 
     			set_radio_freq(FM_CUR_FRE);
+
+
+    			SYS_AMP_POWER_ON();
 			
 			flush_all_msg();
+			ext_amp_mute(UNMUTE);
 			break;
 	        case MSG_CHANGE_RADIO_MODE:
     		    flush_all_msg();
             	     scan_mode = RADIO_SCAN_STOP;		
 		     //radio_band.bCurBand++;
+    		     set_delay_mute(DELAY_MUTE_500MS);
 		     radio_band_hdlr();
 		     break;
         	 case MSG_MUSIC_NEW_DEVICE_IN:							//有新设备接入
@@ -717,6 +725,8 @@ void radio_rev_hdlr( void )
                     			break;							 
 				}
 			}
+
+			set_brightness_all_on();			  
             	       put_msg_fifo(MSG_RADIO_SCAN);
 			break;	
 			
@@ -784,6 +794,9 @@ void radio_rev_hdlr( void )
 		    	set_radio_freq(FM_FRE_DEC);
 		       break;		 
 	        case MSG_HALF_SECOND:
+
+			ext_pa_delay_mute_hdlr();
+				
 #if defined(USE_BAT_MANAGEMENT)			
 		     bmt_hdlr();
 #endif

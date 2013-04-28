@@ -31,6 +31,7 @@ extern u8 given_device;
 extern u16 given_file_number;
 extern bool vol_change_en;
 extern bool sys_pwr_flag,sys_mute_flag;
+bool sys_bp_sd_init=0,sys_bp_usb_init=0;
 
 extern u8 eq_mode;
 extern u8 play_mode;
@@ -53,6 +54,8 @@ u8  main_menu_conter;				///<离开主界面的时间
 //bool flash_en;						///<显示闪动允许
 //u8 bright_counter;
 extern bool iic_busy; ///<iic繁忙标记
+extern bool irkey_activated;
+
 extern void KT_AMFMStandby(void);					//0->Fail 1->Success
 #ifdef JOG_STICK_FUNC	 
 extern void JogDetect(void);
@@ -250,9 +253,7 @@ static void sys_info_init(void)
     u8 vol_tmp;
 
 #if 1
-
     vol_tmp = read_info(MEM_SYS_VOL);
-
     if ((vol_tmp > MAX_MAIN_VOL) || (vol_tmp == 0))              //每次开机时，不要超过最大音量的一半，以免开机音量过大
     {
         vol_tmp = 20;
@@ -296,6 +297,7 @@ void sys_init(void)
     uart_init();
     deg_str("power on\n");
 #endif
+    SYS_POWER_OFF();	
 
     core_power_on();
     OTP_CLK_DIV2();
@@ -330,8 +332,11 @@ void sys_init(void)
         }
     }
 #endif
+
+    SYS_POWER_OFF();	
     key_init();
     bsp_init();
+    SYS_POWER_OFF();	
     //interrupt_init(15, rtcisr);
     interrupt_init(3, timer3isr);
     interrupt_init(0, timer0isr);
@@ -345,7 +350,7 @@ void sys_init(void)
 void idle_mode(void)
 {
     u8 key;
-//deg_str("idle_mode \n");
+    //deg_str("idle_mode \n");
 
     //dac_out_select(DAC_MUSIC, 0);
     //clear_all_event();
@@ -356,7 +361,9 @@ void idle_mode(void)
     disp_port(MENU_POWER_OFF);
     input_number_en=0;
     vol_change_en=0;
-	
+
+    SYS_POWER_OFF();	
+    LCD_BACKLIGHT_OFF();		
     //core_power_off();
 	
    while (1)
@@ -365,31 +372,87 @@ void idle_mode(void)
 
         switch (key)
         {
-        case MSG_CHANGE_WORK_MODE:
-	     clear_all_event();
-    	     flush_all_msg();
-            return;
+    	  	case MSG_POWER:
+        		work_mode = MUSIC_MODE;
+        	case MSG_CHANGE_WORK_MODE:
+	     		clear_all_event();
+    	     		flush_all_msg();
+			irkey_activated =0;
+			sys_pwr_flag =1;
+           	 	return;
 
-        case MSG_MUSIC_NEW_DEVICE_IN:							//有新设备接入
-	  //put_msg_lifo(MSG_CHANGE_WORK_MODE);		
-	 	break;
-        default:
-            ap_handle_hotkey(key);        
-            break;
+       	case MSG_MUSIC_NEW_DEVICE_IN:							//有新设备接入
+		  	//put_msg_lifo(MSG_CHANGE_WORK_MODE);		
+	 		break;
+        	default:
+           	 	//ap_handle_hotkey(key);        
+            		break;
         }
     }
 }
 #endif
+void sys_power_on_wait_for_powerkey(void)
+{	
+	u8 msg_key=0;
+	u8 pwr_keyhold_timer=2,pwr_keyhold_sec=0;
+       SYS_POWER_OFF();	
+	LCD_BACKLIGHT_OFF();	
+	while(1)
+	{
+        	msg_key = app_get_msg();
+		switch(msg_key)
+		{
+	        	case MSG_POWER_HOLD:
+				pwr_keyhold_timer=8;				
+				break;
+				
+	        	case MSG_HALF_SECOND:
+					
+				if(pwr_keyhold_timer>6){
+					
+					pwr_keyhold_sec++;	
+					if(pwr_keyhold_sec==0){
+					       SYS_POWER_ON();
+						return ;
+					}
+				}
+				else{
+					pwr_keyhold_sec--;	
+					pwr_keyhold_timer--;	
+					if(pwr_keyhold_timer==0){
+					       SYS_POWER_OFF();
+						disp_port(MENU_POWER_OFF);
+	    					delay_10ms(12);
+	    					//core_power_off();
+	    					while(1);
+					}
+				}
+				break;
+	        	default:
+				break;
+		}
+	}
+}
 void main(void)
 {
+    ext_amp_mute(MUTE);
 #if defined(USE_LCD_DRV_HT1621)
     lcd_ht1621_init();
 #endif
+    sys_pwr_flag=0;
+
+    sys_bp_sd_init=1;
+    sys_bp_usb_init=1;
+	
     work_mode = MUSIC_MODE;
     //amp_mute(1);
     clock_in = T0CNT;									//输入时钟,define in clock.h
     //WDT_EN();
     sys_init();
+    sys_power_on_wait_for_powerkey();
+    sys_pwr_flag=1;
+	
+    LCD_BACKLIGHT_ON();	
     SYS_POWER_ON();	
     P2IE_reg_OverWrite();	
    // AMUX_P2IE_SET(AMUX1_IE);

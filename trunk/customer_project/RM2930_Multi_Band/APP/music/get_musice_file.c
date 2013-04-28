@@ -75,13 +75,13 @@ u8 fs_get_filenum(u8 playmode, u8 searchMode)
 
         if (break_point_filenum)
         {
-            given_file_number = break_point_filenum;
-            find_break_point_file_flag = 1;
+            	given_file_number = break_point_filenum;
+            	find_break_point_file_flag = 1;
         }
         else
 #endif
 	{
-            given_file_number = 1;
+            	given_file_number = 1;
 	}
         break_point_filenum = 0;
 
