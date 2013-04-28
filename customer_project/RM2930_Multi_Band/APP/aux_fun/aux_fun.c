@@ -57,6 +57,8 @@ void aux_main_handlr(void)
 #endif	
 #endif	
 
+    SYS_AMP_POWER_ON();
+
     while (1)
     {
 #if defined(EXCHANGE_AUX_CHANNEL)
@@ -81,6 +83,8 @@ void aux_main_handlr(void)
             dac_mute_control(sys_mute_flag,1);					//调节音量时，自动UNMUTE
 	     break;		
         case MSG_HALF_SECOND:
+
+			ext_pa_delay_mute_hdlr();
 ////////////////////////////////////////////////////////////
 //显示界面的切换
 #if  1
@@ -144,6 +148,8 @@ void aux_main(void)
     }
 #endif
 
+    set_delay_mute(DELAY_MUTE_1000MS);
+
     key_table_sel(SYS_DEFUALT_KEY_TABLE);
     sys_mute_flag=0;
     input_number_en = 0;
@@ -158,6 +164,9 @@ void aux_main(void)
     flush_all_msg();
     set_max_vol(MAX_ANOLOG_VOL,MAX_DIGITAL_VOL);///设置最大音量
     aux_main_handlr();
+	
+    ext_amp_mute(MUTE);
+
     main_vol_set(0, CHANGE_VOL_NO_MEM);
     sys_mute_flag=0;
     break_encode();

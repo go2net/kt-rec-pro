@@ -22,12 +22,14 @@
 
 extern void disk_remove_deal_for_music(void);
 extern void rtc_disp_hdlr(void);
+extern void stop_decode(void);
 
 #ifdef AUTO_PLAY_RADIO_REC_FILE
 extern bool auto_play_radio_rec;
 #endif
 
 extern u8 work_mode;
+extern u8 play_status;
 xd_u8  last_work_mode;
 extern bool input_number_en;
 extern bool eq_change_en;
@@ -49,6 +51,7 @@ extern RTC_TIME _xdata curr_time;
 extern xd_u8 rtc_coordinate;
 bool sys_mute_flag=0;
 bool sys_pwr_flag=0;
+extern bool irkey_activated;
 
 #ifdef REC_PLAY_KEY_BREAK_POINT
 bool rec_pley_bp_flag=0;
@@ -61,6 +64,24 @@ xd_u8 rtc_set_cnt=0;
 xd_u8 disp_scenario=DISP_NORMAL;
 xd_u8 rtc_setting_flag=0;
 bool aux_plugged_in=0;
+
+xd_u8 ext_pa_timer=0;
+
+void set_delay_mute(u8 pa_dly_mute_time)
+{
+	ext_pa_timer=pa_dly_mute_time;
+	ext_amp_mute(MUTE);
+}
+
+void ext_pa_delay_mute_hdlr(void)
+{
+	if(ext_pa_timer>0){	
+		ext_pa_timer--;
+		if(ext_pa_timer==0){
+			ext_amp_mute(UNMUTE);
+		}
+	}
+}
 /*----------------------------------------------------------------------------*/
 /**@brief   几个任务都会用到的消息集中处理的函数
    @param   key： 需要处理的消息
@@ -75,7 +96,7 @@ void ap_handle_hotkey(u8 key)
     {
     	
     	case MSG_POWER:
-
+			
 #if 0
 		if(sys_pwr_flag==0){
 			sys_pwr_flag =1;
@@ -92,11 +113,22 @@ void ap_handle_hotkey(u8 key)
 			//work_mode =  IDLE_MODE;
 		}
 #endif
-		dac_mute_control(1,1);
-		delay_10ms(20);
-	       SYS_POWER_OFF();	
+              write_file_info(0xff);
+		sys_pwr_flag =0;
+		disp_port(MENU_POWER_OFF);		
+		LCD_BACKLIGHT_OFF();		
+	       SYS_POWER_OFF();
+#if 0		   
+		if(irkey_activated){
+	    		ext_amp_mute(MUTE);
+			dac_mute_control(1,1);		
+			work_mode =  IDLE_MODE;		
+		       put_msg_lifo(MSG_CHANGE_WORK_MODE);			
+			irkey_activated =0;
+			break;
+		}		
+#endif		
 		break;
-		
     case MSG_MUTE_UNMUTE:
 		sys_mute_flag=~sys_mute_flag;
         	dac_mute_control(sys_mute_flag,1);					//调节音量时，自动UNMUTE
@@ -303,9 +335,11 @@ void ap_handle_hotkey(u8 key)
     case MSG_VOL_UP:
         if(vol_change_en==0)
             break;
+#if 0		
 	 sys_mute_flag=0;		
         dac_mute_control(0,1);					//调节音量时，自动UNMUTE
-        //main_vol_set(0, CHANGE_VOL_INC);
+#endif
+	//main_vol_set(0, CHANGE_VOL_INC);
         write_info(MEM_SYS_VOL, main_vol_set(0, CHANGE_VOL_INC));
         disp_port(MENU_MAIN_VOL);
         break;
@@ -313,8 +347,10 @@ void ap_handle_hotkey(u8 key)
     case MSG_VOL_DOWN:
         if(vol_change_en==0)
             break;
+#if 0		
 	 sys_mute_flag=0;		
         dac_mute_control(0,1);					//调节音量时，自动UNMUTE
+#endif
         //main_vol_set(0, CHANGE_VOL_DEC);
         write_info(MEM_SYS_VOL, main_vol_set(0, CHANGE_VOL_DEC));
         disp_port(MENU_MAIN_VOL);

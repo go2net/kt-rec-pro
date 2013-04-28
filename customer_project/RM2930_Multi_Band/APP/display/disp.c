@@ -42,6 +42,7 @@ extern RADIO_MODE_VAR _data radio_band;
 #endif
 extern u16 input_number;
 extern u8 _bdata device_online;
+extern bool sys_pwr_flag;
 
 extern u16 given_file_number;
 extern u8 device_active;
@@ -173,7 +174,9 @@ void set_brightness_fade_out(void)
 /*----------------------------------------------------------------------------*/
 void set_brightness_all_on(void)
 {
-    backlight_timer = 120;
+    if(sys_pwr_flag==0)return;
+
+    backlight_timer = 30;
     LCD_BACKLIGHT_ON();
     //set_brightness(16);
     //bright_counter = 0;
@@ -191,7 +194,7 @@ void init_display(void)
 {
     	init_lcd_disp();
  //   disp_power_on();
-    	LCD_BACKLIGHT_ON();
+    	LCD_BACKLIGHT_OFF();
 #ifdef PLAY_STATUS_LED_FUNC
 	play_status_led_init(); 
 #endif
@@ -228,7 +231,7 @@ void disp_power_on(void)
 void disp_power_off(void)
 {
     //printf_str("OFF ",0);//my_printf("OFF ");
-      clear_lcd_disp_buf();
+       clear_lcd_disp_buf();
 	LCD_BACKLIGHT_OFF();
 }
 void disp_no_device(void)
