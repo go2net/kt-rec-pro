@@ -105,31 +105,6 @@ void radio_device_standby(void)
 {
     	KT_AMFMStandby();
 }
-
-void radio_info_pre_init(void)
-{
-	set_adc_mode_protect(UNPROTECT);
-
-	delay_10ms(10);
-	if(radio_band.bCurBand>((sizeof(radio_freq_tab)/6)-1)){
-		
-		radio_band.bCurBand = FM_MODE;
-	}
-	radio_band.wFreqUpLimit = radio_freq_tab[radio_band.bCurBand].MAX_FREQ;
-	radio_band.wFreqDownLimit = radio_freq_tab[radio_band.bCurBand].MIN_FREQ;
-	radio_band.bTuneStep  = radio_freq_tab[radio_band.bCurBand].FREQ_STEP;
-	
-
-	if (radio_band.wFreq > radio_band.wFreqUpLimit)
-        	radio_band.wFreq = radio_band.wFreqDownLimit;
-	
-    	if (radio_band.wFreq < radio_band.wFreqDownLimit)
-        	radio_band.wFreq =radio_band.wFreqDownLimit;
-
-    disp_port(MENU_RADIO_MAIN);			
-    scan_mode = RADIO_SCAN_STOP;
-}
-
 #ifdef SAVE_BAND_FREQ_INFO
 void save_radio_freq(u16 radio_freq,u8 ch)
 {
@@ -154,6 +129,34 @@ u16 read_radio_freq(u8 ch)
 	return freq_reg;	
 }
 #endif
+
+void radio_info_pre_init(void)
+{
+	set_adc_mode_protect(UNPROTECT);
+
+	delay_10ms(10);
+	if(radio_band.bCurBand>((sizeof(radio_freq_tab)/6)-1)){
+		
+		radio_band.bCurBand = FM_MODE;
+	}
+
+	radio_band.wFreqUpLimit = radio_freq_tab[radio_band.bCurBand].MAX_FREQ;
+	radio_band.wFreqDownLimit = radio_freq_tab[radio_band.bCurBand].MIN_FREQ;
+	radio_band.bTuneStep  = radio_freq_tab[radio_band.bCurBand].FREQ_STEP;
+	
+#ifdef SAVE_BAND_FREQ_INFO	
+	radio_band.wFreq= read_radio_freq(radio_band.bCurBand);
+#endif
+
+	if (radio_band.wFreq > radio_band.wFreqUpLimit)
+        	radio_band.wFreq = radio_band.wFreqDownLimit;
+	
+    	if (radio_band.wFreq < radio_band.wFreqDownLimit)
+        	radio_band.wFreq =radio_band.wFreqDownLimit;
+
+    disp_port(MENU_RADIO_MAIN);			
+    scan_mode = RADIO_SCAN_STOP;
+}
 
 void set_radio_freq(u8 mode)
 {
@@ -200,7 +203,16 @@ void set_radio_freq(u8 mode)
 		am_adj_timer=2;
 	}
 #endif
-
+#else
+    	if(radio_band.bCurBand==FM_MODE){
+		freq_step = (radio_band.bTuneStep);
+	}
+    	if(radio_band.bCurBand==MW_MODE){
+		freq_step = (radio_band.bTuneStep);
+	}
+    	else{
+		freq_step = (radio_band.bTuneStep);
+	}		
 #endif
 	
     if (mode == RADIO_FRE_INC)
@@ -311,7 +323,11 @@ void radio_all_scan_stop(void)
 {
        radio_scan_safeguard=0;
 	input_number_en = 1;
-       vol_change_en=1;	
+#ifdef NO_VOL_TUNE_FUNC	
+    	vol_change_en=0;
+#else	
+       vol_change_en=1;
+#endif
 	sys_dac_mute(DAC_UNMUTE);
 	scan_mode = RADIO_SCAN_STOP;
     	set_radio_freq(RADIO_CUR_FRE);			

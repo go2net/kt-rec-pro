@@ -599,6 +599,7 @@ void ap_handle_hotkey(u8 key)
 #ifdef PLAY_STATUS_LED_FUNC
 			    	set_play_status_led_spark(PLED_ON);
 #endif	
+ 			   	dac_mute_control(1,1);	   
 				disp_scenario = DISP_RTC_SCEN;
 				rtc_disp_hdlr();
 			}
