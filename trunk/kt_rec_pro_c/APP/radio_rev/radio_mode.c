@@ -86,7 +86,7 @@ void radio_rev_hdlr( void )
     		   set_max_vol(MAX_ANOLOG_VOL,MAX_DIGITAL_VOL);///设置最大音量
 	     }
 	     set_adc_mode_protect(UNPROTECT);
-            main_vol_set(sys_main_vol, CHANGE_VOL_MEM);
+	     sys_main_vol_setting(sys_main_vol);	 	
 		 
 	     flush_all_msg();						  	 
 	     break;
@@ -147,11 +147,17 @@ void radio_rev_hdlr( void )
             	put_msg_lifo(MSG_RADIO_SCAN_ALL);
 		break;	
 #endif
+#ifdef NEXT_PREV_HOLD_FAST_TUNE_RADIO_STEP
+	 case MSG_MUSIC_FF:
+#endif	 	
         case MSG_MUSIC_NEXT_FILE:
 		freq_step_flag=1;
         case MSG_FM_NEXT_STEP:
     		set_radio_freq(RADIO_FRE_INC);
 		break;
+#ifdef NEXT_PREV_HOLD_FAST_TUNE_RADIO_STEP
+	 case MSG_MUSIC_FR:
+#endif	 	
 	 case MSG_MUSIC_PREV_FILE:
 		freq_step_flag=1;	 	
         case MSG_FM_PREV_STEP:

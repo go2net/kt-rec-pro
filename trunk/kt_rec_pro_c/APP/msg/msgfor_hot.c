@@ -62,6 +62,10 @@ void sys_dac_mute(bool mutectrl)
 	sys_mute_flag=mutectrl;
 	dac_mute_control(sys_mute_flag,1);
 }
+void sys_main_vol_setting(u8 sys_vol)
+{
+    	main_vol_set(sys_vol, CHANGE_VOL_MEM);
+}
 /*----------------------------------------------------------------------------*/
 /**@brief   几个任务都会用到的消息集中处理的函数
    @param   key： 需要处理的消息
@@ -300,18 +304,38 @@ void ap_handle_hotkey(u8 key)
     case MSG_VOL_UP:
         if(vol_change_en==0)
             break;
+
+	 if(sys_main_vol<MAX_MAIN_VOL){
+		sys_main_vol++;
+	 }
+
+	sys_main_vol_setting(sys_main_vol);	 	
+       write_info(MEM_VOL, sys_main_vol);
+	 
         sys_dac_mute(DAC_UNMUTE);					//调节音量时，自动UNMUTE
         //main_vol_set(0, CHANGE_VOL_INC);
-        write_info(MEM_VOL, main_vol_set(0, CHANGE_VOL_INC));
+        //write_info(MEM_VOL, main_vol_set(0, CHANGE_VOL_INC));
         disp_port(MENU_MAIN_VOL);
         break;
 
     case MSG_VOL_DOWN:
         if(vol_change_en==0)
             break;
-        sys_dac_mute(DAC_UNMUTE);					//调节音量时，自动UNMUTE
+
+	 if(sys_main_vol>0){
+		sys_main_vol--;
+	 }
+
+	if(sys_main_vol==0){
+		 sys_dac_mute(DAC_MUTE);					//调节音量时，自动UNMUTE
+	}
+	else{
+		sys_main_vol_setting(sys_main_vol);	 	
+       	write_info(MEM_VOL, sys_main_vol);
+	 }
+        //sys_dac_mute(DAC_UNMUTE);					//调节音量时，自动UNMUTE
         //main_vol_set(0, CHANGE_VOL_DEC);
-        write_info(MEM_VOL, main_vol_set(0, CHANGE_VOL_DEC));
+        //write_info(MEM_VOL, main_vol_set(0, CHANGE_VOL_DEC));
         disp_port(MENU_MAIN_VOL);
         break;
 #endif

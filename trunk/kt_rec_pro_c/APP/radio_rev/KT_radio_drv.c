@@ -622,28 +622,6 @@ xd_u8 KT_AMFMWakeUp(void) //0->Fail 1->Success
 	return (KT_AMFMInit());
 #endif	
 }
-#if 0
-/************************************************************************************/
-/*函 数 名：KT_AMFMVolumeSet											 	 */
-/*功能描述：音量设置程序													*/
-/*函数说明：vol=0~31														 */
-/*调用函数：KT_Bus_Read()、KT_Bus_Write()									 */
-/*全局变量：mem_vol															 */
-/*输    入：xd_u8 vol														 */
-/*返    回：设置完毕：1														 */
-/*设 计 者：Yangpei					时间：											*/
-/*修 改 者：Kanghekai				时间：2011-04-08								*/
-/*版    本：V4.0																	*/
-/************************************************************************************/
-xd_u8 KT_AMFMVolumeSet(xd_u8 vol)			//Input: 0~31
-{
-	xd_u16 regx;
-	mem_vol = vol;
-	regx = KT_Bus_Read(0x0F); 
-	KT_Bus_Write(0x0F, regx & 0xFFE0 | mem_vol);
-	return(1);
-}
-#endif
 /************************************************************************************/
 /*函 数 名：KT_AMFMMute													 	 */
 /*功能描述：静音程序													 */

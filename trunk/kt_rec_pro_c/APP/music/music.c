@@ -510,6 +510,8 @@ static u8 start_decode(void)
 #ifdef PLAY_STATUS_LED_FUNC
     set_play_status_led_spark(PLED_SPARK_NOR);
 #endif	
+
+    sys_main_vol_setting(sys_main_vol);	 	
     dac_mute_control(0,1);	   
     //flashled(2);
     //amp_mute(0);	
@@ -552,7 +554,7 @@ void music_play(void)
 
     clear_all_event();
 
-    main_vol_set(sys_main_vol, CHANGE_VOL_MEM);
+    //main_vol_set(sys_main_vol, CHANGE_VOL_MEM);
 
 #ifdef AUTO_PLAY_RADIO_REC_FILE
 	if(auto_play_radio_rec){

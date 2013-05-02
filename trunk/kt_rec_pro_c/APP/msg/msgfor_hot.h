@@ -28,6 +28,7 @@ enum {
 #ifdef __C51__
 void ap_handle_hotkey(u8 msg);
 void sys_dac_mute(bool mutectrl);
+void sys_main_vol_setting(u8 sys_vol);
 #endif
 
 #endif
