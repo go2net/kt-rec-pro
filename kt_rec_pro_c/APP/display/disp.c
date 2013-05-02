@@ -351,11 +351,11 @@ void disp_input_number(u16 num)
    @note   void disp_main_vol(u8 vol)
 */
 /*----------------------------------------------------------------------------*/
-void disp_main_vol(u8 vol)
+void disp_main_vol()
 {
-    sys_main_vol = vol;
+    //sys_main_vol = vol;
     led_putchar('U',1);
-    printf_num(vol,2,2);
+    printf_num(sys_main_vol,2,2);
 
 }
 /*----------------------------------------------------------------------------*/
@@ -728,7 +728,7 @@ void disp_port(u8 menu)
             break;
 
         case MENU_MAIN_VOL:
-            disp_main_vol(get_dac_vol(0));
+            disp_main_vol();
             break;
 
         case MENU_FILENUM:

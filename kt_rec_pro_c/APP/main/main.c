@@ -257,8 +257,9 @@ static void sys_info_init(void)
 #endif
 
 #ifdef DEFAULT_VOL
-    sys_main_vol=DEFAULT_VOL;
+    sys_main_vol = DEFAULT_VOL;
 #endif
+
     dac_init(sys_main_vol);
     delay_10ms(50);										//µÈ´ý,¼ì²âUSB,SDÔÚÏß×´Ì¬
     //init_rec_name();
@@ -366,19 +367,22 @@ void idle_mode(void)
 #endif
     delay_10ms(20);
 
+#ifdef SYS_SOFT_WARE_GOIN_STANDBY
     if(sys_pwr_flag==0){
 		put_msg_fifo(MSG_SYS_CORE_SLEEP);		
     }
-	
+#endif	
    while (1)
     {
         key = app_get_msg();
 
         switch (key)
         {
+#ifdef SYS_SOFT_WARE_GOIN_STANDBY        
         case MSG_SYS_CORE_SLEEP:
     		core_power_off();			
 		break;
+#endif		
         case MSG_CHANGE_WORK_MODE:
 	     	clear_all_event();
     	     	flush_all_msg();
