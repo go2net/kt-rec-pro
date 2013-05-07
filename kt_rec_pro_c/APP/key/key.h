@@ -36,6 +36,7 @@ enum
     MSG_7,
     MSG_8,
     MSG_9,
+    MSG_100,
     MSG_SYS_CORE_SLEEP,
     MSG_DEVICE_REMOVED,
     MSG_RADIO_DEVICE_INIT,
@@ -173,6 +174,10 @@ void bmt_hdlr(void);
 #endif
 void ad_mod_sel_hdlr();
 void set_adc_mode_protect(bool set_bit);
+
+#ifdef FUNC_OFF_MP3_RADIO_MIXED
+void clr_adc_band_protect(void);
+#endif
 
 void kv_init(void);
 #endif

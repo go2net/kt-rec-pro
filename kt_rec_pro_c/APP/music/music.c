@@ -90,6 +90,9 @@ extern xd_u8 disp_scenario,rtc_setting_flag;
 extern bool rec_pley_bp_flag;
 /** 存放ID3V2信息的结构体变量 */
 ID3V2_PARSE _xdata s_id3v2; 
+#ifdef KEY_100_FUNC		
+extern xd_u8 key_100_func;
+#endif
 /*----------------------------------------------------------------------------*/
 /**@brief  跳过ID3信息获取阶段
    @param  无
@@ -970,6 +973,9 @@ void music_play(void)
             	{
 			if (cur_menu == MENU_INPUT_NUMBER)			//数字输入模式
 			{
+#ifdef KEY_100_FUNC		
+				key_100_func=0;
+#endif
 				put_msg_lifo(MSG_PICH_SONG);
                     		break;
                 	}

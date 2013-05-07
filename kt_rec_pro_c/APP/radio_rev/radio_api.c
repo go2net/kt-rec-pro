@@ -132,6 +132,10 @@ u16 read_radio_freq(u8 ch)
 
 void radio_info_pre_init(void)
 {
+#ifdef FUNC_OFF_MP3_RADIO_MIXED
+	clr_adc_band_protect();
+	delay_10ms(10);
+#endif
 	set_adc_mode_protect(UNPROTECT);
 
 	delay_10ms(10);
@@ -203,6 +207,40 @@ void set_radio_freq(u8 mode)
 		am_adj_timer=2;
 	}
 #endif
+
+#elif defined(MID_SPEED_STICK_TUNE_FUNC)
+
+	 if(fast_step_cnt==0){
+		fast_step_cnt=1;
+	 }
+
+    	if(radio_band.bCurBand==FM_MODE){
+
+		if(fast_step_cnt<8)				
+			freq_step = (radio_band.bTuneStep*fast_step_cnt);
+		else if(fast_step_cnt<12)				
+			freq_step = (radio_band.bTuneStep*fast_step_cnt*3);
+    	}
+    	if(radio_band.bCurBand==MW_MODE){
+
+		if(fast_step_cnt<6)				
+			freq_step = (radio_band.bTuneStep*fast_step_cnt);
+		else if(fast_step_cnt<12)				
+			freq_step = (radio_band.bTuneStep*fast_step_cnt*5);
+		else			
+			freq_step = (radio_band.bTuneStep*fast_step_cnt*8);
+		
+    	}
+    	else{
+		
+		if(fast_step_cnt<6)				
+			freq_step = (radio_band.bTuneStep*fast_step_cnt);
+		else if(fast_step_cnt<12)				
+			freq_step = (radio_band.bTuneStep*fast_step_cnt*5);		
+		else		
+			freq_step = (radio_band.bTuneStep*fast_step_cnt*8);
+	}
+		
 #else
     	if(radio_band.bCurBand==FM_MODE){
 		freq_step = (radio_band.bTuneStep);

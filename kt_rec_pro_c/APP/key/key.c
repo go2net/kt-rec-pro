@@ -185,7 +185,7 @@ void adc_avrg_filter(u8 volt)
 xd_u8 touchkeyval;
 xd_u8 keyval_buf;
 xd_u8  JogBuf;
-#ifdef FAST_STICK_TUNE_FUNC
+#if defined(FAST_STICK_TUNE_FUNC)||defined(MID_SPEED_STICK_TUNE_FUNC)
 xd_u8 fast_step_cnt=0,reset_cnt=0,last_reg=0,dir_reg=0;
 #endif
 void Jog_stick_gpio_init()
@@ -219,8 +219,8 @@ void JogDetect(void)
     touchkeyval = ((port_val & (BIT(4)))>>4)|((port_val & (BIT(3)))>>2);
 #endif
 
-#ifdef FAST_STICK_TUNE_FUNC
-	
+#if defined(FAST_STICK_TUNE_FUNC)|| defined(MID_SPEED_STICK_TUNE_FUNC)
+
 	if(fast_step_cnt>0){
 
 		reset_cnt++;
@@ -249,7 +249,7 @@ void JogDetect(void)
 	                    // Increase
 		             put_msg_fifo(MSG_FM_PREV_STEP);
 	                    JogBuf = 0;
-#ifdef FAST_STICK_TUNE_FUNC
+#if defined(FAST_STICK_TUNE_FUNC)|| defined(MID_SPEED_STICK_TUNE_FUNC)
 				dir_reg = 0x02;
 				if(last_reg != dir_reg){
 					last_reg =dir_reg;
@@ -269,7 +269,7 @@ void JogDetect(void)
 		                 put_msg_fifo(MSG_FM_NEXT_STEP);
 		             //put_msg_fifo(INFO_VOL_MINUS);
 	                    JogBuf = 0;
-#ifdef FAST_STICK_TUNE_FUNC
+#if defined(FAST_STICK_TUNE_FUNC)|| defined(MID_SPEED_STICK_TUNE_FUNC)
 				dir_reg = 0x01;
 				if(last_reg != dir_reg){
 					last_reg =dir_reg;
@@ -286,7 +286,7 @@ void JogDetect(void)
 	            }
 	            else
 	            {
-#ifdef FAST_STICK_TUNE_FUNC
+#if defined(FAST_STICK_TUNE_FUNC)|| defined(MID_SPEED_STICK_TUNE_FUNC)
 	                 reset_cnt=0;
 #endif	            
 	                if (JogBuf == 0x02)
@@ -630,6 +630,31 @@ void adc_scan(void)
         P0IE = ~(BIT(7));	 		
 #endif		
     }
+#ifdef FUNC_OFF_MP3_RADIO_MIXED
+    else if (cnt == 2)
+    {
+        ((u8 *)(&adkey_value1))[0] = ADCDATH;
+        ((u8 *)(&adkey_value1))[1] = ADCDATL;
+		
+#if defined(FUNCTION_SWITCH_AD_PORT_P05)
+        ADCCON = ADC_KEY_IO5; 
+        P0IE = ~(BIT(5));	 	
+#elif defined(FUNCTION_SWITCH_AD_PORT_P04)
+        ADCCON = ADC_KEY_IO4; 
+        P0IE = ~(BIT(4));	 			
+#else        
+        ADCCON = ADC_KEY_IO5; 
+        P0IE = ~(BIT(5));	 		
+#endif		
+
+    }
+    else if (cnt == 3)
+    {
+        sys_mod_volt = ADCDATH;
+        ADCCON = ADC_VDD_12;
+    }		
+#else	
+
     else if (cnt == 2)
     {
     
@@ -666,7 +691,10 @@ void adc_scan(void)
     {
         sys_mod_volt = ADCDATH;
         ADCCON = ADC_VDD_12;
-    }		
+    }	
+	
+#endif		
+	
     else
     {
         cnt = 0;
@@ -767,9 +795,89 @@ void set_adc_mode_protect(bool set_bit)
 {
 	ad_mode_switcher_protect= set_bit;
 }
+#ifdef FUNC_OFF_MP3_RADIO_MIXED
+bool ad_mode_band_protect=0;
+void clr_adc_band_protect(void)
+{
+	ad_mode_band_protect=0;
+}
+#endif
 void ad_mod_sel_hdlr()
 {
      if(ad_mode_switcher_protect) return;
+	 
+#ifdef FUNC_OFF_MP3_RADIO_MIXED
+
+	if(sys_mod_volt>ADKEY2_RES_5){
+
+	      	   cur_work_mod =FM_RADIO_MODE;
+			   
+		   if(!ad_mode_band_protect){
+		   	
+			if(sys_mod_volt>ADKEY2_RES_8){
+		      	   	sw_fm_mod =SW1_MODE ;
+			}
+		 	else if(sys_mod_volt>ADKEY2_RES_7){
+		      	   	sw_fm_mod =SW_MODE ;
+		 	}
+		 	else if(sys_mod_volt>ADKEY2_RES_6){
+		      	   	sw_fm_mod =MW_MODE ;
+		 	}
+		  	else{ 
+		      	   	sw_fm_mod =FM_MODE ;
+		  	}
+
+			if(radio_band.bCurBand !=sw_fm_mod){
+				radio_band.bCurBand=sw_fm_mod;
+				
+				if(work_mode!=REC_MIC_MODE){
+#ifndef LCD_BACK_LIGHT_DUMMY								
+					set_brightness_all_on();
+#endif
+					put_msg_fifo(MSG_CHANGE_RADIO_MODE);
+				}
+		      }			
+		}
+	}
+	else if(sys_mod_volt>ADKEY2_RES_2){	
+
+		ad_mode_band_protect=1;		
+	   	cur_work_mod =MUSIC_MODE ;
+	}
+	else {
+
+		ad_mode_band_protect=1;
+		cur_work_mod =IDLE_MODE ;
+	}
+
+
+	if(sys_pwr_flag==0){
+
+		if(cur_menu == MENU_SCAN_DISK)return;
+		if(work_mode !=cur_work_mod){
+
+			if(work_mode!=REC_MIC_MODE){
+#ifndef LCD_BACK_LIGHT_DUMMY				
+				set_brightness_all_on();
+#endif
+				work_mode = cur_work_mod;
+				put_msg_fifo(MSG_CHANGE_WORK_MODE);				
+			}
+		}
+	}
+	else{
+
+		if(cur_work_mod==IDLE_MODE){
+
+			if(work_mode ==cur_work_mod){
+				sys_pwr_flag =0;
+				put_msg_fifo(MSG_SYS_CORE_SLEEP);				
+			}
+		}
+	}
+	
+#else
+
 #if 1		
 	if(sys_mod_volt>ADKEY2_RES_NOKEY){
 			
@@ -861,6 +969,8 @@ void ad_mod_sel_hdlr()
 		}
 #endif		
 	}
+#endif		
+
 }
 
 /*----------------------------------------------------------------------------*/

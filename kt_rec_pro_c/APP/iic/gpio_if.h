@@ -179,7 +179,12 @@
 #define ADC_KEY_IO2    0xFA
 #define ADC_VDD_12     0xF8
 #define ADC_LDOIN        0xF9
+
+#ifdef FUNC_OFF_MP3_RADIO_MIXED
+#define ADC_MAX_USED   (0x03+1)
+#else
 #define ADC_MAX_USED   (0x03+2)
+#endif
 
 #if defined(USE_LCD_DRV_HT1621)
 #define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(4));P0PU|= (BIT(4))
@@ -188,22 +193,31 @@
 #endif
 
 
+#ifdef BACKLIGHT_ON_LEVEL_HIGH
+#define BL_ON		1
+#define BL_OFF		0
+#else
+#define BL_ON		0
+#define BL_OFF		1
+#endif
+
+
 #ifdef LCD_BACK_LIGHT_USE_P06
-#define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(6));P0PU|= (BIT(6))
-#define LCD_BACKLIGHT_ON()		P06 =0;
-#define LCD_BACKLIGHT_OFF()		P06=1;
+#define  LCD_BACKLIGHT_INIT()	  	P0DIR &=~(BIT(6));P0PU|= (BIT(6))
+#define LCD_BACKLIGHT_ON()			P06 =BL_ON;
+#define LCD_BACKLIGHT_OFF()			P06=BL_OFF;
 #elif defined(LCD_BACK_LIGHT_USE_P03)
-#define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(3));P0PU|= (BIT(3))
-#define LCD_BACKLIGHT_ON()		P03 =0;
-#define LCD_BACKLIGHT_OFF()		P03=1;
+#define  LCD_BACKLIGHT_INIT()	  	P0DIR &=~(BIT(3));P0PU|= (BIT(3))
+#define LCD_BACKLIGHT_ON()			P03 =BL_ON;
+#define LCD_BACKLIGHT_OFF()			P03=BL_OFF;
 #elif defined(LCD_BACK_LIGHT_DUMMY)
 #define  LCD_BACKLIGHT_INIT()	  
 #define LCD_BACKLIGHT_ON()		
 #define LCD_BACKLIGHT_OFF()		
 #else
-#define  LCD_BACKLIGHT_INIT()	  P0DIR &=~(BIT(4));P0PU|= (BIT(4))
-#define LCD_BACKLIGHT_ON()		P04 =0;
-#define LCD_BACKLIGHT_OFF()		P04 =1;
+#define  LCD_BACKLIGHT_INIT()	  	P0DIR &=~(BIT(4));P0PU|= (BIT(4))
+#define LCD_BACKLIGHT_ON()			P04 =BL_ON;
+#define LCD_BACKLIGHT_OFF()			P04 =BL_OFF;
 #endif
 
 
