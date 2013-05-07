@@ -108,6 +108,100 @@
 								/*18*/    NO_MSG,\
 								/*19*/    NO_MSG,\
 								/*20*/    NO_MSG
+#elif defined(JK_HT_998_MODULE)
+//
+#define IRFF00_MUSIC_SHORT		\
+                                                        /*00*/    MSG_0,\
+							       /*01*/    MSG_1,\
+								/*02*/    MSG_2,\
+								/*03*/    MSG_3,\
+								/*04*/    MSG_4,\
+								/*05*/    MSG_5,\
+								/*06*/    MSG_6,\
+								/*07*/    MSG_7,\
+								/*08*/    MSG_8,\
+								/*09*/    MSG_9,\
+                                                        /*10*/    MSG_100,\
+								/*11*/    MSG_REC_KEY,\
+								/*12*/    MSG_MUSIC_PREV_FILE,\
+								/*13*/    MSG_NEXT_PLAYMODE,\
+								/*14*/    MSG_VOL_DOWN,\
+								/*15*/    MSG_MUSIC_NEXT_EQ,\
+								/*16*/    MSG_MUSIC_PP,\
+								/*17*/    MSG_MUSIC_NEXT_FILE,\
+								/*18*/    MSG_VOL_UP,\
+								/*19*/    MSG_MUTE_UNMUTE,\
+								/*20*/    MSG_POWER_DOWN
+
+#define IRFF00_MUSIC_LONG		\
+                                                        /*00*/    NO_MSG,\
+                                                        /*01*/    NO_MSG,\
+								/*02*/    NO_MSG,\
+								/*03*/    NO_MSG,\
+								/*04*/    NO_MSG,\
+								/*05*/    NO_MSG,\
+								/*06*/    NO_MSG,\
+								/*07*/    NO_MSG,\
+								/*08*/    NO_MSG,\
+								/*09*/    NO_MSG,\
+                                                       /*10*/     NO_MSG,\
+								/*11*/    NO_MSG,\
+								/*12*/    MSG_MUSIC_FR,\
+								/*13*/    NO_MSG,\
+								/*14*/    NO_MSG,\
+								/*15*/    NO_MSG,\
+								/*16*/    NO_MSG,\
+								/*17*/    MSG_MUSIC_FF,\
+								/*18*/    NO_MSG,\
+								/*19*/    NO_MSG,\
+								/*20*/    NO_MSG
+
+#define IRFF00_MUSIC_HOLD		\
+                                                         /*00*/    NO_MSG,\
+                                                         /*01*/    NO_MSG,\
+								/*02*/    NO_MSG,\
+								/*03*/    NO_MSG,\
+								/*04*/    NO_MSG,\
+								/*05*/    NO_MSG,\
+								/*06*/    NO_MSG,\
+								/*07*/    NO_MSG,\
+								/*08*/    NO_MSG,\
+								/*09*/    NO_MSG,\
+                                                       /*10*/     NO_MSG,\
+								/*11*/    NO_MSG,\
+								/*12*/    MSG_MUSIC_FR,\
+								/*13*/    NO_MSG,\
+								/*14*/    MSG_VOL_DOWN,\
+								/*15*/    NO_MSG,\
+								/*16*/    NO_MSG,\
+								/*17*/    MSG_MUSIC_FF,\
+								/*18*/    MSG_VOL_UP,\
+								/*19*/    NO_MSG,\
+								/*20*/    NO_MSG
+
+
+#define IRFF00_MUSIC_LONG_UP	\
+                                                        /*00*/    NO_MSG,\
+                                                        /*01*/    NO_MSG,\
+								/*02*/    NO_MSG,\
+								/*03*/    NO_MSG,\
+								/*04*/    NO_MSG,\
+								/*05*/    NO_MSG,\
+								/*06*/    NO_MSG,\
+								/*07*/    NO_MSG,\
+								/*08*/    NO_MSG,\
+								/*09*/    NO_MSG,\
+								/*10*/    NO_MSG,\
+								/*11*/    NO_MSG,\
+								/*12*/    MSG_MUSIC_FFR_DONE,\
+								/*13*/    NO_MSG,\
+                                                        /*14*/    NO_MSG,\
+								/*15*/    NO_MSG,\
+								/*16*/    NO_MSG,\
+								/*17*/    MSG_MUSIC_FFR_DONE,\
+								/*18*/    NO_MSG,\
+								/*19*/    NO_MSG,\
+								/*20*/    NO_MSG								
 #else
 //
 #define IRFF00_MUSIC_SHORT		\

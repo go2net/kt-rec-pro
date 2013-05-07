@@ -47,6 +47,10 @@ extern xd_u8 rtc_coordinate;
 bool sys_mute_flag=0;
 bool sys_pwr_flag=0;
 
+#ifdef KEY_100_FUNC		
+xd_u8 key_100_func=0;
+#endif
+
 #ifdef REC_PLAY_KEY_BREAK_POINT
 bool rec_pley_bp_flag=0;
 xd_u16 last_play_index=0;
@@ -339,6 +343,16 @@ void ap_handle_hotkey(u8 key)
         disp_port(MENU_MAIN_VOL);
         break;
 #endif
+#ifdef KEY_100_FUNC		
+    case MSG_100:
+        if (!input_number_en)
+            break;	
+		
+	key_100_func=0xFF;		
+       input_number += 100;
+       disp_port(MENU_INPUT_NUMBER);
+	break;
+#endif	
     case MSG_0:
     case MSG_1:
     case MSG_2:
@@ -351,14 +365,30 @@ void ap_handle_hotkey(u8 key)
     case MSG_9:
         if (!input_number_en)
             break;
-		
-	 if((input_number)>6553){
-		input_number = 0x0000;			
-	 }
-        if (input_number > 9999)
-            input_number = 0;
 
-           input_number = input_number * 10 + key;
+#ifdef KEY_100_FUNC		
+	if(key_100_func==0xFF){
+
+		key_100_func=0xFE;
+           	input_number = input_number + key;
+	}
+	else if(key_100_func==0xFE){
+
+		key_100_func=0xFD;
+		input_number += (input_number%10)*10-(input_number%10)+key;
+	}
+	else
+#endif		
+	{		
+	 	if((input_number)>6553){
+			input_number = 0x0000;			
+	 	}
+		
+        	if(input_number > 9999)
+            		input_number = 0;
+		
+           	input_number = input_number * 10 + key;
+	}
         disp_port(MENU_INPUT_NUMBER);
         break;
 //2  REC FSM BEGIN

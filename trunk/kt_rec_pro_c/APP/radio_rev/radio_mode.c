@@ -43,7 +43,9 @@ extern  xd_u8 sys_main_vol;
 
 xd_u8 sw_fm_mod=0;
 extern void sw_auto_gain_hdlr(void);
-
+#ifdef KEY_100_FUNC		
+extern xd_u8 key_100_func;
+#endif
 /*----------------------------------------------------------------------------*/
 /**@brief  FM任务函数
    @param  无
@@ -206,6 +208,10 @@ void radio_rev_hdlr( void )
 #ifdef FM_FREQ_NUM_KEY_INPUT			
             else if (cur_menu == MENU_INPUT_NUMBER)			//数字输入模式
             {
+
+#ifdef KEY_100_FUNC		
+			key_100_func=0;
+#endif
             		if(radio_band.bCurBand>1){
 				input_number = input_number*10;
 			}
