@@ -66,6 +66,7 @@ xd_u8 rtc_setting_flag=0;
 bool aux_plugged_in=0;
 
 xd_u8 ext_pa_timer=0;
+xd_u8 sys_main_vol=0;
 
 void set_delay_mute(u8 pa_dly_mute_time)
 {
@@ -75,12 +76,18 @@ void set_delay_mute(u8 pa_dly_mute_time)
 
 void ext_pa_delay_mute_hdlr(void)
 {
+	low_power_auto_power_off();
+	
 	if(ext_pa_timer>0){	
 		ext_pa_timer--;
 		if(ext_pa_timer==0){
 			ext_amp_mute(UNMUTE);
 		}
 	}
+}
+void sys_main_vol_setting(u8 sys_vol)
+{
+    	main_vol_set(sys_vol, CHANGE_VOL_MEM);
 }
 /*----------------------------------------------------------------------------*/
 /**@brief   几个任务都会用到的消息集中处理的函数
@@ -335,24 +342,44 @@ void ap_handle_hotkey(u8 key)
     case MSG_VOL_UP:
         if(vol_change_en==0)
             break;
+
+		
+	 if(sys_main_vol<MAX_MAIN_VOL){
+		sys_main_vol++;
+	 }
+
+	sys_main_vol_setting(sys_main_vol);	 	
+       write_info(MEM_SYS_VOL, sys_main_vol);		
 #if 0		
 	 sys_mute_flag=0;		
         dac_mute_control(0,1);					//调节音量时，自动UNMUTE
 #endif
 	//main_vol_set(0, CHANGE_VOL_INC);
-        write_info(MEM_SYS_VOL, main_vol_set(0, CHANGE_VOL_INC));
+        //write_info(MEM_SYS_VOL, main_vol_set(0, CHANGE_VOL_INC));
         disp_port(MENU_MAIN_VOL);
         break;
 
     case MSG_VOL_DOWN:
         if(vol_change_en==0)
             break;
+
+	 if(sys_main_vol>0){
+		sys_main_vol--;
+	 }
+
+	//if(sys_main_vol==0){
+		 //sys_dac_mute(1);					//调节音量时，自动UNMUTE
+	//}
+	//else{
+	sys_main_vol_setting(sys_main_vol);	 	
+       write_info(MEM_SYS_VOL, sys_main_vol);
+	// }		
 #if 0		
 	 sys_mute_flag=0;		
         dac_mute_control(0,1);					//调节音量时，自动UNMUTE
 #endif
         //main_vol_set(0, CHANGE_VOL_DEC);
-        write_info(MEM_SYS_VOL, main_vol_set(0, CHANGE_VOL_DEC));
+        //write_info(MEM_SYS_VOL, main_vol_set(0, CHANGE_VOL_DEC));
         disp_port(MENU_MAIN_VOL);
         break;
 #endif

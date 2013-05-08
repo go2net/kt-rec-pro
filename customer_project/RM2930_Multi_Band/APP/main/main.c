@@ -55,6 +55,7 @@ u8  main_menu_conter;				///<离开主界面的时间
 //u8 bright_counter;
 extern bool iic_busy; ///<iic繁忙标记
 extern bool irkey_activated;
+extern xd_u8 sys_main_vol;
 
 extern void KT_AMFMStandby(void);					//0->Fail 1->Success
 #ifdef JOG_STICK_FUNC	 
@@ -250,17 +251,17 @@ void timer0isr(void)
 /*----------------------------------------------------------------------------*/
 static void sys_info_init(void)
 {
-    u8 vol_tmp;
+    //u8 vol_tmp;
 
 #if 1
-    vol_tmp = read_info(MEM_SYS_VOL);
-    if ((vol_tmp > MAX_MAIN_VOL) || (vol_tmp == 0))              //每次开机时，不要超过最大音量的一半，以免开机音量过大
+    sys_main_vol = read_info(MEM_SYS_VOL);
+    if ((sys_main_vol > MAX_MAIN_VOL) || (sys_main_vol == 0))              //每次开机时，不要超过最大音量的一半，以免开机音量过大
     {
-        vol_tmp = 20;
+        sys_main_vol = 20;
     }
 #endif
 
-    dac_init(vol_tmp);
+    dac_init(sys_main_vol);
     delay_10ms(50);										//等待,检测USB,SD在线状态
     //init_rec_name();
     //restore_music_point();

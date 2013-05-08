@@ -70,6 +70,7 @@ extern u8 bright_counter;		///<显示亮度调整延时
 extern u8 play_status;	
 u8 led_flag;
 xd_u8  clock_points=0;
+extern xd_u8 sys_main_vol;
 
 extern void clear_lcd_disp_buf(void);
 
@@ -359,10 +360,10 @@ void disp_input_number(u16 num)
    @note   void disp_main_vol(u8 vol)
 */
 /*----------------------------------------------------------------------------*/
-void disp_main_vol(u8 vol)
+void disp_main_vol()
 {
     led_putchar('U',1);
-    printf_num(vol,2,2);
+    printf_num(sys_main_vol,2,2);
 
 #ifdef AUX_DISP_VOL
     if(work_mode == AUX_MODE){
@@ -442,7 +443,7 @@ void disp_music_main(void)
 void disp_aux_main(void)
 {
 #ifdef AUX_DISP_VOL
-       disp_main_vol(get_dac_vol(0));
+       disp_main_vol();
 #else
 	printf_str(" AUX",0);
 	 lcd_disp_icon(AUX_ICON);	
@@ -734,7 +735,7 @@ void disp_port(u8 menu)
             break;
 
         case MENU_MAIN_VOL:
-            disp_main_vol(get_dac_vol(0));
+            disp_main_vol();
             break;
 
         case MENU_FILENUM:

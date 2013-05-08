@@ -36,6 +36,8 @@ enum {
 void ap_handle_hotkey(u8 msg);
 void set_delay_mute(u8 pa_dly_mute_time);
 void ext_pa_delay_mute_hdlr(void);
+void sys_main_vol_setting(u8 sys_vol);
+
 #endif
 
 #endif
