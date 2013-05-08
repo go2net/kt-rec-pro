@@ -175,6 +175,7 @@ void alarm_tone(void);
 void bmt_hdlr(void);
 #endif
 void ad_mod_sel_hdlr();
+void low_power_auto_power_off(void);
 
 void kv_init(void);
 #endif

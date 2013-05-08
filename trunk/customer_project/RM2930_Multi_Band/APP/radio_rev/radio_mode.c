@@ -55,6 +55,7 @@ bool freq_step_flag=0;
 #ifdef AUTO_PLAY_RADIO_REC_FILE
 bool auto_play_radio_rec=0;
 #endif
+extern xd_u8 sys_main_vol;
 
 //xd_u8 am_adj_timer=0;
 #ifdef USE_VALIDSTATION_CHECK
@@ -665,7 +666,7 @@ void radio_rev_hdlr( void )
 			}
 
     			set_radio_freq(FM_CUR_FRE);
-
+			sys_main_vol_setting(sys_main_vol);	 	
 
     			SYS_AMP_POWER_ON();
 			

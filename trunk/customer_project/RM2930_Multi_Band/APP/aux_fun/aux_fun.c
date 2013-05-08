@@ -25,6 +25,7 @@ extern bool vol_change_en,aux_online;
 extern xd_u8 P2IE_REG;
 extern bool sys_mute_flag;
 
+extern xd_u8 sys_main_vol;
 
 
 /*----------------------------------------------------------------------------*/
@@ -56,6 +57,7 @@ void aux_main_handlr(void)
 	P2 &=~((BIT(4)|BIT(5)));
 #endif	
 #endif	
+    sys_main_vol_setting(sys_main_vol);	 	
 
     SYS_AMP_POWER_ON();
 

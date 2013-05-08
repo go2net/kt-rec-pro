@@ -89,6 +89,8 @@ extern bool rec_pley_bp_flag;
 /** 存放ID3V2信息的结构体变量 */
 ID3V2_PARSE _xdata s_id3v2; 
 bool first_fr_init=0;
+extern xd_u8 sys_main_vol;
+
 /*----------------------------------------------------------------------------*/
 /**@brief  跳过ID3信息获取阶段
    @param  无
@@ -438,6 +440,8 @@ static u8 start_decode(void)
 	set_play_status_led_spark(PLED_SPARK_NOR);
 #endif	
     //flashled(2);
+    sys_main_vol_setting(sys_main_vol);	 	
+    
     ext_amp_mute(UNMUTE);
 
     SYS_AMP_POWER_ON();

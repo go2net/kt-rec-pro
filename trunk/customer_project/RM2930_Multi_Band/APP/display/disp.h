@@ -77,7 +77,7 @@ enum
 void disp_power_on(void);
 void disp_fm_freq(void);
 void disp_input_number(u16 num);
-void disp_main_vol(u8 vol);
+void disp_main_vol();
 void update_disp_icon();
 
 

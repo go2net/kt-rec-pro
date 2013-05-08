@@ -24,6 +24,7 @@
 extern u8 work_mode;
 extern u8 _idata last_work_mode;
 extern DECODER_MSG _xdata *dec_msg;
+extern void printf_u16(u16 dat,u8 c);
 
 //extern bit kv_flag;
 //u16 _xdata kv_rate_tab[6] _at_ 0x011E;
@@ -450,7 +451,28 @@ u8 ldoin_voltage(void)
     return ((((u16)adc_vddio*248+5)/10)/adc_vdd12);
 }
 #endif
-
+xd_u8 sys_power_off_timer=0;
+void low_power_auto_power_off(void)
+{
+	u8 bat_volt=0;
+	
+	bat_volt = ldoin_voltage();
+#ifdef UART_ENABLE
+	printf_u16(bat_volt,'V');
+#endif
+	// 0x22 3V8,  0x28 4V2,   0x2F 5V, 
+	if(bat_volt<0x26){
+		if(sys_power_off_timer++>60){
+			put_msg_fifo(MSG_POWER);
+		}
+	}
+	else{
+		if(sys_power_off_timer>0){
+			sys_power_off_timer--;
+		}
+	}
+	
+}
 #if defined(USE_BAT_MANAGEMENT)
 xd_u8 LDO_IN_Volt=0,batt_level=0;
 
