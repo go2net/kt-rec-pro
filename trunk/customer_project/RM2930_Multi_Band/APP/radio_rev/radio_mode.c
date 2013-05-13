@@ -90,7 +90,7 @@ FREQ_RAGE _code radio_freq_tab[]=
 {
 	8750,	10800,	10,	50,
 	522,		1622,  	9,	50,
-	3500,	7800,  	5,	100,
+	3500,	7800,  	5,	80,
 	8000,	21800, 	5,	100,
 };
 #elif defined(SW_FULL_BAND_RANGE)
@@ -173,6 +173,9 @@ void mem_radio_info(RADIO_STORE_CMD SAVE_CMD,u16 *RADIO_DATA,u8 RADIO_VALID_CH)
 	 case RADIO_READ_BAND:
 	 	radio_band.bCurBand = read_info(MEM_RADIO_BAND_CHAN);	 	
 	 	break;
+	 case RADIO_READ_CUR_CH:
+	 	radio_band.bCurChannel= read_info(MEM_RADIO_CUR_CH_BASE+(radio_band.bCurBand));	 	
+	 	break;			
 	 case RADIO_READ_STATION_SUM:
 	 	radio_band.bTotalChannel= read_info(MEM_RADIO_FM_TOTAL_STATION+(radio_band.bCurBand));	 	
 	 	break;	 	
@@ -204,6 +207,9 @@ void mem_radio_info(RADIO_STORE_CMD SAVE_CMD,u16 *RADIO_DATA,u8 RADIO_VALID_CH)
 	 case RADIO_SAVE_BAND:
 		write_info((MEM_RADIO_BAND_CHAN), radio_band.bCurBand);
 	 	break;	 	
+	 case RADIO_SAVE_CUR_CH:
+		write_info((MEM_RADIO_CUR_CH_BASE+(radio_band.bCurBand)), radio_band.bCurChannel);
+	 	break;	
 	 case RADIO_SAVE_STATION_SUM:
 		write_info((MEM_RADIO_TOTAL_STATION_BASE+(radio_band.bCurBand)), radio_band.bTotalChannel);
 	 	break;	
@@ -354,23 +360,26 @@ void radio_band_hdlr()
 	radio_band.bTuneStep  = radio_freq_tab[radio_band.bCurBand].FREQ_STEP;
 	radio_band.bTotalMAX  = radio_freq_tab[radio_band.bCurBand].SCAN_MAX;
 	
-#ifdef SAVE_BAND_FREQ_INFO	
+#ifdef SAVE_BAND_FREQ_INFO
     	mem_radio_info(RADIO_SAVE_BAND,&radio_band.wFreq,0);
-
     	mem_radio_info(RADIO_READ_FREQ,&radio_band.wFreq,0);
     	mem_radio_info(RADIO_READ_STATION_SUM,&radio_band.wFreq,0);
+    	mem_radio_info(RADIO_READ_CUR_CH,&radio_band.wFreq,0);
+#endif
 
-	if(radio_band.bTotalChannel>MEM_RADIO_STATION_MAX){
+	if(radio_band.bTotalChannel>radio_band.bTotalMAX){
 		radio_band.bTotalChannel=0;
 	}
 
-	radio_band.bCurChannel=1;
+	if((radio_band.bCurChannel>radio_band.bTotalChannel)||(radio_band.bCurChannel==0)){
+		radio_band.bCurChannel=1;
+	}
+	
 	if (radio_band.wFreq > radio_band.wFreqUpLimit)
         	radio_band.wFreq = radio_band.wFreqDownLimit;
 	
     	if (radio_band.wFreq < radio_band.wFreqDownLimit)
         	radio_band.wFreq =radio_band.wFreqDownLimit;
-#endif
 
 #ifdef USE_VALIDSTATION_CHECK
 	load_band_info(radio_band.bCurBand);
@@ -378,7 +387,7 @@ void radio_band_hdlr()
 
 	KT_AMFMSetMode(radio_band.bCurBand);	
     	set_radio_freq(FM_CUR_FRE);
-	delay_10ms(10);
+	delay_10ms(2);
 	radio_all_scan_stop();
 }
 
@@ -449,11 +458,10 @@ bool radio_band_scan(u8 mode)
     if (res)						//找到一个台
     {
 #ifdef DEBUG_FM    	
-	printf(" ---->KT  VALID  %d  \r\n ",(u16)radio_band.bTotalChannel);
-	printf(" ---->OK OK   \r\n ");
-	printf(" \r\n   \r\n ");
+		printf(" ---->KT  VALID  %d  \r\n ",(u16)radio_band.bTotalChannel);
+		printf(" ---->OK OK   \r\n ");
+		printf(" \r\n   \r\n ");
 #endif
-
        	if(mode==RADIO_SCAN_ALL){
 				
 #ifdef SAVE_BAND_FREQ_INFO	
@@ -505,6 +513,12 @@ void restore_station_from_epprom(u8 radio_cmd)
 				}			
 			}
 		}
+		else{
+			
+			if(radio_band.bCurChannel == 0){
+				radio_band.bCurChannel=1;
+			}	
+		}
 	}
 	else{
 		
@@ -516,11 +530,12 @@ void restore_station_from_epprom(u8 radio_cmd)
 	//vol_change_en=1;	
 #ifdef SAVE_BAND_FREQ_INFO	
     	mem_radio_info(RADIO_READ_STATION,&radio_band.wFreq,radio_band.bCurChannel);
+    	mem_radio_info(RADIO_SAVE_CUR_CH,&radio_band.wFreq,radio_band.bCurChannel);
 #endif
 
     	set_radio_freq(FM_CUR_FRE);
 	disp_port(MENU_RADIO_STATION_CH);
-	delay_10ms(50);
+	//delay_10ms(50);
 	sys_mute_flag =0;	   	
     	dac_mute_control(0,1);
 }

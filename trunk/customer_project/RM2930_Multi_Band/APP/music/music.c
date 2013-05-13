@@ -90,6 +90,7 @@ extern bool rec_pley_bp_flag;
 ID3V2_PARSE _xdata s_id3v2; 
 bool first_fr_init=0;
 extern xd_u8 sys_main_vol;
+xd_u8 main_sys_timer=0;
 
 /*----------------------------------------------------------------------------*/
 /**@brief  跳过ID3信息获取阶段
@@ -163,6 +164,8 @@ static void music_info_init(void)
 	}
         given_file_method = PLAY_BREAK_POINT;
     }
+
+    main_sys_timer=2;
 
     put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
 
@@ -437,7 +440,7 @@ static u8 start_decode(void)
     dac_mute_control(0,1);
 	
 #ifdef PLAY_STATUS_LED_FUNC
-	set_play_status_led_spark(PLED_SPARK_NOR);
+    set_play_status_led_spark(PLED_SPARK_NOR);
 #endif	
     //flashled(2);
     sys_main_vol_setting(sys_main_vol);	 	
@@ -589,6 +592,7 @@ void music_play(void)
                     break;
                 }
             }
+	     sys_main_vol_setting(sys_main_vol);	
             main_menu = MENU_MUSIC_MAIN;
             write_file_info(0xff);
             break;
@@ -651,8 +655,8 @@ void music_play(void)
 		 set_play_status_led_spark(PLED_ON);
 #endif	
     		 ext_amp_mute(MUTE);
-    		sys_mute_flag =1;
-    		dac_mute_control(1,1);
+    		 sys_mute_flag =1;
+    		 dac_mute_control(1,1);
             }
             else if (play_status == MAD_PAUSE)
             {
@@ -859,6 +863,14 @@ void music_play(void)
 			break;
 		}	
 #endif		
+		if(main_sys_timer>0){
+
+			main_sys_timer--;
+			if(main_sys_timer==0){
+    				sys_main_vol_setting(sys_main_vol);
+			}
+				
+		}
 		if (main_menu_conter < (SUB_MENU_TIME - 3))
 		{
                 	main_menu_conter++;
