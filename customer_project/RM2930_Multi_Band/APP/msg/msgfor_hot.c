@@ -356,23 +356,23 @@ void ap_handle_hotkey(u8 key)
 #endif
 	//main_vol_set(0, CHANGE_VOL_INC);
         //write_info(MEM_SYS_VOL, main_vol_set(0, CHANGE_VOL_INC));
-        disp_port(MENU_MAIN_VOL);
-        break;
+         disp_port(MENU_MAIN_VOL);
+         break;
 
     case MSG_VOL_DOWN:
-        if(vol_change_en==0)
+         if(vol_change_en==0)
             break;
 
-	 if(sys_main_vol>0){
+	  if(sys_main_vol>0){
 		sys_main_vol--;
-	 }
+	  }
 
 	//if(sys_main_vol==0){
 		 //sys_dac_mute(1);					//调节音量时，自动UNMUTE
 	//}
 	//else{
-	sys_main_vol_setting(sys_main_vol);	 	
-       write_info(MEM_SYS_VOL, sys_main_vol);
+	 sys_main_vol_setting(sys_main_vol);	 	
+        write_info(MEM_SYS_VOL, sys_main_vol);
 	// }		
 #if 0		
 	 sys_mute_flag=0;		
@@ -424,13 +424,9 @@ void ap_handle_hotkey(u8 key)
 			auto_play_radio_rec=1;
 	    }
 #endif
-			
         }
         else
         {
-#ifdef AUTO_PLAY_RADIO_REC_FILE
-
-#endif
             put_msg_lifo(MSG_REC_STOP);
         }
         break;
