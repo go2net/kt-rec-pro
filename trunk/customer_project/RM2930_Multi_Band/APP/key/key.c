@@ -458,7 +458,7 @@ void low_power_auto_power_off(void)
 	
 	bat_volt = ldoin_voltage();
 #ifdef UART_ENABLE
-	printf_u16(bat_volt,'V');
+	//printf_u16(bat_volt,'V');
 #endif
 	// 0x22 3V8,  0x28 4V2,   0x2F 5V, 
 	if(bat_volt<0x26){

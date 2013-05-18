@@ -52,6 +52,7 @@ extern xd_u8 rtc_coordinate;
 bool sys_mute_flag=0;
 bool sys_pwr_flag=0;
 extern bool irkey_activated;
+extern bool aux_online;
 
 #ifdef REC_PLAY_KEY_BREAK_POINT
 bool rec_pley_bp_flag=0;
@@ -161,7 +162,21 @@ void ap_handle_hotkey(u8 key)
 		       radio_band.bCurBand++;
 			if(radio_band.bCurBand>3/*((sizeof(radio_freq_tab)/6)-1)*/){
 				radio_band.bCurBand = FM_MODE;
-				work_mode=MUSIC_MODE;
+
+				if(aux_online){
+					work_mode=AUX_MODE;
+				}
+				else{
+
+					if(get_device_online_status()>0){
+					
+						work_mode=MUSIC_MODE;
+					}
+					else{
+						put_msg_lifo(MSG_CHANGE_RADIO_MODE);
+						break;
+					}
+				}
 			}
 			else{
 				put_msg_lifo(MSG_CHANGE_RADIO_MODE);
@@ -172,22 +187,29 @@ void ap_handle_hotkey(u8 key)
 			work_mode++;
 		}
 		
-		if(work_mode>=AUX_MODE)
-			work_mode=MUSIC_MODE;
-
+		if(work_mode>=AUX_MODE){
+			
+			if(!aux_online)
+				work_mode=MUSIC_MODE;
+			
+			if(work_mode>AUX_MODE){
+				work_mode=MUSIC_MODE;
+			}
+		}
+		
 		if(work_mode==MUSIC_MODE){
 
-			if(device_check()==0){
+    			SYSTEM_CLK_DIV1();
+			delay_10ms(20);
+			
+			if(get_device_online_status()==0){
 
-				if(work_mode!=MUSIC_MODE){
-					put_msg_lifo(MSG_CHANGE_WORK_MODE);
-				}
-				else{
-					radio_band.bCurBand = FM_MODE;				
-					put_msg_lifo(MSG_CHANGE_RADIO_MODE);
-				}
+#ifdef UART_ENABLE
+				deg_str("charge \n");
+#endif
 				work_mode=FM_RADIO_MODE;
-				break;
+				radio_band.bCurBand = FM_MODE;				
+				//put_msg_lifo(MSG_CHANGE_RADIO_MODE);
 			}
 		}
 		put_msg_lifo(MSG_CHANGE_WORK_MODE);
@@ -308,7 +330,7 @@ void ap_handle_hotkey(u8 key)
             break;
 #endif
 
-		given_device = read_info(MEM_ACTIVE_DEV);
+		given_device = read_info(MEM_RAM_ACTIVE_DEV);
 
 		if(given_device != DEVICE_SDMMC0_REC)
 			given_device = DEVICE_SDMMC0;
@@ -330,7 +352,7 @@ void ap_handle_hotkey(u8 key)
 
 	disp_scenario = DISP_NORMAL;
 	   
-	given_device = read_info(MEM_ACTIVE_DEV);
+	given_device = read_info(MEM_RAM_ACTIVE_DEV);
 
 	if(given_device != DEVICE_UDISK_REC)
 		given_device = DEVICE_UDISK;
@@ -420,7 +442,7 @@ void ap_handle_hotkey(u8 key)
         {
             put_msg_lifo(MSG_REC_FIND);
 #ifdef AUTO_PLAY_RADIO_REC_FILE
-	    if(work_mode == FM_RADIO_MODE){
+	    if(work_mode != MUSIC_MODE){
 			auto_play_radio_rec=1;
 	    }
 #endif
@@ -491,7 +513,17 @@ void ap_handle_hotkey(u8 key)
         {
             if (given_device == NO_DEVICE)
             {
-                given_device = read_info(MEM_ACTIVE_DEV);
+                given_device = read_info(MEM_RAM_ACTIVE_DEV);
+            	  device_check();
+		  if(given_device==NO_DEVICE){
+
+			if(device_online&(DEVICE_UDISK)>0){
+				given_device=DEVICE_UDISK;
+			}
+			else if(device_online&(DEVICE_SDMMC0)>0){
+				given_device=DEVICE_SDMMC0;
+			}
+		  }
             }
         }
        // if( ((given_device & (~VIRTUAL_DEVICE))  != DEVICE_SDMMC0) && ((given_device & (~VIRTUAL_DEVICE)) != DEVICE_UDISK))
@@ -511,6 +543,7 @@ void ap_handle_hotkey(u8 key)
         encode_device = device_active;	 //设置录音存储设备
         write_file_info(0);
         SYSTEM_CLK_DIV2();
+	 sys_mute_flag=0;
 
         set_rec_channel(encode_channel); //设置录音通道
         set_rec_vol(encode_vol);		 //设置录音音量
@@ -553,10 +586,16 @@ void ap_handle_hotkey(u8 key)
         */
         encode_status = RECODE_WORKING;
 #if FM_MODULE 
-		if(FM_RADIO_MODE == work_mode)
+		if(FM_RADIO_MODE == work_mode){
 			disp_port(MENU_RADIO_MAIN);
+		}
+		else if(AUX_MODE == work_mode)
+		{
+
+		}
 		else
 #endif
+		
 		{
 		 	main_menu = MENU_RECWORKING;//
 		}
@@ -567,7 +606,7 @@ void ap_handle_hotkey(u8 key)
         if(work_mode==REC_MIC_MODE){
 	 	put_msg_lifo(MSG_REC_PLAY);
         }
-#ifdef AUTO_PLAY_RADIO_REC_FILE
+#ifdef AUTO_PLAY_RADIO_REC_FILE_AT_ONCE
 	if(auto_play_radio_rec){
 		work_mode = MUSIC_MODE;
             	put_msg_lifo(MSG_CHANGE_WORK_MODE);
@@ -576,12 +615,14 @@ void ap_handle_hotkey(u8 key)
 #endif
 		
 #if FM_MODULE 
-	if(FM_RADIO_MODE == work_mode)
+	if(FM_RADIO_MODE == work_mode){
 		disp_port(MENU_RADIO_MAIN);
+	}
 	else
 #endif
-	disp_port(main_menu);
-
+	{
+		disp_port(main_menu);
+	}
 #ifdef REC_PLAY_KEY_BREAK_POINT
 	rec_pley_bp_flag=0;
 #endif		
@@ -656,6 +697,12 @@ void ap_handle_hotkey(u8 key)
 
         res = find_device(given_device);
 
+#ifdef UART_ENABLE
+	deg_str("NEW \n");
+	printf_u16(given_device, 'G');
+	printf_u16(res, 'F');
+#endif
+
         if ((res == DEV_INIT_ERR) ||
                 (res == NO_DEFINE_DEV))                    //指定的设备不在线，或初始化失败
         {
@@ -678,7 +725,6 @@ void ap_handle_hotkey(u8 key)
             else
             {	
 #if 1
-
 			aux_plugged_in=1;	
 			work_mode =  FM_RADIO_MODE;
               	put_msg_lifo(MSG_CHANGE_WORK_MODE);

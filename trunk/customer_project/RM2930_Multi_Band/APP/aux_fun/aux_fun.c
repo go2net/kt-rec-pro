@@ -117,8 +117,8 @@ void aux_main_handlr(void)
             }
             else if (cur_menu != main_menu)
             {
-                cur_menu = main_menu;
-                disp_port(cur_menu);
+                	cur_menu = main_menu;
+                	disp_port(cur_menu);
             }
 
 	     if(RECODE_WORKING == encode_status)
@@ -150,6 +150,10 @@ void aux_main(void)
     }
 #endif
 
+#ifdef UART_ENABLE
+	deg_str("aux_main \n");
+#endif
+
     set_delay_mute(DELAY_MUTE_1000MS);
 
     key_table_sel(SYS_DEFUALT_KEY_TABLE);
@@ -159,7 +163,7 @@ void aux_main(void)
     main_menu = MENU_AUX_MAIN;
     disp_port(MENU_AUX_MAIN);
     amux_dsp_eq();
-    SYSTEM_CLK_DIV4();
+    SYSTEM_CLK_DIV2();
     encode_channel = REC_LINEIN;
     encode_vol = 3;
     key_table_sel(0);

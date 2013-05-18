@@ -364,8 +364,12 @@ void write_file_info(u8 cmd)
     {
         id = read_file_id(&fat_ptr1);
     }
+#ifdef UART_ENABLE
+	deg_str("SAVE  \n");
+#endif
 
     write_info(MEM_ACTIVE_DEV, device_active);
+    write_music_info(MEM_RAM_ACTIVE_DEV, device_active);
 
    // get_rec_mem_info();
     if ((device_active & (~VIRTUAL_DEVICE)) == DEVICE_SDMMC0)
