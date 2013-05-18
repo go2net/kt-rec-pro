@@ -47,6 +47,13 @@ enum {
 	BAND_NEXT,
 	BAND_PREV,
 };
+
+enum {
+	
+	NOT_DISP,
+	DISP_FREQ,
+};
+
 #define FM_CUR_FRE          0
 #define FM_FRE_DEC          1
 #define FM_FRE_INC			2

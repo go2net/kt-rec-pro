@@ -325,7 +325,7 @@ void disp_radio_station_ch(void)
 }
 void disp_radio_station(void)
 {
-	if(radio_band.bCurChannel<100){
+	if(radio_band.bTotalChannel<100){
     		led_putchar('P',1);
     		printf_num(radio_band.bTotalChannel,2,2);
 	}

@@ -489,6 +489,10 @@ void music_play(void)
 
 #ifdef AUTO_PLAY_RADIO_REC_FILE
 	if(auto_play_radio_rec){
+
+#ifdef UART_ENABLE
+		deg_str("auto play Rec\n");
+#endif
 		
 #ifdef REC_PLAY_KEY_BREAK_POINT
 		rec_pley_bp_flag=0;
