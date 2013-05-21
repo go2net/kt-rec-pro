@@ -40,7 +40,7 @@ void aux_main_handlr(void)
     u8 key;
 
 #ifdef FORCE_AUX_GPIO_TO_GROUND_IMPROVE_CROSSTALK
-
+#ifndef UART_ENABLE
 #if defined(EXCHANGE_AUX_CHANNEL)	
 	P2IE_REG &=~((BIT(4)|BIT(5)));
 	P2IE_REG |= ((BIT(6)|BIT(7)));
@@ -55,6 +55,7 @@ void aux_main_handlr(void)
 	P2PD &=~((BIT(6)|BIT(7)));
 	P2PD |= ((BIT(4)|BIT(5)));
 	P2 &=~((BIT(4)|BIT(5)));
+#endif	
 #endif	
 #endif	
     sys_main_vol_setting(sys_main_vol);	 	
@@ -151,8 +152,9 @@ void aux_main(void)
 #endif
 
 #ifdef UART_ENABLE
-	deg_str("aux_main \n");
+	deg_str("aux \n");
 #endif
+    aux_detect_protect(FALSE);
 
     set_delay_mute(DELAY_MUTE_1000MS);
 

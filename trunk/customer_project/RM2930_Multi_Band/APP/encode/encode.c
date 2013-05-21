@@ -249,6 +249,7 @@ void rec_mic_main(void)
     u8 key;
 
     dac_out_select(DAC_MUSIC, 0);
+    aux_detect_protect(FALSE);
 
     while (1)
     {
@@ -321,11 +322,16 @@ void rec_mic_main(void)
 /*----------------------------------------------------------------------------*/
 void rec_mic_fun(void)
 {
+#ifdef UART_ENABLE
+	deg_str("encode \n");
+#endif
+
     dac_mute_control(1,1);
     input_number_en = 0;
     //vol_change_en=1;
     main_menu = MENU_RECWORKING;
-    disp_port(MENU_REC);
+    disp_port(MENU_SCAN_DISK);
+    delay_10ms(50);
     SYSTEM_CLK_DIV2();
     encode_channel = REC_MIC;
     encode_vol = 7;
@@ -333,8 +339,8 @@ void rec_mic_fun(void)
     flush_all_msg();
     if(RECODE_INIT == encode_status)
     {
-        put_msg_lifo(MSG_REC_FIND);
-        //put_msg_lifo(MSG_REC_START);
+        	put_msg_lifo(MSG_REC_FIND);
+        	//put_msg_lifo(MSG_REC_START);
     }
     //put_msg_lifo(MSG_REC_START);
     set_max_vol(MAX_ANOLOG_VOL,MAX_DIGITAL_VOL);///设置最大音量

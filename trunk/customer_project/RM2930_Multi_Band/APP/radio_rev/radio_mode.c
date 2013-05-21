@@ -651,6 +651,8 @@ void radio_rev_hdlr( void )
 		
 #ifdef FORCE_AUX_GPIO_TO_GROUND_IMPROVE_CROSSTALK
 
+#ifndef UART_ENABLE
+
 #if defined(EXCHANGE_AUX_CHANNEL)
 
 	P2IE_REG &=~((BIT(6)|BIT(7)));
@@ -666,6 +668,8 @@ void radio_rev_hdlr( void )
 	P2PD &= ~((BIT(4)|BIT(5)));
 	P2PD |= ((BIT(6)|BIT(7)));
 	P2 &=~((BIT(6)|BIT(7)));
+#endif	
+
 #endif	
 	P2IE_reg_OverWrite();	
 #endif	
@@ -687,6 +691,7 @@ void radio_rev_hdlr( void )
 
 	        case MSG_RADIO_DEVICE_INIT:
 
+			aux_detect_protect(TRUE);
    			if(KT_AMFMWakeUp()==1){
 
 			    	radio_band_hdlr();
@@ -707,6 +712,7 @@ void radio_rev_hdlr( void )
 			
 			flush_all_msg();
 			ext_amp_mute(UNMUTE);
+			aux_detect_protect(FALSE);
 			break;
 	        case MSG_CHANGE_RADIO_MODE:
     		    flush_all_msg();
