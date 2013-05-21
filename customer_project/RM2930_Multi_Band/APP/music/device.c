@@ -16,6 +16,7 @@ extern void stop_decode(void);
 extern FSAPIMSG _pdata fs_msg;
 extern FIL xdata fat_ptr1;
 extern bool sys_bp_sd_init,sys_bp_usb_init;
+extern u8 work_mode;
 
 #if 0
 extern DISK_MUSIC_POINT _idata	disk_mus_point[];
@@ -86,7 +87,11 @@ u8 device_init(void)
     device_check();
     if (device_active & device_online)  ///<当前需要活动的设备在线
     {
-        disp_port(MENU_SCAN_DISK);
+
+	 if(work_mode == MUSIC_MODE){
+        	disp_port(MENU_SCAN_DISK);
+		delay_10ms(50);
+	 }
 
         stop_decode();
 //        deg_str("device init\n");
@@ -232,16 +237,29 @@ u8 find_device(u8 select)
 //            return ONLY_ONE_DEVICE;
 #if 1
 	   last_active_dev =device_active;
+#ifdef UART_ENABLE
+	deg_str("FIND..11. \n");
+	printf_u16(device_active, 'A');
+#endif
 
 	   if((device_active & (~VIRTUAL_DEVICE))==DEVICE_UDISK){
-		device_active = DEVICE_SDMMC0;
+	   	
+			device_active = DEVICE_SDMMC0;
+		
 	   }
 	   else if((device_active & (~VIRTUAL_DEVICE))==DEVICE_SDMMC0){
-		device_active = DEVICE_UDISK;
+	   	
+			device_active = DEVICE_UDISK;
+		
 	   }
 	   else{
 		device_active=0;
 	   }
+
+#ifdef UART_ENABLE
+	deg_str("FIND..22. \n");
+	printf_u16(device_active, 'A');
+#endif
 	  
           if ((device_active & device_online) == 0){
 
@@ -254,6 +272,10 @@ u8 find_device(u8 select)
 		}
           }	
 
+#ifdef UART_ENABLE
+	deg_str("FIND..33. \n");
+	printf_u16(device_active, 'A');
+#endif
 
           if (!device_init()){             //找到有效设备
 
@@ -327,11 +349,16 @@ u8 find_device(u8 select)
         if (select & device_online)
         {
             device_active = select;
+#ifdef UART_ENABLE
+	deg_str("FIND..44. \n");
+	printf_u16(device_active, 'A');
+#endif
+			
             if (!device_init())
                 return FIND_DEV_OK;
             else
             {
-                device_active = 0;
+                //device_active = 0;
                 return DEV_INIT_ERR;
             }
         }

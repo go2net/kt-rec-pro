@@ -447,6 +447,7 @@ static u8 start_decode(void)
     
     ext_amp_mute(UNMUTE);
 
+    aux_detect_protect(FALSE);
     SYS_AMP_POWER_ON();
     return 0;
 }
@@ -501,6 +502,7 @@ void music_play(void)
 		put_msg_lifo(MSG_REC_PLAY);
 	}
 #endif
+    aux_detect_protect(FALSE);
 	
     while (1)
     {
@@ -989,7 +991,7 @@ void music_decode(void)
 {
 #ifdef UART_ENABLE
 	uart_init();
-	deg_str("music_decode \n");
+	deg_str("music \n");
 #endif
     ext_amp_mute(MUTE);
 

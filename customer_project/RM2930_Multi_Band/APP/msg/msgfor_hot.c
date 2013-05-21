@@ -294,8 +294,10 @@ void ap_handle_hotkey(u8 key)
 
 #ifdef AUX_DETECT_FUNC
     case MSG_AUX_OUT :
+#ifdef UART_ENABLE
+	deg_str("aux remove \n");
+#endif
 	if(work_mode == AUX_MODE){
-
 		aux_plugged_in=1;		
 		work_mode = last_work_mode;
         	put_msg_lifo(MSG_CHANGE_WORK_MODE);
@@ -441,11 +443,6 @@ void ap_handle_hotkey(u8 key)
         if(RECODE_PLAY >= encode_status)
         {
             put_msg_lifo(MSG_REC_FIND);
-#ifdef AUTO_PLAY_RADIO_REC_FILE
-	    if(work_mode != MUSIC_MODE){
-			auto_play_radio_rec=1;
-	    }
-#endif
         }
         else
         {
@@ -478,7 +475,7 @@ void ap_handle_hotkey(u8 key)
 		put_msg_lifo(MSG_REC_PLAY);
 		break;
     case MSG_ENCODE_FAT_FULL:  //建文件时
-		api_stop_encode();		//停止录音
+	 api_stop_encode();		//停止录音
         if((!device_check())&& (REC_MIC_MODE == work_mode))
         {
              put_msg_lifo(MSG_MUSIC_NEW_DEVICE_IN);
@@ -511,21 +508,29 @@ void ap_handle_hotkey(u8 key)
 	 }
 	 else //if((MUSIC_MODE != work_mode))
         {
-            if (given_device == NO_DEVICE)
+            //if (given_device == NO_DEVICE)
             {
-                given_device = read_info(MEM_RAM_ACTIVE_DEV);
-            	  device_check();
-		  if(given_device==NO_DEVICE){
+             //   given_device = read_info(MEM_RAM_ACTIVE_DEV);
+				
+            	  	device_check();
+		 // if( (given_device&(DEVICE_SDMMC0)==0) &&(given_device&(DEVICE_UDISK)==0)){
 
-			if(device_online&(DEVICE_UDISK)>0){
+			if((device_online&DEVICE_UDISK)>0){
 				given_device=DEVICE_UDISK;
 			}
-			else if(device_online&(DEVICE_SDMMC0)>0){
+			else if((device_online&DEVICE_SDMMC0)>0){
 				given_device=DEVICE_SDMMC0;
 			}
-		  }
+		//  }
             }
         }
+
+#ifdef UART_ENABLE
+		deg_str("rec init \n");
+		printf_u16(device_online, 'O');
+		printf_u16(given_device, 'G');
+#endif
+	 
        // if( ((given_device & (~VIRTUAL_DEVICE))  != DEVICE_SDMMC0) && ((given_device & (~VIRTUAL_DEVICE)) != DEVICE_UDISK))
         {
             //given_device = DEVICE_SDMMC0;
@@ -535,6 +540,13 @@ void ap_handle_hotkey(u8 key)
         put_msg_lifo(MSG_MUSIC_SELECT_NEW_DEVICE);
         break;
     case MSG_REC_START:		//开始录音
+
+#ifdef AUTO_PLAY_RADIO_REC_FILE
+	auto_play_radio_rec=1;
+#endif
+#ifdef UART_ENABLE
+		deg_str("rec start \n");
+#endif
 
 	 rec_device_out = 0;
 	 rec_sys_set(0);  //0:24M   1:48M
@@ -556,7 +568,8 @@ void ap_handle_hotkey(u8 key)
             set_rec_track(TRACK_ALL);
         }
         /**/
-        
+        aux_detect_protect(FALSE);
+    
         CLKGAT |= MP3CLK;// | SPIURCLK;
         CLKCON0 |= DACCLK;
         if(DEVICE_SDMMC0 == (device_active & (~VIRTUAL_DEVICE)))
@@ -595,7 +608,6 @@ void ap_handle_hotkey(u8 key)
 		}
 		else
 #endif
-		
 		{
 		 	main_menu = MENU_RECWORKING;//
 		}
@@ -695,7 +707,9 @@ void ap_handle_hotkey(u8 key)
 
     case MSG_MUSIC_SELECT_NEW_DEVICE:					        //重新选择设备
 
+	aux_detect_protect(TRUE);
         res = find_device(given_device);
+        aux_detect_protect(FALSE);
 
 #ifdef UART_ENABLE
 	deg_str("NEW \n");
@@ -714,60 +728,52 @@ void ap_handle_hotkey(u8 key)
         else if ((res == NO_EFFECTIVE_DEV) ||
                  (res == NO_DEV_ONLINE))                    //无可播放的设备
         {		
-            if(RECODE_STOP != encode_status)
-            {
-                	encode_status = RECODE_STOP;
-			if(REC_MIC_MODE == work_mode)
-			{
-				put_msg_lifo(MSG_NEXT_WORKMODE);
-			}
-            }
-            else
-            {	
+            	     if(RECODE_STOP != encode_status)
+	            {
+	                	encode_status = RECODE_STOP;
+				if(REC_MIC_MODE == work_mode)
+				{
+					put_msg_lifo(MSG_NEXT_WORKMODE);
+				}
+	            }
+            	     else
+	            {	
 #if 1
-			aux_plugged_in=1;	
-			work_mode =  FM_RADIO_MODE;
-              	put_msg_lifo(MSG_CHANGE_WORK_MODE);
-#else
-                //put_msg_lifo(MSG_NEXT_WORKMODE);
-                	if(disp_scenario == DISP_NORMAL){
-
-#ifdef PLAY_STATUS_LED_FUNC
-			    	set_play_status_led_spark(PLED_ON);
-#endif	
-				disp_scenario = DISP_RTC_SCEN;
-				rtc_disp_hdlr();
-			}
+				if(res != NO_EFFECTIVE_DEV)
+				aux_plugged_in=1;	
+				work_mode =  FM_RADIO_MODE;
+	              	put_msg_lifo(MSG_CHANGE_WORK_MODE);
+					
 #endif					
-            }
-            break;
+	            }
+            	     break;
         }
         else
         {
-            if(RECODE_PLAY < encode_status)
-            {
-                put_msg_lifo(MSG_REC_START);
-            }
-            else
-            {
-                if(RECODE_PLAY == encode_status)  //4去播刚录好的文件
-                {
-                    encode_status = RECODE_STOP;
+            		if(RECODE_PLAY < encode_status)
+            		{
+                		put_msg_lifo(MSG_REC_START);
+            		}
+            		else
+            		{
+                		if(RECODE_PLAY == encode_status)  //4去播刚录好的文件
+	                	{
+	                    		encode_status = RECODE_STOP;
 #if VIRTUAL_ENABLE
 #if 1//defined(K820_LHD_820_REC_V001)
-                    given_file_number = logic_fileTotal;
+	                    		given_file_number = logic_fileTotal;
 #else
-			given_file_number = encode_filenum;
+				given_file_number = encode_filenum;
 #endif
 #else
-                    given_file_number = logic_fileTotal;
-                    //given_file_number = encode_filenum + encode_fristfile -1; 
+	                    		given_file_number = logic_fileTotal;
+	                    //given_file_number = encode_filenum + encode_fristfile -1; 
 #endif
-                    put_msg_lifo(MSG_MUSIC_PLAY_NEW_FILE);
-                }
+	                    		put_msg_lifo(MSG_MUSIC_PLAY_NEW_FILE);
+	                	}
                 else
                 {
-                    put_msg_lifo(MSG_MUSIC_SELECT_NEW_FILE);		//找到可用设备
+                    		put_msg_lifo(MSG_MUSIC_SELECT_NEW_FILE);		//找到可用设备
                 }
             }
         }

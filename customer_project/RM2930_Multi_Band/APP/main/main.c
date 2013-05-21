@@ -72,10 +72,17 @@ extern void lcd_ht1621_init(void);
 */
 /*----------------------------------------------------------------------------*/
 #ifdef AUX_DETECT_FUNC
+static bool aux_detect_protect_en=0;
+void aux_detect_protect(bool protect_bit)
+{
+	aux_detect_protect_en=protect_bit;
+}
 static void aux_check(void)
 {
     static u8 aux_cnt_online;
 
+    if(aux_detect_protect_en)return;
+	
 #ifdef AUX_DETECT_SHARE_IIC_GPIO
     if(iic_busy)return;
 #endif
