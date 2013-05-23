@@ -297,6 +297,9 @@ void ap_handle_hotkey(u8 key)
 #ifdef UART_ENABLE
 	deg_str("aux remove \n");
 #endif
+#ifndef LCD_BACK_LIGHT_DUMMY						
+        set_brightness_all_on();
+#endif
 	if(work_mode == AUX_MODE){
 		aux_plugged_in=1;		
 		work_mode = last_work_mode;
@@ -304,6 +307,9 @@ void ap_handle_hotkey(u8 key)
 	}
 	break;
     case MSG_AUX_IN :
+#ifndef LCD_BACK_LIGHT_DUMMY						
+        set_brightness_all_on();
+#endif		
 	if(work_mode != AUX_MODE){
 
 		last_work_mode = work_mode;
