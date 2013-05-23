@@ -61,6 +61,7 @@ void aux_main_handlr(void)
     sys_main_vol_setting(sys_main_vol);	 	
 
     SYS_AMP_POWER_ON();
+    dac_mute_control(0,1);	
 
     while (1)
     {
