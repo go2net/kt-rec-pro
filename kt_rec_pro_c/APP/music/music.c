@@ -1102,7 +1102,7 @@ void music_decode(void)
     //key_table_sel(0);
     flush_all_msg();
     music_info_init();
-    set_max_vol(MAX_ANOLOG_VOL,MAX_DIGITAL_VOL);///设置最大音量
+    set_max_vol(MAX_ANOLOG_VOL-3,MAX_DIGITAL_VOL);///设置最大音量
     encode_channel = REC_MIC;
     music_play();
     //delay_10ms(3);

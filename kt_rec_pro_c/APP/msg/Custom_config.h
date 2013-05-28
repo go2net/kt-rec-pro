@@ -239,7 +239,7 @@
 
 #if defined(JK_JF_689_MODULE)
 
-#define DISP_VER		3
+//#define DISP_VER		3
 
 //#define JF_168_LCD_MODULE
 #define JK_JF_689_LCD_MODULE
