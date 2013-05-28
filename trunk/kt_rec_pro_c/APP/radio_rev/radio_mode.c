@@ -87,10 +87,10 @@ void radio_rev_hdlr( void )
 		   sys_dac_mute(DAC_UNMUTE);
     		   set_max_vol(MAX_ANOLOG_VOL,MAX_DIGITAL_VOL);///设置最大音量
 	     }
-	     set_adc_mode_protect(UNPROTECT);
 	     sys_main_vol_setting(sys_main_vol);	 	
 		 
 	     flush_all_msg();						  	 
+	     set_adc_mode_protect(UNPROTECT);
 	     break;
 		 
         case MSG_CHANGE_RADIO_MODE:
@@ -255,6 +255,7 @@ void radio_rev_init()
 	uart_init();
 	deg_str("fm_radio \n");
 #endif
+	set_adc_mode_protect(PROTECT);
     	dac_mute_control(1,1);	   
     	amux_dsp_eq();
     	SYSTEM_CLK_DIV2();

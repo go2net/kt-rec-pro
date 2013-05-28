@@ -60,7 +60,7 @@ FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 #elif defined(SW_TWO_BAND_RANGE_FOR_CUSTOMER_JIN_FENG)
 FREQ_RAGE _code radio_freq_tab[MAX_BAND]=
 {
-	8750,	10800,	10,
+	8750,	10850,	10,
 	522,		1620,	9,
 	3500,	7800,	5,
 	8000,	20500,	5,
@@ -136,9 +136,7 @@ void radio_info_pre_init(void)
 	clr_adc_band_protect();
 	delay_10ms(10);
 #endif
-	set_adc_mode_protect(UNPROTECT);
 
-	delay_10ms(10);
 	if(radio_band.bCurBand>((sizeof(radio_freq_tab)/6)-1)){
 		
 		radio_band.bCurBand = FM_MODE;
