@@ -93,6 +93,8 @@ ID3V2_PARSE _xdata s_id3v2;
 #ifdef KEY_100_FUNC		
 extern xd_u8 key_100_func;
 #endif
+xd_u8 sys_volume_timer=0;
+
 /*----------------------------------------------------------------------------*/
 /**@brief  跳过ID3信息获取阶段
    @param  无
@@ -514,8 +516,10 @@ static u8 start_decode(void)
     set_play_status_led_spark(PLED_SPARK_NOR);
 #endif	
 
-    sys_main_vol_setting(sys_main_vol);	 	
-    dac_mute_control(0,1);	   
+    sys_volume_timer=3;
+
+    //sys_main_vol_setting(sys_main_vol);	 	
+    //dac_mute_control(0,1);	   
     //flashled(2);
     //amp_mute(0);	
     return 0;
@@ -935,6 +939,14 @@ void music_play(void)
 
         case MSG_HALF_SECOND:
 
+	       if(sys_volume_timer>0){
+
+			sys_volume_timer--;
+			if(sys_volume_timer==0){
+			    	sys_main_vol_setting(sys_main_vol);	 	
+			    	dac_mute_control(0,1);	   
+			}
+		}
 #if defined(USE_BAT_MANAGEMENT)
 		bmt_hdlr();
 #endif
@@ -1094,6 +1106,11 @@ void music_decode(void)
      play_mode = REPEAT_ALL;
      disp_scenario = DISP_NORMAL;
 
+#ifdef EQ_DEFAULT_AT_POP
+    eq_mode = POP;
+#else
+    eq_mode = NORMAL;
+#endif
     main_menu = MENU_MUSIC_MAIN;
     dec_msg = get_dec_msg_ptr();
     fat_ptr1.buf = win_buffer;
